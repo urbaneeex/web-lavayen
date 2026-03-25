@@ -1,0 +1,134 @@
+---
+import { SOCIAL_PROFILE_URLS } from '../site';
+
+const [instagramHref, linkedInHref] = SOCIAL_PROFILE_URLS;
+
+/**
+ * Pie global del sitio. variant:
+ * - standalone: ancho viewport, padding lateral --site-pad, margin-top auto (p. ej. contacto)
+ * - in-content: dentro de .content; sin padding horizontal extra (el contenedor ya acota el ancho)
+ */
+interface Props {
+	variant?: 'standalone' | 'in-content';
+}
+
+const { variant = 'standalone' } = Astro.props;
+---
+
+<footer class:list={['site-footer', variant === 'in-content' && 'site-footer--in-content']} id="contact">
+	<div>
+		<h4>Pages</h4>
+		<div class="footer-links">
+			<a href="/">Home</a>
+			<a href="/works">Works</a>
+				<a href="/fotos">Fotos</a>
+			<a href="/contacto">Contacto</a>
+			<a href="/en/" hreflang="en">English</a>
+		</div>
+	</div>
+	<div>
+		<h4>Socials</h4>
+		<div class="footer-links">
+			<a href={instagramHref} target="_blank" rel="noreferrer noopener">Instagram</a>
+			<a href={linkedInHref} target="_blank" rel="noreferrer noopener">LinkedIn</a>
+		</div>
+	</div>
+	<div>
+		<h4>Info</h4>
+		<div class="footer-links">
+			<a href="/contacto">Términos y condiciones</a>
+			<a href="/contacto">Configurar Cookies</a>
+		</div>
+	</div>
+	<div class="footer-bottom">
+		<span class="footer-brand">Ángel Lavayen</span>
+		<span class="footer-copy">© 2026 Ángel Lavayen. All rights reserved.</span>
+	</div>
+</footer>
+
+<style>
+	.site-footer {
+		border-top: 1px solid rgba(255, 255, 255, 0.12);
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 1.2rem;
+		font-size: 1.02rem;
+		color: #f1f1f1;
+		background: #000;
+		position: relative;
+		z-index: 8;
+	}
+
+	.site-footer--in-content {
+		margin-top: 0;
+		padding-top: 1.6rem;
+		padding-bottom: 0;
+	}
+
+	.site-footer:not(.site-footer--in-content) {
+		margin-top: auto;
+		padding: 1.6rem var(--site-pad, clamp(1.8rem, 4.8vw, 3rem)) 2.2rem;
+	}
+
+	.site-footer h4 {
+		display: block;
+		margin: 0 0 0.55rem;
+		color: rgba(231, 231, 231, 0.45);
+		font-size: 0.95rem;
+		font-weight: 500;
+	}
+
+	.footer-links {
+		display: grid;
+		gap: 0.45rem;
+	}
+
+	.footer-links a,
+	.footer-links span {
+		color: #fff;
+		font-size: 1.02rem;
+	}
+
+	.footer-links a,
+	.footer-links a:visited,
+	.footer-links a:hover,
+	.footer-links a:focus-visible,
+	.footer-links a:active {
+		text-decoration: none;
+	}
+
+	.footer-bottom {
+		grid-column: 1 / -1;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		margin-top: 0.85rem;
+		padding-top: 0.9rem;
+		border-top: 1px solid rgba(255, 255, 255, 0.12);
+	}
+
+	.footer-brand {
+		font-family: 'Instrument Serif', Georgia, serif;
+		font-size: clamp(1.55rem, 2.3vw, 2rem);
+		color: #fff;
+		line-height: 1;
+	}
+
+	.footer-copy {
+		color: rgba(232, 232, 232, 0.62);
+		font-size: 0.86rem;
+	}
+
+	@media (max-width: 640px) {
+		.site-footer {
+			grid-template-columns: 1fr;
+			gap: 1.2rem;
+		}
+
+		.footer-bottom {
+			flex-direction: column;
+			align-items: flex-start;
+		}
+	}
+</style>

@@ -1,0 +1,79 @@
+---
+/**
+ * Enlace con marco blanco y texto duplicado que sube en hover (misma línea visible).
+ */
+interface Props {
+	href: string;
+	label: string;
+	class?: string;
+}
+
+const { href, label, class: className } = Astro.props;
+---
+
+<a class:list={['slide-frame-link', className]} href={href}>
+	<span class="slide-frame-link__clip">
+		<span class="slide-frame-link__stack">
+			<span class="slide-frame-link__line">{label}</span>
+			<span class="slide-frame-link__line" aria-hidden="true">{label}</span>
+		</span>
+	</span>
+</a>
+
+<style>
+	.slide-frame-link {
+		--slide-frame-lh: 1.2;
+		width: max-content;
+		display: block;
+		font-size: 0.78rem;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: #fff;
+		text-decoration: none;
+		border: 1px solid #fff;
+		padding: 0.72rem 1.45rem;
+		line-height: var(--slide-frame-lh);
+		font-family: Inter, system-ui, -apple-system, sans-serif;
+		font-weight: 500;
+	}
+
+	.slide-frame-link__clip {
+		display: block;
+		overflow: hidden;
+		line-height: var(--slide-frame-lh);
+		height: calc(1em * var(--slide-frame-lh));
+		height: 1lh;
+		clip-path: inset(0 0 0.22em 0);
+	}
+
+	.slide-frame-link__stack {
+		display: flex;
+		flex-direction: column;
+		gap: 0;
+		align-items: stretch;
+		transition: transform 0.5s cubic-bezier(0.33, 1, 0.68, 1);
+	}
+
+	.slide-frame-link__line {
+		display: block;
+		white-space: nowrap;
+		flex: 0 0 auto;
+		line-height: var(--slide-frame-lh);
+	}
+
+	.slide-frame-link:hover .slide-frame-link__stack,
+	.slide-frame-link:focus-visible .slide-frame-link__stack {
+		transform: translateY(-50%);
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.slide-frame-link__stack {
+			transition: none;
+		}
+
+		.slide-frame-link:hover .slide-frame-link__stack,
+		.slide-frame-link:focus-visible .slide-frame-link__stack {
+			transform: none;
+		}
+	}
+</style>

@@ -1,0 +1,192 @@
+---
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import {
+	OG_IMAGE_DEFAULT_HEIGHT,
+	OG_IMAGE_DEFAULT_URL,
+	OG_IMAGE_DEFAULT_WIDTH,
+	PERSON_LEGAL_NAME,
+	SITE_ORIGIN
+} from '../site';
+
+const title = 'Contacto | Ángel Lavayen — Diseño gráfico y dirección de arte en Madrid';
+const description =
+	'Teléfono, email y ubicación en Madrid para contratar a Ángel Alejandro Lavayen Ruiz: dirección de arte, diseño gráfico, motion graphics y vídeo.';
+const canonicalURL = new URL(Astro.url.pathname, SITE_ORIGIN).toString();
+---
+
+<BaseLayout
+	title={title}
+	description={description}
+	canonicalURL={canonicalURL}
+	ogImage={OG_IMAGE_DEFAULT_URL}
+	ogImageWidth={OG_IMAGE_DEFAULT_WIDTH}
+	ogImageHeight={OG_IMAGE_DEFAULT_HEIGHT}
+	ogLocaleAlternate="en_US"
+>
+	<script
+		slot="head"
+		type="application/ld+json"
+		set:html={JSON.stringify({
+			'@context': 'https://schema.org',
+			'@type': 'ContactPage',
+			name: 'Contacto — Ángel Lavayen',
+			description,
+			url: canonicalURL,
+			mainEntity: {
+				'@type': 'Person',
+				name: PERSON_LEGAL_NAME,
+				email: 'angel@lavayen.me',
+				telephone: '+34608812834',
+				address: {
+					'@type': 'PostalAddress',
+					addressLocality: 'Madrid',
+					addressCountry: 'ES'
+				}
+			}
+		})}
+	/>
+
+	<style slot="head">
+		:root {
+			--site-pad: clamp(1.8rem, 4.8vw, 3rem);
+		}
+
+		* {
+			box-sizing: border-box;
+		}
+
+		html,
+		body {
+			margin: 0;
+			padding: 0;
+			font-family: Inter, system-ui, -apple-system, sans-serif;
+			background: #000;
+			color: #f5f5f5;
+		}
+
+		body {
+			cursor: none;
+			min-height: 100svh;
+			display: flex;
+			flex-direction: column;
+		}
+
+		a {
+			color: inherit;
+			text-decoration: none;
+		}
+
+		.contact-main {
+			flex: 1;
+			width: calc(100% - (var(--site-pad) * 2));
+			margin: 0 auto;
+			padding: clamp(5.2rem, 14vw, 7.5rem) 0 clamp(4rem, 12vw, 7rem);
+		}
+
+		.contact-layout {
+			display: grid;
+			grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+			gap: clamp(2rem, 6vw, 5rem);
+			align-items: start;
+		}
+
+		.contact-title {
+			margin: 0 0 clamp(1.75rem, 3.5vw, 2.75rem);
+			font-family: 'Instrument Serif', Georgia, serif;
+			font-size: clamp(2.35rem, 6.5vw, 4rem);
+			font-weight: 400;
+			line-height: 1;
+			letter-spacing: -0.02em;
+			color: #fff;
+		}
+
+		.contact-fields {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: clamp(2.2rem, 5vw, 3.75rem) clamp(1.5rem, 4vw, 3rem);
+		}
+
+		.contact-block {
+			min-width: 0;
+		}
+
+		.contact-label {
+			display: block;
+			margin: 0 0 0.5rem;
+			font-size: 0.82rem;
+			font-weight: 500;
+			color: rgba(245, 245, 245, 0.48);
+			letter-spacing: 0.02em;
+		}
+
+		.contact-value {
+			display: inline-block;
+			margin: 0;
+			font-size: clamp(1.05rem, 1.35vw, 1.22rem);
+			font-weight: 500;
+			color: #fff;
+			line-height: 1.35;
+		}
+
+		a.contact-value {
+			transition: opacity 0.2s ease;
+		}
+
+		a.contact-value:hover {
+			opacity: 0.82;
+		}
+
+		@media (max-width: 720px) {
+			.contact-layout {
+				grid-template-columns: 1fr;
+				gap: 2.25rem;
+			}
+
+			.contact-fields {
+				grid-template-columns: 1fr;
+			}
+		}
+
+		@media (prefers-reduced-motion: reduce) {
+			html {
+				scroll-behavior: auto;
+			}
+
+			a.contact-value {
+				transition: none !important;
+			}
+		}
+
+		@media (hover: none), (pointer: coarse) {
+			body {
+				cursor: auto;
+			}
+		}
+	</style>
+
+	<Header theme="dark" />
+
+	<main class="contact-main" id="main">
+		<div class="contact-layout">
+			<h1 class="contact-title">Contacto</h1>
+			<div class="contact-fields">
+				<div class="contact-block">
+					<span class="contact-label">Teléfono</span>
+					<a class="contact-value" href="tel:+34608812834">+34 608 812 834</a>
+				</div>
+				<div class="contact-block">
+					<span class="contact-label">Dirección</span>
+					<p class="contact-value">Madrid, España</p>
+				</div>
+				<div class="contact-block">
+					<span class="contact-label">Email</span>
+					<a class="contact-value" href="mailto:angel@lavayen.me">angel@lavayen.me</a>
+				</div>
+			</div>
+		</div>
+	</main>
+
+	<Footer />
+</BaseLayout>

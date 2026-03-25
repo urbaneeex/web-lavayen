@@ -1,17 +1,769 @@
 ---
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import SlideFrameLink from '../components/SlideFrameLink.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getWorkBySlug } from '../data/works';
+import {
+	OG_IMAGE_DEFAULT_HEIGHT,
+	OG_IMAGE_DEFAULT_URL,
+	OG_IMAGE_DEFAULT_WIDTH,
+	PERSON_LEGAL_NAME,
+	PERSON_SHORT_NAME,
+	SITE_ORIGIN,
+	SOCIAL_PROFILE_URLS
+} from '../site';
 
+const title = 'Ángel Lavayen | Director de arte, diseñador gráfico y motion designer en Madrid';
+const description =
+	'Portfolio de Ángel Alejandro Lavayen Ruiz en Madrid: dirección de arte, diseño gráfico, motion graphics, vídeo, branding, packaging y campañas para marcas.';
+const canonicalURL = new URL(Astro.url.pathname, SITE_ORIGIN).toString();
+const keywords =
+	'Ángel Lavayen, Ángel Alejandro Lavayen Ruiz, director de arte Madrid, diseñador gráfico Madrid, motion graphics, motion designer, branding, packaging, diseño editorial, identidad visual, portfolio creativo';
+
+/** Orden de la home = fuente única en data/works.ts */
+const homeSlugs = [
+	'la-sinfonia-del-caos',
+	'womo-brand',
+	'campana-pizzas-goodfellas',
+	'amor-fatum',
+	'packaging'
+] as const;
+
+const homeWorks = homeSlugs.map((slug) => {
+	const p = getWorkBySlug(slug);
+	if (!p) throw new Error(`Work no encontrado para home: ${slug}`);
+	return p;
+});
+
+const [workA, workB, workFeatured, workC, workD] = homeWorks;
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<BaseLayout
+	title={title}
+	description={description}
+	canonicalURL={canonicalURL}
+	robots="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+	keywords={keywords}
+	author={PERSON_LEGAL_NAME}
+	ogImage={OG_IMAGE_DEFAULT_URL}
+	ogImageWidth={OG_IMAGE_DEFAULT_WIDTH}
+	ogImageHeight={OG_IMAGE_DEFAULT_HEIGHT}
+	ogLocaleAlternate="en_US"
+	interWeights="400;500;600"
+	cursorHoverSelector={'a, button, [role="button"], .work-item-link, .featured-work-link, .work-item, .photo'}
+>
+	<link rel="alternate" hreflang="es" href={`${SITE_ORIGIN}/`} slot="head" />
+	<link rel="alternate" hreflang="en" href={`${SITE_ORIGIN}/en/`} slot="head" />
+	<link rel="alternate" hreflang="x-default" href={`${SITE_ORIGIN}/`} slot="head" />
+	<script
+		type="application/ld+json"
+		slot="head"
+		set:html={JSON.stringify({
+			'@context': 'https://schema.org',
+			'@type': 'Person',
+			name: PERSON_LEGAL_NAME,
+			alternateName: [PERSON_SHORT_NAME, 'Angel Lavayen', 'Ángel Lavayen'],
+			jobTitle: 'Director de arte, diseñador gráfico y motion designer',
+			description,
+			url: `${SITE_ORIGIN}/`,
+			address: {
+				'@type': 'PostalAddress',
+				addressLocality: 'Madrid',
+				addressCountry: 'ES'
+			},
+			sameAs: [...SOCIAL_PROFILE_URLS],
+			knowsAbout: [
+				'Dirección de arte',
+				'Diseño gráfico',
+				'Motion graphics',
+				'Branding',
+				'Diseño editorial',
+				'Packaging',
+				'Edición de vídeo'
+			]
+		})}
+	/>
+	<style slot="head">
+			:root {
+				--light-bg: #f6f6f4;
+				--light-text: #161616;
+				--muted: #5c5c5c;
+				--line: #d6d6d1;
+				--max: 1240px;
+				--site-pad: clamp(1.8rem, 4.8vw, 3rem);
+				--hero-blue: #1848ff;
+				--hero-text: #7896b0;
+			}
+
+			* {
+				box-sizing: border-box;
+			}
+
+			html,
+			body {
+				margin: 0;
+				padding: 0;
+				font-family: Inter, system-ui, -apple-system, sans-serif;
+				background: #000;
+				color: var(--light-text);
+			}
+
+			body {
+				cursor: none;
+			}
+
+			a {
+				color: inherit;
+				text-decoration: none;
+			}
+
+			.hero-screen {
+				position: relative;
+				min-height: 100svh;
+				overflow: hidden;
+				background: var(--hero-blue);
+			}
+
+			.hero-screen::before,
+			.hero-screen::after {
+				content: '';
+				position: absolute;
+				inset: -20%;
+				pointer-events: none;
+			}
+
+			.hero-screen::before {
+				background:
+					radial-gradient(30rem 24rem at 69% 37%, rgba(136, 192, 255, 0.36), rgba(136, 192, 255, 0) 65%),
+					radial-gradient(32rem 44rem at 50% 70%, rgba(123, 174, 255, 0.32), rgba(123, 174, 255, 0) 62%),
+					radial-gradient(26rem 20rem at 45% 78%, rgba(39, 98, 255, 0.5), rgba(39, 98, 255, 0) 62%);
+				filter: blur(10px);
+				animation: drift-a 18s ease-in-out infinite alternate;
+			}
+
+			.hero-screen::after {
+				background:
+					radial-gradient(44rem 62rem at 50% 58%, rgba(166, 208, 255, 0.16), rgba(166, 208, 255, 0) 70%),
+					radial-gradient(22rem 19rem at 78% 30%, rgba(146, 201, 255, 0.26), rgba(146, 201, 255, 0) 72%);
+				animation: drift-b 22s ease-in-out infinite alternate;
+			}
+
+			.hero-wrap {
+				position: relative;
+				z-index: 1;
+				width: calc(100% - (var(--site-pad) * 2));
+				margin: 0 auto;
+				min-height: 100svh;
+				display: grid;
+				/* El nav es fixed y va fuera de este bloque (evita stacking trap con z-index del wrap) */
+				grid-template-rows: 1fr auto;
+			}
+
+			.hero-center {
+				position: absolute;
+				inset: 0;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				text-align: center;
+				padding: 0 1rem 0;
+			}
+
+			/* Solo anular el margen del h1; tipografía la define .hero-copy (no usar inherit en font-size). */
+			h1.hero-copy {
+				margin: 0;
+			}
+
+			.hero-copy {
+				margin: 0;
+				max-width: 80ch;
+				font-family: 'Instrument Serif', Georgia, serif;
+				font-size: clamp(1.85rem, 2.85vw, 3.05rem);
+				line-height: 1.16;
+				letter-spacing: -0.015em;
+				font-style: normal;
+				font-weight: 300;
+				color: color-mix(in srgb, var(--hero-text) 84%, #a7c2da 16%);
+				opacity: 0.85;
+				text-wrap: balance;
+				text-shadow: 0 0 1px rgba(60, 110, 170, 0.25);
+			}
+
+			.hero-copy .first-line-italic {
+				font-style: italic;
+			}
+
+			.hero-note {
+				position: absolute;
+				left: 50%;
+				bottom: 2.65rem;
+				transform: translateX(-50%);
+				text-align: center;
+				font-size: 0.9rem;
+				line-height: 1.35;
+				color: rgba(150, 187, 215, 0.44);
+				margin: 0;
+				width: min(92%, 34rem);
+			}
+
+			.content {
+				width: calc(100% - (var(--site-pad) * 2));
+				margin: 0 auto;
+				padding: 2.5rem 0 2.8rem;
+			}
+
+			.intro-split {
+				display: grid;
+				grid-template-columns: 1.02fr 0.98fr;
+				gap: clamp(0.8rem, 1.5vw, 1.2rem);
+				min-height: min(90svh, 900px);
+				background: #050505;
+				width: calc(100% - (var(--site-pad) * 2));
+				margin: 0 auto;
+				padding-top: 0;
+				padding-left: clamp(0.7rem, 1.5vw, 1rem);
+				padding-right: clamp(0.7rem, 1.5vw, 1rem);
+				padding-bottom: clamp(0.7rem, 1.5vw, 1rem);
+				border-radius: 0;
+			}
+
+			.intro-copy {
+				padding: clamp(2.1rem, 3.8vw, 3rem) clamp(1.25rem, 2.4vw, 2.5rem);
+				color: #f4f4f4;
+				display: grid;
+				align-content: start;
+				gap: 1rem;
+				background: #050505;
+				border-radius: 0.8rem;
+			}
+
+			.intro-copy h2 {
+				margin: 0;
+				font-family: 'Instrument Serif', Georgia, serif;
+				font-size: clamp(1.95rem, 3.2vw, 2.65rem);
+				line-height: 0.96;
+				letter-spacing: -0.01em;
+			}
+
+			.intro-copy p {
+				margin: 0;
+				max-width: 62ch;
+				font-size: clamp(0.98rem, 0.98vw, 1.08rem);
+				line-height: 1.48;
+				color: rgba(244, 244, 244, 0.9);
+				text-align: justify;
+				text-justify: inter-word;
+			}
+
+			.intro-copy strong {
+				font-weight: 600;
+			}
+
+			.intro-photo {
+				position: relative;
+				min-height: 100%;
+				border-radius: 0;
+				overflow: hidden;
+			}
+
+			.intro-photo img {
+				width: 100%;
+				height: 100%;
+				object-fit: cover;
+				object-position: 54% 45%;
+				filter: grayscale(100%) contrast(1.04);
+				display: block;
+			}
+
+			.copy {
+				display: grid;
+				gap: 1rem;
+				max-width: 76ch;
+			}
+
+			.copy p {
+				margin: 0;
+				font-size: clamp(1rem, 1.2vw, 1.08rem);
+				line-height: 1.55;
+				color: #2a2a2a;
+			}
+
+			.section-title {
+				margin: 2.2rem 0 0.65rem;
+				font-size: 0.86rem;
+				text-transform: uppercase;
+				letter-spacing: 0.12em;
+				color: var(--muted);
+			}
+
+			.work-showcase {
+				margin-top: 0.4rem;
+				background: #000;
+				color: #f3f3f3;
+				padding: clamp(0.9rem, 1.7vw, 1.3rem) 0 0.6rem;
+			}
+
+			.work-showcase h2 {
+				margin: 0 0 0.9rem;
+				font-size: clamp(1.95rem, 2.1vw, 2.4rem);
+				line-height: 1;
+				font-weight: 500;
+				letter-spacing: -0.01em;
+			}
+
+			.work {
+				display: grid;
+				grid-template-columns: repeat(2, minmax(0, 1fr));
+				gap: clamp(0.7rem, 1.2vw, 1.2rem);
+			}
+
+			.work-item {
+				display: block;
+				min-width: 0;
+			}
+
+			.work-item-link {
+				display: grid;
+				gap: 0.58rem;
+				color: inherit;
+				text-decoration: none;
+				min-width: 0;
+			}
+
+			.work-item-link:hover .work-meta h3,
+			.work-item-link:focus-visible .work-meta h3 {
+				text-decoration: underline;
+				text-underline-offset: 0.12em;
+			}
+
+			.work-item-link:focus-visible {
+				outline: 2px solid rgba(255, 255, 255, 0.65);
+				outline-offset: 3px;
+			}
+
+			.work-media {
+				margin: 0;
+				aspect-ratio: 16 / 11;
+				background: #111;
+				overflow: hidden;
+			}
+
+			.work-media img {
+				width: 100%;
+				height: 100%;
+				object-fit: cover;
+				display: block;
+				transition: transform 220ms ease;
+			}
+
+			.work-item-link:hover .work-media img,
+			.work-item-link:focus-visible .work-media img {
+				transform: scale(1.015);
+			}
+
+			.work-meta {
+				display: grid;
+				gap: 0.25rem;
+			}
+
+			.work-year {
+				width: fit-content;
+				padding: 0.08rem 0.38rem;
+				font-size: 0.78rem;
+				color: rgba(239, 239, 239, 0.9);
+				border: 1px solid rgba(255, 255, 255, 0.2);
+				border-radius: 0.18rem;
+				line-height: 1.2;
+			}
+
+			.work-item h3 {
+				margin: 0;
+				font-size: clamp(1.25rem, 1.55vw, 1.75rem);
+				font-weight: 500;
+				letter-spacing: -0.01em;
+			}
+
+			.work-item p {
+				margin: 0;
+				font-size: 1rem;
+				color: rgba(241, 241, 241, 0.78);
+			}
+
+			.featured-work {
+				margin-top: clamp(1rem, 1.8vw, 1.6rem);
+				background: #000;
+				color: #f2f2f2;
+				display: block;
+				min-width: 0;
+			}
+
+			.featured-work-link {
+				display: grid;
+				gap: 0.62rem;
+				color: inherit;
+				text-decoration: none;
+				min-width: 0;
+			}
+
+			.featured-work-link:hover .featured-meta h3,
+			.featured-work-link:focus-visible .featured-meta h3 {
+				text-decoration: underline;
+				text-underline-offset: 0.12em;
+			}
+
+			.featured-work-link:focus-visible {
+				outline: 2px solid rgba(255, 255, 255, 0.65);
+				outline-offset: 3px;
+			}
+
+			.featured-work-link:hover .featured-media img,
+			.featured-work-link:focus-visible .featured-media img {
+				transform: scale(1.015);
+			}
+
+			.featured-media {
+				margin: 0;
+				aspect-ratio: 16 / 9.2;
+				background: #090909;
+				overflow: hidden;
+			}
+
+			.featured-media img {
+				width: 100%;
+				height: 100%;
+				object-fit: cover;
+				display: block;
+				transition: transform 220ms ease;
+			}
+
+			.featured-meta {
+				display: grid;
+				gap: 0.32rem;
+			}
+
+			.featured-meta .work-year {
+				font-size: 0.74rem;
+			}
+
+			.featured-meta h3 {
+				margin: 0;
+				font-size: clamp(1.65rem, 2vw, 2.15rem);
+				line-height: 1.04;
+				font-weight: 500;
+				letter-spacing: -0.01em;
+			}
+
+			.featured-meta p {
+				margin: 0;
+				font-size: clamp(1rem, 1.08vw, 1.18rem);
+				color: rgba(241, 241, 241, 0.8);
+				max-width: 72ch;
+			}
+
+			.work-secondary {
+				margin-top: clamp(1.1rem, 2vw, 1.7rem);
+				display: grid;
+				gap: 0.62rem;
+			}
+
+			/* Wrapper en index (scoped): el <a> del componente no recibe selectores de esta hoja */
+			.index-more-projects {
+				margin-top: clamp(2.75rem, 5.2vw, 4.25rem);
+				width: 100%;
+				display: flex;
+				justify-content: center;
+			}
+
+			.index-cta-slide {
+				margin-top: 0.7rem;
+			}
+
+			.photo-grid {
+				display: grid;
+				grid-template-columns: repeat(12, minmax(0, 1fr));
+				gap: 0.8rem;
+			}
+
+			.photo {
+				border: 1px solid var(--line);
+				aspect-ratio: 4 / 5;
+				background: linear-gradient(145deg, #ecece8 0%, #dcdcd6 100%);
+			}
+
+			.photo:nth-child(1),
+			.photo:nth-child(2),
+			.photo:nth-child(3) {
+				grid-column: span 4;
+			}
+
+			.cta {
+				margin-top: clamp(2rem, 4vw, 3rem);
+				width: 100vw;
+				margin-left: 50%;
+				transform: translateX(-50%);
+				min-height: clamp(22rem, 45vw, 34rem);
+				display: grid;
+				align-content: center;
+				gap: 1rem;
+				padding: clamp(2rem, 5vw, 3.6rem);
+				background:
+					radial-gradient(80rem 44rem at 72% 14%, rgba(255, 178, 205, 0.54), rgba(255, 178, 205, 0) 46%),
+					radial-gradient(64rem 36rem at 24% 92%, rgba(252, 169, 197, 0.46), rgba(252, 169, 197, 0) 48%),
+					radial-gradient(58rem 33rem at 48% 72%, rgba(170, 168, 215, 0.45), rgba(170, 168, 215, 0) 56%),
+					radial-gradient(85rem 48rem at 43% 46%, rgba(73, 113, 176, 0.88), rgba(73, 113, 176, 0.84) 60%);
+				overflow: hidden;
+				position: sticky;
+				top: 0;
+				z-index: 4;
+			}
+
+			.cta h2 {
+				margin: 0;
+				font-family: 'Instrument Serif', Georgia, serif;
+				font-size: clamp(1.5rem, 3vw, 3.8rem);
+				font-weight: 400;
+				line-height: 1.05;
+				letter-spacing: -0.01em;
+				color: rgba(226, 233, 249, 0.95);
+				max-width: min(96vw, 58ch);
+				text-wrap: balance;
+			}
+
+			.cta h2 em {
+				font-style: italic;
+				opacity: 0.95;
+			}
+
+			@keyframes drift-a {
+				0% {
+					transform: translate3d(-2.5%, -1.5%, 0) scale(0.98);
+				}
+				100% {
+					transform: translate3d(3%, 2.5%, 0) scale(1.03);
+				}
+			}
+
+			@keyframes drift-b {
+				0% {
+					transform: translate3d(1.2%, -2.2%, 0);
+				}
+				100% {
+					transform: translate3d(-2.3%, 2.4%, 0);
+				}
+			}
+
+			@media (max-width: 900px) {
+				.hero-copy {
+					font-size: clamp(1.68rem, 6.2vw, 2.5rem);
+					max-width: 34ch;
+				}
+
+				.hero-note {
+					font-size: 0.86rem;
+					bottom: 2.1rem;
+				}
+			}
+
+			@media (max-width: 640px) {
+				.hero-copy {
+					max-width: 16ch;
+					line-height: 1.1;
+				}
+
+				.photo-grid {
+					grid-template-columns: repeat(2, minmax(0, 1fr));
+				}
+
+				.work {
+					grid-template-columns: 1fr;
+				}
+
+				.photo:nth-child(1),
+				.photo:nth-child(2),
+				.photo:nth-child(3) {
+					grid-column: span 1;
+				}
+			}
+
+			@media (max-width: 980px) {
+				.intro-split {
+					grid-template-columns: 1fr;
+					padding-top: 0;
+					padding-left: 0.7rem;
+					padding-right: 0.7rem;
+					padding-bottom: 0.7rem;
+				}
+
+				.intro-copy {
+					border-bottom: 0;
+				}
+
+				.intro-photo {
+					min-height: 26rem;
+				}
+			}
+
+			@media (prefers-reduced-motion: reduce) {
+				.hero-screen::before,
+				.hero-screen::after {
+					animation: none !important;
+				}
+
+				.hero-copy,
+				.hero-note,
+				.work-media img,
+				.featured-media img,
+				.cta a {
+					transition: none !important;
+				}
+
+				html {
+					scroll-behavior: auto;
+				}
+			}
+
+			@media (hover: none), (pointer: coarse) {
+				body {
+					cursor: auto;
+				}
+			}
+		</style>
+		<section class="hero-screen" aria-label="Portada">
+			<Header theme="hero" />
+
+			<div class="hero-wrap">
+				<div class="hero-center">
+					<h1 class="hero-copy">
+						<span class="first-line-italic"
+							>Soy Ángel Lavayen, Director de Arte, diseñador gráfico y Motion Grapher en Madrid</span
+						>
+						y experto en promesas que no voy a cumplir. Te diseñaré un logo tan potente que tu empresa atraerá unicornios,
+						tus ventas subirán un 1000% mientras duermes y, básicamente, te cambiaré la vida...*
+					</h1>
+				</div>
+				<p class="hero-note">
+					*Este es un anuncio profesional generico<br />
+					Puedes saltartelo haciendo scroll ↓
+				</p>
+			</div>
+		</section>
+
+		<section class="intro-split" aria-label="Presentacion">
+			<div class="intro-copy">
+				<h2>¿Saltándote los anuncios, eh?<br />De eso vivimos, ¿sabes?</h2>
+				<p>
+					Bueno... ya que estas aqui aprovecho para contarte que en cuanto al diseño prefiero centrarme en lo
+					importa: <strong>la jerarquia visual, el ritmo del movimiento y la estrategia de comunicacion.</strong>
+				</p>
+				<p>
+					Mi trabajo no es cambiarte la vida, es hacer que tu marca deje de ser invisible. Diseño para que el
+					espectador se detenga, no porque le hayamos prometido el cielo, sino porque lo que esta viendo tiene
+					un proposito claro y una estetica impecable.
+				</p>
+				<p>
+					Con una solida trayectoria en agencia, me especializo en transformar conceptos estrategicos en piezas
+					visuales de alto impacto. Mi experiencia abarca desde el desarrollo de Branding y Diseño Editorial
+					hasta la creación de contenido dinamico mediante Motion Graphics y Edición de Vídeo.
+				</p>
+				<p>
+					He trabajado en proyectos integrales que incluyen campañas digitales e impresas, packaging y
+					dirección visual de marca, aportando siempre un equilibrio entre vision estratégica y ejecución
+					técnica detallada.
+				</p>
+			</div>
+			<div class="intro-photo">
+				<img
+					src="/images/lavayen-pic.webp"
+					alt="Retrato de Ángel Alejandro Lavayen Ruiz, director de arte y diseñador gráfico en Madrid"
+					loading="lazy"
+				/>
+			</div>
+		</section>
+
+		<div class="content">
+			<main>
+				<section id="work" class="work-showcase" aria-labelledby="work-title">
+					<h2 id="work-title">Selected Work</h2>
+					<div class="work">
+						<article class="work-item">
+							<a class="work-item-link" href={`/works/${workA.slug}/`}>
+								<figure class="work-media">
+									<img src={workA.img} alt={workA.alt} loading="lazy" />
+								</figure>
+								<div class="work-meta">
+									<span class="work-year">{workA.year}</span>
+									<h3>{workA.title}</h3>
+									<p>{workA.desc ?? ''}</p>
+								</div>
+							</a>
+						</article>
+						<article class="work-item">
+							<a class="work-item-link" href={`/works/${workB.slug}/`}>
+								<figure class="work-media">
+									<img src={workB.img} alt={workB.alt} loading="lazy" />
+								</figure>
+								<div class="work-meta">
+									<span class="work-year">{workB.year}</span>
+									<h3>{workB.title}</h3>
+									<p>{workB.desc ?? ''}</p>
+								</div>
+							</a>
+						</article>
+					</div>
+
+					<article class="featured-work">
+						<a class="featured-work-link" href={`/works/${workFeatured.slug}/`}>
+							<figure class="featured-media">
+								<img src={workFeatured.img} alt={workFeatured.alt} loading="lazy" />
+							</figure>
+							<div class="featured-meta">
+								<span class="work-year">{workFeatured.year}</span>
+								<h3>{workFeatured.title}</h3>
+								<p>{workFeatured.desc ?? ''}</p>
+							</div>
+						</a>
+					</article>
+
+					<section class="work-secondary" aria-label="Mas proyectos destacados">
+						<div class="work">
+							<article class="work-item">
+								<a class="work-item-link" href={`/works/${workC.slug}/`}>
+									<figure class="work-media">
+										<img src={workC.img} alt={workC.alt} loading="lazy" />
+									</figure>
+									<div class="work-meta">
+										<span class="work-year">{workC.year}</span>
+										<h3>{workC.title}</h3>
+										<p>{workC.desc ?? ''}</p>
+									</div>
+								</a>
+							</article>
+							<article class="work-item">
+								<a class="work-item-link" href={`/works/${workD.slug}/`}>
+									<figure class="work-media">
+										<img src={workD.img} alt={workD.alt} loading="lazy" />
+									</figure>
+									<div class="work-meta">
+										<span class="work-year">{workD.year}</span>
+										<h3>{workD.title}</h3>
+										<p>{workD.desc ?? ''}</p>
+									</div>
+								</a>
+							</article>
+						</div>
+						<div class="index-more-projects">
+							<SlideFrameLink href="/works" label="Más proyectos" />
+						</div>
+					</section>
+				</section>
+
+				<section class="cta">
+					<h2>Probablemente <em>trabajar conmigo</em> sea una experiencia... <br />¿curiosa?<br /> Así que, ¿por qué no?</h2>
+					<SlideFrameLink href="/contacto" label="Just Do It!" class="index-cta-slide" />
+				</section>
+			</main>
+
+			<Footer variant="in-content" />
+		</div>
+</BaseLayout>

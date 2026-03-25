@@ -1,0 +1,249 @@
+---
+/**
+ * Cabecera global fija (isla al hacer scroll).
+ * theme="hero": colores sobre el hero azul | theme="dark": texto claro sobre negro (interiores).
+ */
+interface Props {
+	theme?: 'hero' | 'dark';
+}
+
+const { theme = 'dark' } = Astro.props;
+
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const workHref = '/works';
+const fotosHref = '/fotos';
+const onWorkPage = path === '/works' || path.startsWith('/works/');
+const onContactPage = path === '/contacto' || path.endsWith('/contacto');
+---
+
+<header
+	id="hero-nav"
+	class:list={['site-header', 'hero-nav', theme === 'hero' ? 'hero-nav--theme-hero' : 'hero-nav--theme-dark']}
+	aria-label="Navegacion principal"
+>
+	<div class="nav-inner">
+		<a class="brand" href="/" aria-label="Inicio Angel Lavayen">
+			<span class="brand-mark" aria-hidden="true">
+				<svg viewBox="0 0 254 250" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+					<path
+						d="M 254.002 121.68 C 254.002 130.31 253.112 174.25 218.242 210.66 C 212.072 217.07 178.452 250.82 125.392 250.29 C 78.222 249.81 47.662 222.59 39.762 215.34 C 26.052 202.72 -0.278 170.18 0.002 121.68 C 0.282 72.01 28.382 40.36 37.372 31.57 C 46.132 22.98 66.972 0 112.452 0 C 152.162 0 155.992 30.76 182.282 57.01 C 210.622 85.35 254.002 74.31 254.002 121.68 Z"
+					/>
+				</svg>
+			</span>
+			Ángel Lavayen
+		</a>
+		<nav class="nav-links" aria-label="Secciones">
+			<a href={workHref} aria-current={onWorkPage ? 'page' : undefined}>Works</a>
+			<a href={fotosHref}>Fotos</a>
+			<a href="/contacto" aria-current={onContactPage ? 'page' : undefined}>Contacto</a>
+		</nav>
+	</div>
+</header>
+
+<style>
+	.site-header.hero-nav {
+		position: fixed;
+		top: 1.15rem;
+		left: 50%;
+		transform: translateX(-50%);
+		width: calc(100% - (var(--site-pad, clamp(1.8rem, 4.8vw, 3rem)) * 2));
+		padding: 0;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: 1rem;
+		font-size: 0.82rem;
+		z-index: 99999;
+		transition:
+			width 280ms ease,
+			padding 280ms ease,
+			background-color 280ms ease,
+			border-color 280ms ease,
+			border-radius 280ms ease,
+			top 280ms ease,
+			box-shadow 280ms ease;
+	}
+
+	.hero-nav--theme-hero,
+	.hero-nav--theme-dark {
+		color: #fff;
+	}
+
+	.nav-inner {
+		width: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding: 0;
+		transition: padding 280ms ease;
+	}
+
+	.brand {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.46rem;
+		font-family: 'Instrument Serif', Georgia, serif;
+		font-size: 1.3rem;
+		font-weight: 200;
+		line-height: 1;
+		text-decoration: none;
+		color: inherit;
+	}
+
+	.brand-mark {
+		display: inline-flex;
+		flex-shrink: 0;
+		width: 1.2rem;
+		height: 1.2rem;
+	}
+
+	.brand-mark svg {
+		width: 100%;
+		height: 100%;
+		display: block;
+	}
+
+	.nav-links {
+		display: flex;
+		gap: 1.55rem;
+	}
+
+	.nav-links a {
+		text-decoration: none;
+		color: inherit;
+	}
+
+	.nav-links a[aria-current='page'] {
+		opacity: 1;
+		font-weight: 600;
+	}
+
+	/*
+	 * Exclusion solo en menú extendido y tras salir del hero (~1vh): el primer viewport suele ser oscuro.
+	 * La clase .past-hero la pone el script (scrollY >= innerHeight).
+	 */
+	.site-header.hero-nav:not(.is-scrolled).past-hero {
+		mix-blend-mode: exclusion;
+	}
+
+	.site-header.hero-nav.is-scrolled {
+		top: 0.8rem;
+		width: fit-content;
+		max-width: calc(100% - 1.2rem);
+		mix-blend-mode: normal;
+		background: rgba(22, 24, 34, 0.95);
+		border: none;
+		border-radius: 999px;
+		box-shadow: 0 16px 34px rgba(8, 9, 14, 0.28);
+		isolation: isolate;
+		backdrop-filter: blur(18px) saturate(110%) brightness(0.9);
+		-webkit-backdrop-filter: blur(18px) saturate(110%) brightness(0.9);
+	}
+
+	.site-header.hero-nav.is-scrolled .nav-inner {
+		justify-content: flex-start;
+		gap: 1rem;
+		padding: 1rem 1.6rem;
+	}
+
+	.site-header.hero-nav.is-scrolled .brand {
+		font-size: 1.3rem;
+		white-space: nowrap;
+		flex-shrink: 0;
+	}
+
+	.site-header.hero-nav.is-scrolled .nav-links {
+		position: relative;
+		padding-left: 1.35rem;
+		gap: 1.45rem;
+		font-size: 0.86rem;
+	}
+
+	.site-header.hero-nav.is-scrolled .nav-links::before {
+		content: '|';
+		position: absolute;
+		left: 0;
+		top: 50%;
+		transform: translateY(-50%);
+		color: rgba(168, 177, 199, 0.45);
+		font-size: 0.92rem;
+		font-weight: 400;
+		line-height: 1;
+	}
+
+	@media (max-width: 900px) {
+		.brand {
+			font-size: 1.45rem;
+		}
+
+		.nav-links {
+			gap: 1rem;
+			font-size: 0.85rem;
+		}
+	}
+
+	@media (max-width: 640px) {
+		.site-header.hero-nav {
+			top: 0.6rem;
+			width: min(100% - 1rem, 22rem);
+			background: rgba(28, 30, 42, 0.96);
+			border: 1px solid rgba(121, 132, 162, 0.2);
+			border-radius: 999px;
+			box-shadow: 0 16px 34px rgba(8, 9, 14, 0.28);
+			isolation: isolate;
+			backdrop-filter: blur(8px);
+			-webkit-backdrop-filter: blur(8px);
+		}
+
+		.nav-inner {
+			padding: 0.52rem 0.8rem;
+		}
+	}
+</style>
+
+<script>
+	const nav = document.getElementById('hero-nav');
+	const ISLAND_AFTER_PX = 42;
+	const DELTA_MIN = 2;
+
+	let lastY = window.scrollY;
+
+	const syncPastHero = () => {
+		if (!nav) return;
+		const vh = window.innerHeight;
+		nav.classList.toggle('past-hero', vh > 0 && window.scrollY >= vh);
+	};
+
+	const onScroll = () => {
+		if (!nav) return;
+		const y = window.scrollY;
+
+		syncPastHero();
+
+		if (y <= ISLAND_AFTER_PX) {
+			nav.classList.remove('is-scrolled');
+			lastY = y;
+			return;
+		}
+
+		const delta = y - lastY;
+		if (Math.abs(delta) >= DELTA_MIN) {
+			if (delta > 0) {
+				nav.classList.add('is-scrolled');
+			} else {
+				nav.classList.remove('is-scrolled');
+			}
+		}
+
+		lastY = y;
+	};
+
+	if (nav && lastY > ISLAND_AFTER_PX) {
+		nav.classList.add('is-scrolled');
+	}
+
+	syncPastHero();
+	onScroll();
+	window.addEventListener('scroll', onScroll, { passive: true });
+	window.addEventListener('resize', syncPastHero, { passive: true });
+</script>

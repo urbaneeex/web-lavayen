@@ -1,0 +1,212 @@
+---
+import Footer from '../../components/Footer.astro';
+import Header from '../../components/Header.astro';
+import SlideFrameLink from '../../components/SlideFrameLink.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import {
+	OG_IMAGE_DEFAULT_HEIGHT,
+	OG_IMAGE_DEFAULT_URL,
+	OG_IMAGE_DEFAULT_WIDTH,
+	PERSON_LEGAL_NAME,
+	SITE_ORIGIN,
+	SOCIAL_PROFILE_URLS
+} from '../../site';
+
+const title = 'Ángel Lavayen | Art director, graphic designer & motion designer in Madrid';
+const description =
+	'Portfolio of Ángel Alejandro Lavayen Ruiz: art direction, graphic design, motion graphics, video editing and branding for brands and agencies — Madrid, available for remote work worldwide.';
+const canonicalURL = new URL(Astro.url.pathname, SITE_ORIGIN).toString();
+const keywords =
+	'Angel Lavayen, art director Madrid, graphic designer Madrid, motion designer, motion graphics, branding, packaging, creative portfolio Spain';
+const schemaDescription =
+	'Art director and graphic designer in Madrid, specializing in branding, motion graphics, editorial design and campaigns.';
+---
+
+<BaseLayout
+	lang="en"
+	title={title}
+	description={description}
+	canonicalURL={canonicalURL}
+	keywords={keywords}
+	author={PERSON_LEGAL_NAME}
+	ogImage={OG_IMAGE_DEFAULT_URL}
+	ogImageWidth={OG_IMAGE_DEFAULT_WIDTH}
+	ogImageHeight={OG_IMAGE_DEFAULT_HEIGHT}
+	ogLocale="en_US"
+	ogLocaleAlternate="es_ES"
+	interWeights="400;500;600"
+	cursorHoverSelector={'a, button, [role="button"], .photo'}
+>
+	<link rel="alternate" hreflang="es" href={`${SITE_ORIGIN}/`} slot="head" />
+	<link rel="alternate" hreflang="en" href={`${SITE_ORIGIN}/en/`} slot="head" />
+	<link rel="alternate" hreflang="x-default" href={`${SITE_ORIGIN}/`} slot="head" />
+	<script
+		type="application/ld+json"
+		slot="head"
+		set:html={JSON.stringify({
+			'@context': 'https://schema.org',
+			'@type': 'Person',
+			name: PERSON_LEGAL_NAME,
+			alternateName: ['Angel Lavayen', 'Ángel Lavayen'],
+			jobTitle: 'Art director, graphic designer and motion designer',
+			description: schemaDescription,
+			url: `${SITE_ORIGIN}/en/`,
+			address: {
+				'@type': 'PostalAddress',
+				addressLocality: 'Madrid',
+				addressCountry: 'ES'
+			},
+			sameAs: [...SOCIAL_PROFILE_URLS],
+			knowsAbout: [
+				'Art direction',
+				'Graphic design',
+				'Motion graphics',
+				'Branding',
+				'Editorial design',
+				'Packaging',
+				'Video editing'
+			]
+		})}
+	/>
+
+	<style slot="head">
+		:root {
+			--site-pad: clamp(1.8rem, 4.8vw, 3rem);
+		}
+
+		* {
+			box-sizing: border-box;
+		}
+
+		html,
+		body {
+			margin: 0;
+			padding: 0;
+			font-family: Inter, system-ui, -apple-system, sans-serif;
+			background: #000;
+			color: #f5f5f5;
+		}
+
+		body {
+			cursor: none;
+			min-height: 100svh;
+			display: flex;
+			flex-direction: column;
+		}
+
+		a {
+			color: inherit;
+			text-decoration: none;
+		}
+
+		.en-page {
+			flex: 1;
+			width: calc(100% - (var(--site-pad) * 2));
+			max-width: 48rem;
+			margin: 0 auto;
+			padding: clamp(5.2rem, 14vw, 7.5rem) 0 clamp(4rem, 12vw, 7rem);
+		}
+
+		.en-page h1 {
+			margin: 0 0 clamp(1.25rem, 3vw, 1.75rem);
+			font-family: 'Instrument Serif', Georgia, serif;
+			font-size: clamp(2rem, 5vw, 2.85rem);
+			font-weight: 400;
+			line-height: 1.12;
+			letter-spacing: -0.02em;
+			color: #fff;
+		}
+
+		.en-page .lead {
+			margin: 0 0 1rem;
+			font-size: clamp(1rem, 1.15vw, 1.08rem);
+			line-height: 1.55;
+			color: rgba(245, 245, 245, 0.88);
+		}
+
+		.en-page h2 {
+			margin: 2rem 0 0.65rem;
+			font-size: 0.86rem;
+			text-transform: uppercase;
+			letter-spacing: 0.12em;
+			color: rgba(245, 245, 245, 0.45);
+		}
+
+		.en-page ul {
+			margin: 0 0 1.5rem;
+			padding-left: 1.15rem;
+			font-size: 0.98rem;
+			line-height: 1.55;
+			color: rgba(245, 245, 245, 0.9);
+		}
+
+		.en-page li {
+			margin-bottom: 0.35rem;
+		}
+
+		.en-cta {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 1rem 1.5rem;
+			align-items: center;
+			margin-top: 0.5rem;
+		}
+
+		.en-lang-switch {
+			margin-top: 2rem;
+			font-size: 0.9rem;
+			color: rgba(200, 200, 200, 0.55);
+		}
+
+		.en-lang-switch a {
+			text-decoration: underline;
+			text-underline-offset: 0.15em;
+			color: rgba(230, 230, 230, 0.85);
+		}
+
+		@media (prefers-reduced-motion: reduce) {
+			html {
+				scroll-behavior: auto;
+			}
+		}
+
+		@media (hover: none), (pointer: coarse) {
+			body {
+				cursor: auto;
+			}
+		}
+	</style>
+
+	<Header theme="dark" />
+
+	<main class="en-page" id="main">
+		<h1>Art direction, graphic design & motion — Madrid</h1>
+		<p class="lead">
+			I’m <strong>{PERSON_LEGAL_NAME}</strong> — also known as <strong>Ángel Lavayen</strong>. I help brands and agencies
+			turn strategy into sharp visual work: campaigns, identity, packaging, editorial, motion and video.
+		</p>
+		<p class="lead">
+			Based in Madrid; I collaborate with teams on site and remotely across Europe and beyond.
+		</p>
+
+		<h2>Services</h2>
+		<ul>
+			<li>Art direction for digital and print campaigns</li>
+			<li>Branding, visual identity and packaging</li>
+			<li>Editorial design and large-format graphics</li>
+			<li>Motion graphics, promos and video editing</li>
+		</ul>
+
+		<div class="en-cta">
+			<SlideFrameLink href="/works/" label="View portfolio" />
+			<SlideFrameLink href="/contacto" label="Contact" />
+		</div>
+
+		<p class="en-lang-switch">
+			<a href="/">Versión en español</a>
+			— full portfolio and copy on the Spanish homepage.
+		</p>
+	</main>
+
+	<Footer />
+</BaseLayout>

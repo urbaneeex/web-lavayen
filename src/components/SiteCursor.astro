@@ -1,0 +1,76 @@
+---
+/**
+ * Cursor personalizado (solo puntero fino). Estilos y script en un solo sitio.
+ */
+interface Props {
+	/** Selectores CSS para `Element.closest()` al detectar hover */
+	hoverSelector: string;
+}
+
+const { hoverSelector } = Astro.props;
+---
+
+<span id="cursor-dot" class="cursor-dot" aria-hidden="true"></span>
+<script define:vars={{ hoverSelector }}>
+	const cursor = document.getElementById('cursor-dot');
+	const isFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+	if (cursor && isFinePointer) {
+		window.addEventListener('mousemove', (event) => {
+			cursor.style.left = `${event.clientX}px`;
+			cursor.style.top = `${event.clientY}px`;
+			cursor.classList.add('is-active');
+		});
+
+		document.addEventListener('mouseout', () => {
+			cursor.classList.remove('is-active');
+			cursor.classList.remove('is-hovering');
+		});
+
+		document.addEventListener('mouseover', (event) => {
+			const target = event.target;
+			if (!(target instanceof Element)) return;
+			cursor.classList.toggle('is-hovering', Boolean(target.closest(hoverSelector)));
+		});
+	}
+</script>
+
+<style is:global>
+	.cursor-dot {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 1.1rem;
+		height: 1.1rem;
+		border-radius: 999px;
+		background: #f4d234;
+		mix-blend-mode: exclusion;
+		transform: translate3d(-50%, -50%, 0) scale(0.7);
+		opacity: 0;
+		pointer-events: none;
+		z-index: 9999;
+		transition:
+			transform 110ms ease,
+			opacity 120ms ease;
+	}
+
+	.cursor-dot.is-active {
+		opacity: 0.92;
+		transform: translate3d(-50%, -50%, 0) scale(1);
+	}
+
+	.cursor-dot.is-hovering {
+		transform: translate3d(-50%, -50%, 0) scale(1.6);
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.cursor-dot {
+			transition: none;
+		}
+	}
+
+	@media (hover: none), (pointer: coarse) {
+		.cursor-dot {
+			display: none !important;
+		}
+	}
+</style>

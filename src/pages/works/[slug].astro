@@ -1,0 +1,121 @@
+---
+import Footer from '../../components/Footer.astro';
+import Header from '../../components/Header.astro';
+import WorkCard from '../../components/WorkCard.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getWorkNeighbors, workProjects, yearToSchemaDatePublished } from '../../data/works';
+import { PERSON_LEGAL_NAME, SITE_ORIGIN } from '../../site';
+
+export function getStaticPaths() {
+	return workProjects.map((p) => ({ params: { slug: p.slug } }));
+}
+
+const slug = Astro.params.slug;
+if (!slug) {
+	throw new Error('Missing work slug');
+}
+const neighbors = getWorkNeighbors(slug);
+if (!neighbors) {
+	throw new Error(`Unknown work slug: ${slug}`);
+}
+
+const { current, prev, next } = neighbors;
+const title = `${current.title} | Ángel Lavayen — Dirección de arte y diseño, Madrid`;
+const description =
+	current.desc ??
+	`${current.title}: proyecto de dirección de arte y diseño gráfico por Ángel Alejandro Lavayen Ruiz (Madrid).`;
+const canonicalURL = new URL(Astro.url.pathname, SITE_ORIGIN).toString();
+const ogImageAbs = new URL(current.img, SITE_ORIGIN).href;
+const datePublished = yearToSchemaDatePublished(current.year);
+---
+
+<BaseLayout
+	title={title}
+	description={description}
+	canonicalURL={canonicalURL}
+	ogType="article"
+	ogImage={ogImageAbs}
+	ogLocaleAlternate="en_US"
+	cursorHoverSelector={'a, button, [role="button"], .work-item-link, .photo, .work-card-gallery-arrow, .work-card-dot'}
+>
+	<script
+		slot="head"
+		type="application/ld+json"
+		set:html={JSON.stringify({
+			'@context': 'https://schema.org',
+			'@type': 'CreativeWork',
+			name: current.title,
+			description,
+			url: canonicalURL,
+			image: ogImageAbs,
+			datePublished,
+			author: { '@type': 'Person', name: PERSON_LEGAL_NAME, url: `${SITE_ORIGIN}/` },
+			isPartOf: { '@type': 'WebSite', name: 'Ángel Lavayen', url: `${SITE_ORIGIN}/` }
+		})}
+	/>
+
+	<style slot="head">
+		:root {
+			--site-pad: clamp(1.8rem, 4.8vw, 3rem);
+		}
+
+		* {
+			box-sizing: border-box;
+		}
+
+		html,
+		body {
+			margin: 0;
+			padding: 0;
+			font-family: Inter, system-ui, -apple-system, sans-serif;
+			background: #000;
+			color: #f5f5f5;
+		}
+
+		body {
+			cursor: none;
+			min-height: 100svh;
+			display: flex;
+			flex-direction: column;
+		}
+
+		a {
+			color: inherit;
+		}
+
+		.work-detail-page {
+			flex: 1;
+			width: calc(100% - (var(--site-pad) * 2));
+			margin: 0 auto;
+			padding: clamp(5.2rem, 14vw, 7.5rem) 0 clamp(4rem, 12vw, 7rem);
+		}
+
+		@media (prefers-reduced-motion: reduce) {
+			html {
+				scroll-behavior: auto;
+			}
+		}
+
+		@media (hover: none), (pointer: coarse) {
+			body {
+				cursor: auto;
+			}
+		}
+	</style>
+
+	<Header theme="dark" />
+
+	<main class="work-detail-page" id="main">
+		<WorkCard
+			title={current.title}
+			year={current.year}
+			descriptionHtml={current.detailHtml}
+			images={current.gallery}
+			galleryRootId={`gallery-${current.slug}`}
+			prev={prev ? { title: prev.title, href: `/works/${prev.slug}/` } : null}
+			next={next ? { title: next.title, href: `/works/${next.slug}/` } : null}
+		/>
+	</main>
+
+	<Footer />
+</BaseLayout>
