@@ -166,21 +166,8 @@ const fotos = [
 				max-width: 48ch;
 			}
 
-			.fotos-copy p.fotos-copy-tagline {
-				/* Espacio igual arriba/abajo respecto a la referencia */
-				margin: clamp(6rem, 9vw, 11rem) 0;
-				font-family: 'Instrument Serif', Georgia, serif;
-				font-size: clamp(1.8rem, 3.3vw, 2.55rem);
-				line-height: 1.12;
-				font-weight: 400;
-				color: rgba(245, 245, 245, 0.92);
-				text-align: left;
-				max-width: none;
-				width: 100%;
-			}
-
 			.fotos-copy {
-				padding: clamp(2.2rem, 4.2vw, 3.2rem) 0 0;
+				padding: clamp(4.75rem, 9.5vw, 7.5rem) 0 clamp(4.75rem, 9.5vw, 7.5rem);
 				max-width: none;
 				margin: 0;
 			}
@@ -207,13 +194,6 @@ const fotos = [
 				margin-bottom: 0;
 			}
 
-			/* El bloque "Ey tú..." es el último <p>, pero queremos espacio también abajo. */
-			.fotos-copy p.fotos-copy-tagline:last-child {
-				/* Asegura igualdad incluso si existe regla de p:last-child */
-				margin-top: clamp(6rem, 9vw, 11rem);
-				margin-bottom: clamp(6rem, 9vw, 11rem);
-			}
-
 			.fotos-grid {
 				padding: clamp(2rem, 4vw, 3rem) 0 clamp(4rem, 12vw, 7rem);
 			}
@@ -222,10 +202,17 @@ const fotos = [
 				display: grid;
 				grid-template-columns: 1fr;
 				width: 100%;
-				/* Usa todo el ancho del main (ya acotado por --site-pad); antes 60rem limitaba demasiado */
-				max-width: 77%;
+				max-width: 100%;
 				margin: 0 auto;
 				gap: clamp(0.65rem, 1vw, 0.95rem);
+			}
+
+			/* Una columna en móvil, iPad (incl. horizontal ~1366px) y portátiles estrechos; dos columnas en pantallas amplias */
+			@media (min-width: 1400px) {
+				.photo-grid {
+					grid-template-columns: repeat(2, minmax(0, 1fr));
+					max-width: min(72rem, 88%);
+				}
 			}
 
 			.photo {
@@ -352,13 +339,6 @@ const fotos = [
 						Te dejo disfrutarlas (o no).
 					</p>
 				</div>
-
-				<p class="fotos-copy-tagline">
-					Ey tú, una cosa… intenta mirarlas rápido.
-					<br />
-					Dicen que si las miras mucho te pueden acabar gustando.
-				</p>
-
 			</section>
 
 			<section class="fotos-grid" aria-label="Galeria de fotografias">

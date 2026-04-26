@@ -11,7 +11,8 @@
     "preview": "astro preview",
     "astro": "astro",
     "generate:favicon": "node scripts/generate-favicon-ico.mjs",
-    "generate:og": "node scripts/generate-og-social.mjs"
+    "generate:og": "node scripts/generate-og-social.mjs",
+    "sync:works": "node scripts/sync-trabajos-assets.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.1",

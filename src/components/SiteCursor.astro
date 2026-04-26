@@ -1,69 +1,215 @@
 ---
 /**
- * Cursor personalizado (solo puntero fino). Estilos y script en un solo sitio.
+ * Punto amarillo: exclusion. Sobre works: dúo de píldoras gris claro (vertical + cápsula "View")
+ * con exclusion — mismo criterio de fusión que el círculo, reaccionando al contenido bajo el puntero.
  */
 interface Props {
-	/** Selectores CSS para `Element.closest()` al detectar hover */
 	hoverSelector: string;
+	workViewSelector?: string;
 }
 
-const { hoverSelector } = Astro.props;
+const { hoverSelector, workViewSelector = '.work-item-link, .featured-work-link' } = Astro.props;
 ---
 
-<span id="cursor-dot" class="cursor-dot" aria-hidden="true"></span>
-<script define:vars={{ hoverSelector }}>
+<span id="cursor-dot" class="cursor-dot" aria-hidden="true">
+	<span class="cursor-dot__track">
+		<span class="cursor-dot__dot" aria-hidden="true"></span>
+		<span class="cursor-dot__work" aria-hidden="true">
+			<span class="cursor-dot__pill cursor-dot__pill--v" aria-hidden="true"></span>
+			<span class="cursor-dot__pill cursor-dot__pill--h">View</span>
+		</span>
+	</span>
+</span>
+<script define:vars={{ hoverSelector, workViewSelector }}>
 	const cursor = document.getElementById('cursor-dot');
-	const isFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-	if (cursor && isFinePointer) {
-		window.addEventListener('mousemove', (event) => {
-			cursor.style.left = `${event.clientX}px`;
-			cursor.style.top = `${event.clientY}px`;
-			cursor.classList.add('is-active');
-		});
+	const mm = window.matchMedia('(hover: hover) and (pointer: fine)');
+	if (cursor) {
+		var inited = false;
+		var applyState = (target) => {
+			if (!target || !(target instanceof Element)) {
+				return;
+			}
+			var onWork = Boolean(target.closest(workViewSelector));
+			var onHover = Boolean(target.closest(hoverSelector));
+			cursor.classList.toggle('is-work-view', onWork);
+			cursor.classList.toggle('is-hovering', onHover && !onWork);
+		};
 
-		document.addEventListener('mouseout', () => {
-			cursor.classList.remove('is-active');
-			cursor.classList.remove('is-hovering');
-		});
+		var onWindowLeave = function () {
+			cursor.classList.remove('is-active', 'is-hovering', 'is-work-view');
+		};
 
-		document.addEventListener('mouseover', (event) => {
-			const target = event.target;
-			if (!(target instanceof Element)) return;
-			cursor.classList.toggle('is-hovering', Boolean(target.closest(hoverSelector)));
-		});
+		var init = function () {
+			if (inited || !mm.matches) return;
+			inited = true;
+
+			var onMove = (event) => {
+				cursor.style.left = event.clientX + 'px';
+				cursor.style.top = event.clientY + 'px';
+				cursor.classList.add('is-active');
+				applyState(event.target);
+			};
+
+			var onOver = (event) => {
+				applyState(event.target);
+			};
+
+			window.addEventListener('mousemove', onMove, { passive: true });
+			document.addEventListener('mouseover', onOver, true);
+			document.documentElement.addEventListener('mouseleave', onWindowLeave, false);
+			window.addEventListener('blur', onWindowLeave);
+		};
+
+		if (mm.matches) {
+			init();
+		} else {
+			mm.addEventListener('change', function onMq() {
+				if (mm.matches) init();
+			});
+		}
 	}
 </script>
 
 <style is:global>
+	@media (hover: hover) and (pointer: fine) {
+		a.work-item-link,
+		a.featured-work-link {
+			cursor: none !important;
+		}
+	}
+
 	.cursor-dot {
 		position: fixed;
 		top: 0;
 		left: 0;
+		width: 0;
+		height: 0;
+		overflow: visible;
+		pointer-events: none;
+		z-index: 2147483000;
+		opacity: 0;
+		transition: opacity 120ms ease;
+	}
+
+	.cursor-dot__track {
+		position: absolute;
+		left: 0;
+		top: 0;
+		display: block;
+		transform: translate3d(-50%, -50%, 0);
+		will-change: transform;
+	}
+
+	/* Solo el círculo usa exclusion: mismo efecto “custom” de siempre. */
+	.cursor-dot__dot {
+		display: block;
 		width: 1.1rem;
 		height: 1.1rem;
 		border-radius: 999px;
 		background: #f4d234;
 		mix-blend-mode: exclusion;
-		transform: translate3d(-50%, -50%, 0) scale(0.7);
-		opacity: 0;
-		pointer-events: none;
-		z-index: 9999;
+		transform: scale(0.7);
+		transform-origin: center;
+		opacity: 1;
 		transition:
 			transform 110ms ease,
-			opacity 120ms ease;
+			opacity 100ms ease;
+	}
+
+	/*
+	 * Referencia: píldora vertical + cápsula con «View» en negro, ambas gris/blanco
+	 * sólido; el bloque entero con exclusion = mismo lenguaje que .cursor-dot__dot
+	 * (inversión / contraste con lo que hay debajo al mover el cursor).
+	 */
+	.cursor-dot__work {
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content: center;
+		gap: 0.3rem;
+		width: max-content;
+		pointer-events: none;
+		transform: translate(-50%, -50%) scale(0.9);
+		transform-origin: center;
+		opacity: 0;
+		visibility: hidden;
+		mix-blend-mode: exclusion;
+		-webkit-backface-visibility: hidden;
+		backface-visibility: hidden;
+		transition:
+			transform 150ms cubic-bezier(0.34, 1.1, 0.64, 1),
+			opacity 120ms ease,
+			visibility 0ms linear 120ms;
+	}
+
+	.cursor-dot__pill {
+		flex-shrink: 0;
+		border-radius: 9999px;
+		background: #e8e8e8;
+		box-sizing: border-box;
+	}
+
+	/* Cápsula alargada (como píldora de medicina en vertical) */
+	.cursor-dot__pill--v {
+		width: 0.35rem;
+		height: 1.1rem;
+	}
+
+	/* Cápsula horizontal: «View» centrada, Inter limpio */
+	.cursor-dot__pill--h {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		min-height: 1.12rem;
+		padding: 0.38rem 0.9rem 0.4rem;
+		font-family: Inter, system-ui, -apple-system, sans-serif;
+		font-size: 0.7rem;
+		font-weight: 600;
+		letter-spacing: 0.01em;
+		line-height: 1;
+		color: #0a0a0a;
+		white-space: nowrap;
 	}
 
 	.cursor-dot.is-active {
-		opacity: 0.92;
-		transform: translate3d(-50%, -50%, 0) scale(1);
+		opacity: 0.95;
 	}
 
-	.cursor-dot.is-hovering {
-		transform: translate3d(-50%, -50%, 0) scale(1.6);
+	.cursor-dot.is-active .cursor-dot__dot {
+		transform: scale(1);
+	}
+
+	.cursor-dot.is-active.is-hovering .cursor-dot__dot {
+		transform: scale(1.6);
+	}
+
+	.cursor-dot.is-active.is-work-view .cursor-dot__dot {
+		opacity: 0;
+		transform: scale(0.3);
+		pointer-events: none;
+		transition: transform 100ms ease, opacity 80ms ease;
+	}
+
+	.cursor-dot.is-work-view .cursor-dot__work {
+		visibility: visible;
+		transition:
+			transform 150ms cubic-bezier(0.34, 1.1, 0.64, 1),
+			opacity 120ms ease,
+			visibility 0ms;
+	}
+
+	.cursor-dot.is-active.is-work-view .cursor-dot__work {
+		opacity: 1;
+		transform: translate(-50%, -50%) scale(1);
 	}
 
 	@media (prefers-reduced-motion: reduce) {
-		.cursor-dot {
+		.cursor-dot,
+		.cursor-dot__dot,
+		.cursor-dot__work {
 			transition: none;
 		}
 	}

@@ -1,8 +1,10 @@
 ---
 /**
- * Cabecera global fija (isla al hacer scroll).
- * theme="hero": colores sobre el hero azul | theme="dark": texto claro sobre negro (interiores).
+ * Cabecera global. Escritorio: isla al scroll. Móvil: hamburguesa | marca; menú en overlay
+ * (el panel #nav-mobile va FUERA de <header> para evitar el bug de `transform` + `position:fixed`).
  */
+import { SOCIAL_PROFILE_URLS } from '../site';
+
 interface Props {
 	theme?: 'hero' | 'dark';
 }
@@ -13,7 +15,9 @@ const path = Astro.url.pathname.replace(/\/$/, '') || '/';
 const workHref = '/works';
 const fotosHref = '/fotos';
 const onWorkPage = path === '/works' || path.startsWith('/works/');
+const onFotosPage = path === '/fotos';
 const onContactPage = path === '/contacto' || path.endsWith('/contacto');
+const [instagramHref, linkedInHref] = SOCIAL_PROFILE_URLS;
 ---
 
 <header
@@ -22,7 +26,20 @@ const onContactPage = path === '/contacto' || path.endsWith('/contacto');
 	aria-label="Navegacion principal"
 >
 	<div class="nav-inner">
-		<a class="brand" href="/" aria-label="Inicio Angel Lavayen">
+		<button
+			type="button"
+			class="nav-burger"
+			id="nav-burger"
+			aria-label="Abrir menú"
+			aria-expanded="false"
+			aria-controls="nav-mobile"
+		>
+			<span class="nav-burger__icon" aria-hidden="true">
+				<span class="nav-burger-line"></span>
+				<span class="nav-burger-line"></span>
+			</span>
+		</button>
+		<a class="brand" id="nav-brand" href="/" aria-label="Inicio Angel Lavayen">
 			<span class="brand-mark" aria-hidden="true">
 				<svg viewBox="0 0 254 250" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
 					<path
@@ -30,15 +47,72 @@ const onContactPage = path === '/contacto' || path.endsWith('/contacto');
 					/>
 				</svg>
 			</span>
-			Ángel Lavayen
+			<span class="brand-text">Ángel Lavayen</span>
 		</a>
 		<nav class="nav-links" aria-label="Secciones">
 			<a href={workHref} aria-current={onWorkPage ? 'page' : undefined}>Works</a>
-			<a href={fotosHref}>Fotos</a>
+			<a href={fotosHref} aria-current={onFotosPage ? 'page' : undefined}>Fotos</a>
 			<a href="/contacto" aria-current={onContactPage ? 'page' : undefined}>Contacto</a>
 		</nav>
 	</div>
 </header>
+
+<!-- Overlay fuera del header: anula el containing block creado por transform en .site-header -->
+<div
+	id="nav-mobile"
+	class="nav-mobile"
+	role="dialog"
+	aria-modal="true"
+	aria-label="Menú de navegación"
+	aria-hidden="true"
+	hidden
+>
+	<div class="nav-mobile__inner">
+		<div class="nav-mobile__content">
+			<nav class="nav-mobile__nav" aria-label="Navegación móvil">
+				<ul class="nav-mobile__list">
+					<li>
+						<a
+							href={workHref}
+							class="nav-mobile__row"
+							aria-current={onWorkPage ? 'page' : undefined}
+							data-close-menu
+						>
+							<span>Works</span>
+							<span class="nav-mobile__num" aria-hidden="true">01</span>
+						</a>
+					</li>
+					<li>
+						<a
+							href={fotosHref}
+							class="nav-mobile__row"
+							aria-current={onFotosPage ? 'page' : undefined}
+							data-close-menu
+						>
+							<span>Fotos</span>
+							<span class="nav-mobile__num" aria-hidden="true">02</span>
+						</a>
+					</li>
+					<li>
+						<a
+							href="/contacto"
+							class="nav-mobile__row"
+							aria-current={onContactPage ? 'page' : undefined}
+							data-close-menu
+						>
+							<span>Contacto</span>
+							<span class="nav-mobile__num" aria-hidden="true">03</span>
+						</a>
+					</li>
+				</ul>
+				<div class="nav-mobile__social">
+					<a href={linkedInHref} target="_blank" rel="noreferrer noopener" data-close-menu>LinkedIn</a>
+					<a href={instagramHref} target="_blank" rel="noreferrer noopener" data-close-menu>Instagram</a>
+				</div>
+			</nav>
+		</div>
+	</div>
+</div>
 
 <style>
 	.site-header.hero-nav {
@@ -74,8 +148,66 @@ const onContactPage = path === '/contacto' || path.endsWith('/contacto');
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
+		gap: 0.75rem;
 		padding: 0;
 		transition: padding 280ms ease;
+	}
+
+	.nav-burger {
+		display: none;
+		position: relative;
+		align-items: center;
+		justify-content: center;
+		width: 2.75rem;
+		height: 2.75rem;
+		margin: 0;
+		padding: 0;
+		border: none;
+		background: transparent;
+		color: inherit;
+		cursor: pointer;
+		border-radius: 0.2rem;
+		flex-shrink: 0;
+	}
+
+	/* Misma longitud de trazo que la X clásica (1.2rem), al cruzarse coincide con «una sola» X */
+	.nav-burger__icon {
+		position: relative;
+		display: block;
+		width: 1.2rem;
+		height: 0.625rem;
+		flex-shrink: 0;
+	}
+
+	.nav-burger-line {
+		position: absolute;
+		left: 0;
+		right: 0;
+		height: 2px;
+		top: 0;
+		margin: 0;
+		background: currentColor;
+		border-radius: 1px;
+		transform-origin: center;
+		transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	}
+
+	.nav-burger-line:nth-child(2) {
+		top: auto;
+		bottom: 0;
+	}
+
+	.nav-burger[aria-expanded='true'] .nav-burger-line:nth-child(1) {
+		transform: translateY(0.25rem) rotate(45deg);
+	}
+
+	.nav-burger[aria-expanded='true'] .nav-burger-line:nth-child(2) {
+		transform: translateY(-0.25rem) rotate(-45deg);
+	}
+
+	.nav-burger:focus-visible {
+		outline: 2px solid rgba(255, 255, 255, 0.55);
+		outline-offset: 3px;
 	}
 
 	.brand {
@@ -88,6 +220,10 @@ const onContactPage = path === '/contacto' || path.endsWith('/contacto');
 		line-height: 1;
 		text-decoration: none;
 		color: inherit;
+	}
+
+	.brand-text {
+		white-space: nowrap;
 	}
 
 	.brand-mark {
@@ -118,10 +254,6 @@ const onContactPage = path === '/contacto' || path.endsWith('/contacto');
 		font-weight: 600;
 	}
 
-	/*
-	 * Exclusion solo en menú extendido y tras salir del hero (~1vh): el primer viewport suele ser oscuro.
-	 * La clase .past-hero la pone el script (scrollY >= innerHeight).
-	 */
 	.site-header.hero-nav:not(.is-scrolled).past-hero {
 		mix-blend-mode: exclusion;
 	}
@@ -172,78 +304,365 @@ const onContactPage = path === '/contacto' || path.endsWith('/contacto');
 	}
 
 	@media (max-width: 900px) {
-		.brand {
-			font-size: 1.45rem;
+		.nav-burger {
+			display: flex;
+			align-items: center;
+			justify-content: center;
 		}
 
 		.nav-links {
-			gap: 1rem;
-			font-size: 0.85rem;
+			display: none;
+		}
+
+		.site-header.hero-nav,
+		.site-header.hero-nav.is-scrolled {
+			/* Menos aire lateral que --site-pad; respeta notch/isla */
+			width: 100% !important;
+			max-width: 100% !important;
+			left: 0;
+			right: 0;
+			transform: none;
+			box-sizing: border-box;
+			padding-left: max(0.7rem, env(safe-area-inset-left, 0px));
+			padding-right: max(0.7rem, env(safe-area-inset-right, 0px));
+			top: max(0.6rem, env(safe-area-inset-top, 0px)) !important;
+			mix-blend-mode: normal;
+			background: transparent !important;
+			border: none !important;
+			border-radius: 0 !important;
+			box-shadow: none !important;
+			backdrop-filter: none !important;
+			-webkit-backdrop-filter: none !important;
+			isolation: auto;
+		}
+
+		.site-header.hero-nav:not(.is-scrolled).past-hero {
+			mix-blend-mode: normal;
+		}
+
+		.site-header.hero-nav.is-scrolled .nav-inner,
+		.site-header.hero-nav .nav-inner {
+			padding: 0;
+			justify-content: space-between;
+			width: 100%;
+		}
+
+		.brand {
+			font-size: 1.45rem;
 		}
 	}
 
-	@media (max-width: 640px) {
+	@media (min-width: 901px) {
+		.nav-burger {
+			display: none !important;
+		}
+	}
+
+	/* --- Overlay: con JS pasa a document.body; cubre el viewport (svh) + safe-areas iOS --- */
+	.nav-mobile {
+		--nav-pad: var(--site-pad, clamp(1.8rem, 4.8vw, 3rem));
+		position: fixed;
+		inset: 0;
+		display: flex;
+		flex-direction: column;
+		width: 100%;
+		max-width: 100%;
+		margin: 0;
+		box-sizing: border-box;
+		padding: env(safe-area-inset-top, 0) env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0) env(
+			safe-area-inset-left,
+			0
+		);
+		z-index: 2147482000;
+		background: #000;
+		color: #fff;
+		overflow: hidden;
+		overscroll-behavior: none;
+		-webkit-tap-highlight-color: transparent;
+		touch-action: manipulation;
+		min-height: 100%;
+	}
+
+	@supports (height: 100dvh) {
+		.nav-mobile {
+			height: 100dvh;
+			max-height: 100dvh;
+		}
+	}
+
+	@supports (height: 100svh) {
+		.nav-mobile {
+			height: 100svh;
+			max-height: 100svh;
+		}
+	}
+
+	.nav-mobile[hidden] {
+		display: none !important;
+	}
+
+	:global(html.nav-mobile-open) {
+		overflow: hidden;
+	}
+
+	:global(html.nav-mobile-open body) {
+		overflow: hidden;
+	}
+
+	/* El botón hamburguesa/X queda encima del overlay: misma X para abrir y cerrar */
+	:global(html.nav-mobile-open) .site-header.hero-nav {
+		z-index: 2147482010;
+		mix-blend-mode: normal;
+	}
+
+	:global(html.nav-mobile-open) .nav-burger,
+	:global(html.nav-mobile-open) .site-header.hero-nav .brand {
+		color: #fff;
+	}
+
+	.nav-mobile__inner {
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+		min-height: 0;
+		width: 100%;
+		overflow: hidden;
+	}
+
+	.nav-mobile__content {
+		flex: 1 1 auto;
+		display: flex;
+		min-height: 0;
+		flex-direction: column;
+		align-items: stretch;
+		justify-content: center;
+		padding: 0.75rem var(--nav-pad) max(1.5rem, env(safe-area-inset-bottom, 0));
+		overflow-x: hidden;
+		overflow-y: auto;
+		-webkit-overflow-scrolling: touch;
+		overscroll-behavior: contain;
+	}
+
+	.nav-mobile__nav {
+		width: 100%;
+		text-align: left;
+	}
+
+	.nav-mobile__list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	.nav-mobile__row {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1.25rem;
+		padding: 0.95rem 0;
+		font-family: Inter, system-ui, -apple-system, sans-serif;
+		font-size: clamp(1.35rem, 4.2vw, 1.75rem);
+		font-weight: 600;
+		letter-spacing: -0.02em;
+		color: #fff;
+		text-decoration: none;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+		width: 100%;
+		box-sizing: border-box;
+	}
+
+	.nav-mobile__row span:first-child {
+		color: #fff;
+	}
+
+	.nav-mobile__num {
+		font-size: 0.75em;
+		font-weight: 600;
+		color: rgba(255, 255, 255, 0.4);
+		font-variant-numeric: tabular-nums;
+	}
+
+	.nav-mobile__social {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 0.55rem;
+		margin-top: 1.75rem;
+	}
+
+	.nav-mobile__social a {
+		font-family: Inter, system-ui, -apple-system, sans-serif;
+		font-size: 0.95rem;
+		color: rgba(255, 255, 255, 0.88);
+		text-decoration: none;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
 		.site-header.hero-nav {
-			top: 0.6rem;
-			width: min(100% - 1rem, 22rem);
-			background: rgba(28, 30, 42, 0.96);
-			border: 1px solid rgba(121, 132, 162, 0.2);
-			border-radius: 999px;
-			box-shadow: 0 16px 34px rgba(8, 9, 14, 0.28);
-			isolation: isolate;
-			backdrop-filter: blur(8px);
-			-webkit-backdrop-filter: blur(8px);
+			transition: none;
 		}
 
-		.nav-inner {
-			padding: 0.52rem 0.8rem;
+		.nav-burger-line {
+			transition: none;
 		}
 	}
 </style>
 
-<script>
-	const nav = document.getElementById('hero-nav');
-	const ISLAND_AFTER_PX = 42;
-	const DELTA_MIN = 2;
+<script is:inline>
+	(function () {
+		const nav = document.getElementById('hero-nav');
+		const panel = document.getElementById('nav-mobile');
+		const burger = document.getElementById('nav-burger');
+		if (!panel || !burger) return;
 
-	let lastY = window.scrollY;
-
-	const syncPastHero = () => {
-		if (!nav) return;
-		const vh = window.innerHeight;
-		nav.classList.toggle('past-hero', vh > 0 && window.scrollY >= vh);
-	};
-
-	const onScroll = () => {
-		if (!nav) return;
-		const y = window.scrollY;
-
-		syncPastHero();
-
-		if (y <= ISLAND_AFTER_PX) {
-			nav.classList.remove('is-scrolled');
-			lastY = y;
-			return;
-		}
-
-		const delta = y - lastY;
-		if (Math.abs(delta) >= DELTA_MIN) {
-			if (delta > 0) {
-				nav.classList.add('is-scrolled');
-			} else {
-				nav.classList.remove('is-scrolled');
+		/* Un único sitio bajo <body> para el overlay: evita herencias de .hero-screen (overflow) y otras. */
+		if (panel.parentElement && panel.parentElement !== document.body) {
+			try {
+				document.body.appendChild(panel);
+			} catch {
+				/* ok */
 			}
 		}
 
-		lastY = y;
-	};
+		let scrollLockY = 0;
 
-	if (nav && lastY > ISLAND_AFTER_PX) {
-		nav.classList.add('is-scrolled');
-	}
+		const clearScrollLock = () => {
+			var docEl = document.documentElement;
+			if (docEl) docEl.classList.remove('nav-mobile-open');
+			var b = document.body;
+			if (b) {
+				b.style.position = '';
+				b.style.top = '';
+				b.style.left = '';
+				b.style.right = '';
+				b.style.width = '';
+			}
+			var y = scrollLockY;
+			try {
+				window.scrollTo(0, y);
+			} catch {
+				/* ok */
+			}
+		};
 
-	syncPastHero();
-	onScroll();
-	window.addEventListener('scroll', onScroll, { passive: true });
-	window.addEventListener('resize', syncPastHero, { passive: true });
+		const open = () => {
+			scrollLockY = window.scrollY || 0;
+			if (document.documentElement) {
+				document.documentElement.classList.add('nav-mobile-open');
+			}
+			var b = document.body;
+			if (b) {
+				b.style.position = 'fixed';
+				b.style.top = -scrollLockY + 'px';
+				b.style.left = '0';
+				b.style.right = '0';
+				b.style.width = '100%';
+			}
+			panel.removeAttribute('hidden');
+			panel.setAttribute('aria-hidden', 'false');
+			burger.setAttribute('aria-expanded', 'true');
+			burger.setAttribute('aria-label', 'Cerrar menú');
+			var firstNav = panel.querySelector('.nav-mobile__nav a[href]');
+			try {
+				if (firstNav) firstNav.focus();
+			} catch {
+				/* ok */
+			}
+		};
+
+		const close = () => {
+			if (panel.hasAttribute('hidden')) return;
+			clearScrollLock();
+			panel.setAttribute('hidden', '');
+			panel.setAttribute('aria-hidden', 'true');
+			burger.setAttribute('aria-expanded', 'false');
+			burger.setAttribute('aria-label', 'Abrir menú');
+			try {
+				burger.focus();
+			} catch {
+				/* ok */
+			}
+		};
+
+		burger.addEventListener('click', function () {
+			if (panel.hasAttribute('hidden')) open();
+			else close();
+		});
+
+		/* Misma marca que en el header: al pulsarla con el menú abierto se cierra (una sola instancia de logo) */
+		if (nav) {
+			nav.addEventListener('click', function (e) {
+				if (panel.hasAttribute('hidden')) return;
+				var t = e.target;
+				if (!t || !t.closest) return;
+				var a = t.closest('a.brand#nav-brand');
+				if (a) close();
+			});
+		}
+
+		panel.addEventListener('click', function (e) {
+			var t = e.target;
+			if (t && t.closest && t.closest('a[href]')) {
+				var a = t.closest('a[href]');
+				if (a && panel.contains(a) && a !== burger) close();
+			}
+		});
+		document.addEventListener('keydown', function (e) {
+			if (e.key === 'Escape' && !panel.hasAttribute('hidden')) {
+				e.preventDefault();
+				close();
+			}
+		});
+
+		/* Cinta del hero / isla: solo > 900px */
+		var ISLAND_AFTER_PX = 42;
+		var DELTA_MIN = 2;
+		var lastY = window.scrollY;
+
+		var syncPastHero = function () {
+			if (!nav) return;
+			var vh = window.innerHeight;
+			nav.classList.toggle('past-hero', vh > 0 && window.scrollY >= vh);
+		};
+
+		var onScroll = function () {
+			if (!nav) return;
+			if (window.innerWidth <= 900) {
+				nav.classList.remove('is-scrolled');
+				syncPastHero();
+				lastY = window.scrollY;
+				return;
+			}
+			var y = window.scrollY;
+			syncPastHero();
+			if (y <= ISLAND_AFTER_PX) {
+				nav.classList.remove('is-scrolled');
+				lastY = y;
+				return;
+			}
+			var delta = y - lastY;
+			if (Math.abs(delta) >= DELTA_MIN) {
+				if (delta > 0) nav.classList.add('is-scrolled');
+				else nav.classList.remove('is-scrolled');
+			}
+			lastY = y;
+		};
+
+		if (nav && lastY > ISLAND_AFTER_PX && window.innerWidth > 900) {
+			nav.classList.add('is-scrolled');
+		}
+		syncPastHero();
+		onScroll();
+		window.addEventListener('scroll', onScroll, { passive: true });
+		window.addEventListener('resize', function () {
+			syncPastHero();
+			if (window.innerWidth <= 900 && nav) {
+				nav.classList.remove('is-scrolled');
+			}
+			onScroll();
+			if (window.innerWidth > 900 && !panel.hasAttribute('hidden')) {
+				close();
+			}
+		}, { passive: true });
+	})();
 </script>

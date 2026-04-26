@@ -31,6 +31,8 @@ interface Props {
 	showOgSiteName?: boolean;
 	showCursor?: boolean;
 	cursorHoverSelector?: string;
+	/** Cursor píldora «View» (mismo exclusion); por defecto enlaces a trabajos */
+	cursorWorkViewSelector?: string;
 }
 
 const {
@@ -56,7 +58,8 @@ const {
 	showTwitter = true,
 	showOgSiteName = true,
 	showCursor = true,
-	cursorHoverSelector = 'a, button, [role="button"], .work-item-link, .featured-work-link, .photo'
+	cursorHoverSelector = 'a, button, [role="button"], .work-item-link, .featured-work-link, .photo',
+	cursorWorkViewSelector = '.work-item-link, .featured-work-link'
 } = Astro.props;
 
 const canonicalURL = canonicalURLProp ?? new URL(Astro.url.pathname, SITE_ORIGIN).toString();
@@ -121,6 +124,8 @@ const fontHref = `https://fonts.googleapis.com/css2?family=Instrument+Serif:ital
 	</head>
 	<body>
 		<slot />
-		{showCursor ? <SiteCursor hoverSelector={cursorHoverSelector} /> : null}
+		{showCursor ? (
+			<SiteCursor hoverSelector={cursorHoverSelector} workViewSelector={cursorWorkViewSelector} />
+		) : null}
 	</body>
 </html>

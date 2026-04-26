@@ -11,11 +11,13 @@ export interface WorkCardNavLink {
 	href: string;
 }
 
+type GallerySlide = { src: string; alt: string; media?: 'image' | 'video' };
+
 interface Props {
 	title: string;
 	year: string;
 	descriptionHtml: string;
-	images: { src: string; alt: string }[];
+	images: GallerySlide[];
 	/** Id estable del bloque galería (p. ej. slug del proyecto) */
 	galleryRootId: string;
 	prev?: WorkCardNavLink | null;
@@ -24,6 +26,16 @@ interface Props {
 
 const { title, year, descriptionHtml, images, galleryRootId, prev = null, next = null } = Astro.props;
 
+function isVideoSlide(s: GallerySlide): boolean {
+	return s.media === 'video' || /\.mp4($|\?)/i.test(s.src);
+}
+
+const TRANSPARENT_GIF =
+	'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+
+const first = images[0]!;
+const firstIsVideo = isVideoSlide(first);
+const firstStatic = images.find((s) => !isVideoSlide(s));
 const hasCarousel = images.length > 1;
 const titleId = `work-title-${galleryRootId}`;
 ---
@@ -72,13 +84,27 @@ const titleId = `work-title-${galleryRootId}`;
 				<img
 					class="work-card-gallery-img"
 					data-gallery-img
-					src={images[0]?.src}
-					alt={images[0]?.alt ?? ''}
+					hidden={firstIsVideo || undefined}
+					src={firstIsVideo ? (firstStatic?.src ?? TRANSPARENT_GIF) : first.src}
+					alt={firstIsVideo ? (firstStatic?.alt ?? first.alt) : first.alt}
 					loading="eager"
 					decoding="async"
 					width="1600"
 					height="900"
 				/>
+				<video
+					class="work-card-gallery-video"
+					data-gallery-video
+					hidden={!firstIsVideo || undefined}
+					src={firstIsVideo ? first.src : undefined}
+					controls
+					playsinline
+					preload="metadata"
+					width="1600"
+					height="900"
+					aria-label={firstIsVideo ? first.alt : 'Vídeo del proyecto'}
+				>
+				</video>
 			</figure>
 		</div>
 		{
@@ -128,18 +154,36 @@ const titleId = `work-title-${galleryRootId}`;
 		if (!root || !images || images.length <= 1) return;
 
 		const img = root.querySelector('[data-gallery-img]');
+		const video = root.querySelector('[data-gallery-video]');
 		const btnPrev = root.querySelector('[data-gallery-prev]');
 		const btnNext = root.querySelector('[data-gallery-next]');
 		const dots = root.querySelectorAll('[data-gallery-dot]');
-		if (!(img instanceof HTMLImageElement)) return;
+		if (!(img instanceof HTMLImageElement) || !(video instanceof HTMLVideoElement)) return;
+
+		function slideIsVideo(s) {
+			return s.media === 'video' || /\.mp4($|\?)/i.test(s.src);
+		}
 
 		let index = 0;
 
 		function setSlide(i) {
 			index = (i + images.length) % images.length;
 			const slide = images[index];
-			img.src = slide.src;
-			img.alt = slide.alt;
+			if (slideIsVideo(slide)) {
+				video.removeAttribute('hidden');
+				video.src = slide.src;
+				video.setAttribute('aria-label', slide.alt);
+				video.load();
+				img.setAttribute('hidden', '');
+			} else {
+				video.setAttribute('hidden', '');
+				video.pause();
+				video.removeAttribute('src');
+				video.load();
+				img.removeAttribute('hidden');
+				img.src = slide.src;
+				img.alt = slide.alt;
+			}
 			dots.forEach((dot, j) => {
 				if (!(dot instanceof HTMLButtonElement)) return;
 				const on = j === index;
@@ -268,6 +312,21 @@ const titleId = `work-title-${galleryRootId}`;
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
+	}
+
+	.work-card-gallery-img[hidden] {
+		display: none;
+	}
+
+	.work-card-gallery-video {
+		display: block;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.work-card-gallery-video[hidden] {
+		display: none;
 	}
 
 	.work-card-gallery-arrow {
