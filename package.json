@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.1",
+    "@paper-design/shaders": "^0.0.30",
     "astro": "^6.0.8"
   },
   "devDependencies": {

@@ -1,11 +1,20 @@
 ---
 /**
- * Ficha de proyecto: cabecera en dos columnas, galería con flechas y puntos,
- * navegación al proyecto anterior/siguiente (solo los que existan).
+ * Ficha de proyecto — réplica 1:1 de la plantilla «Work» de Framer (lavayen.framer.website/work/<slug>).
  *
- * `descriptionHtml` solo debe contener HTML de confianza (p. ej. desde works.ts);
- * si en el futuro viene de CMS, sanitizar antes de pasarlo a set:html.
+ * Estructura (nombres de capas Framer entre paréntesis):
+ *   Header (84/30/30) › Padding (border-top, 30px 0, gap 30)
+ *     ├ Title + Tags: h1 Inter Display 2.6rem + pills año/tag (5px 9px, #171717, borde #222225)
+ *     └ Text Wrapper: párrafo Inter Display 1rem/1.4 (+ créditos)
+ *   Images (0 30px) › Padding (border-bottom, pb 30, gap 30)
+ *     └ Slideshow 85% 16:9 · gap 10 · autoplay 8s · flechas fuera (inset -60) · dots pill (-40px)
+ *       ó rejilla de vídeos Vimeo (Motion Graphics)
+ *   Prev/Next (50px 30px 100px): Instrument Serif 1.5rem/.9
+ *
+ * `descriptionHtml` / `creditsHtml` solo deben contener HTML de confianza (works.ts).
  */
+import type { WorkVideoRow } from '../data/works';
+
 export interface WorkCardNavLink {
 	title: string;
 	href: string;
@@ -16,451 +25,896 @@ type GallerySlide = { src: string; alt: string; media?: 'image' | 'video' };
 interface Props {
 	title: string;
 	year: string;
+	tag?: string;
 	descriptionHtml: string;
+	creditsHtml?: string;
 	images: GallerySlide[];
+	videoRows?: WorkVideoRow[];
 	/** Id estable del bloque galería (p. ej. slug del proyecto) */
 	galleryRootId: string;
 	prev?: WorkCardNavLink | null;
 	next?: WorkCardNavLink | null;
 }
 
-const { title, year, descriptionHtml, images, galleryRootId, prev = null, next = null } = Astro.props;
+const {
+	title,
+	year,
+	tag,
+	descriptionHtml,
+	creditsHtml,
+	images,
+	videoRows,
+	galleryRootId,
+	prev = null,
+	next = null
+} = Astro.props;
 
 function isVideoSlide(s: GallerySlide): boolean {
 	return s.media === 'video' || /\.mp4($|\?)/i.test(s.src);
 }
 
-const TRANSPARENT_GIF =
-	'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-
-const first = images[0]!;
-const firstIsVideo = isVideoSlide(first);
-const firstStatic = images.find((s) => !isVideoSlide(s));
-const hasCarousel = images.length > 1;
+const hasVideoGrid = Boolean(videoRows && videoRows.length > 0);
+const hasCarousel = !hasVideoGrid && images.length > 1;
 const titleId = `work-title-${galleryRootId}`;
+const hasText = descriptionHtml.trim().length > 0;
+const hasCredits = Boolean(creditsHtml && creditsHtml.trim().length > 0);
+
+function vimeoSrc(id: string): string {
+	return `https://player.vimeo.com/video/${id}?title=0&byline=0&portrait=0&dnt=1`;
+}
 ---
 
-<section class="work-card" data-work-card aria-labelledby={titleId}>
-	<header class="work-card-header">
-		<div class="work-card-intro">
-			<h1 class="work-card-title" id={titleId}>{title}</h1>
-			<span class="work-card-year">{year}</span>
+<section class="wd" data-work-card aria-labelledby={titleId}>
+	<!-- Header -->
+	<header class="wd-header">
+		<div class="wd-pad wd-appear">
+			<div class="wd-intro">
+				<h1 class="wd-title" id={titleId}>{title}</h1>
+				<div class="wd-tags" aria-label="Año y cliente">
+					<span class="wd-tag">{year}</span>
+					{tag ? <span class="wd-tag">{tag}</span> : null}
+				</div>
+			</div>
+			{
+				hasText || hasCredits ? (
+					<div class="wd-text">
+						{hasText ? <div class="wd-copy" set:html={descriptionHtml} /> : null}
+						{hasCredits ? <div class="wd-copy" set:html={creditsHtml} /> : null}
+					</div>
+				) : (
+					<div class="wd-text" aria-hidden="true" />
+				)
+			}
 		</div>
-		<div class="work-card-body prose" set:html={descriptionHtml} />
 	</header>
 
-	<div
-		class:list={['work-card-gallery', !hasCarousel && 'work-card-gallery--single']}
-		data-gallery-root
-		id={galleryRootId}
-		tabindex="0"
-		aria-roledescription="carrusel"
-		aria-label={`Imágenes de ${title}`}
-	>
-		<div class="work-card-gallery-frame">
+	<!-- Images -->
+	<div class="wd-images">
+		<div class="wd-images-pad">
 			{
-				hasCarousel ? (
-					<>
-						<button
-							type="button"
-							class="work-card-gallery-arrow work-card-gallery-arrow--prev"
-							data-gallery-prev
-							aria-label="Imagen anterior"
-						>
-							<span aria-hidden="true">‹</span>
-						</button>
-						<button
-							type="button"
-							class="work-card-gallery-arrow work-card-gallery-arrow--next"
-							data-gallery-next
-							aria-label="Imagen siguiente"
-						>
-							<span aria-hidden="true">›</span>
-						</button>
-					</>
-				) : null
+				hasVideoGrid ? (
+					videoRows!.map((row) => (
+						<div class="wd-vrow" style={`--row-gap:${row.gap}px`}>
+							{row.videos.map((v) => (
+								<div class="wd-vid" style={`aspect-ratio:${v.aspect}`}>
+									<iframe
+										src={vimeoSrc(v.vimeoId)}
+										title={v.title}
+										loading="lazy"
+										allow="autoplay; fullscreen; picture-in-picture; clipboard-write"
+										allowfullscreen
+										referrerpolicy="strict-origin-when-cross-origin"
+									/>
+								</div>
+							))}
+						</div>
+					))
+				) : (
+					<div
+						class:list={['wd-slideshow', !hasCarousel && 'wd-slideshow--single']}
+						data-slideshow
+						id={galleryRootId}
+						tabindex="0"
+						role="region"
+						aria-roledescription="carrusel"
+						aria-label={`Imágenes de ${title}`}
+						style={`--count:${images.length}`}
+					>
+						<div class="wd-viewport">
+							<ul class="wd-track" data-track>
+								{images.map((s, i) => (
+									<li class:list={['wd-slide', i === 0 && 'is-shown']} data-slide aria-hidden={i === 0 ? 'false' : 'true'}>
+										{isVideoSlide(s) ? (
+											<video
+												class="wd-media"
+												src={s.src}
+												controls
+												playsinline
+												preload={i === 0 ? 'metadata' : 'none'}
+												aria-label={s.alt}
+											/>
+										) : (
+											<img
+												class="wd-media"
+												src={s.src}
+												alt={s.alt}
+												loading={i === 0 ? 'eager' : 'lazy'}
+												decoding="async"
+												draggable="false"
+												width="1920"
+												height="1080"
+											/>
+										)}
+									</li>
+								))}
+							</ul>
+						</div>
+						{
+							hasCarousel ? (
+								<>
+									<div class="wd-arrows" aria-label="Controles del carrusel">
+										<button type="button" class="wd-arrow" data-prev aria-label="Anterior">
+											<svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true">
+												<path
+													fill="transparent"
+													stroke="#fff"
+													stroke-linecap="round"
+													stroke-linejoin="round"
+													stroke-width="2"
+													d="M22.5 12.5 15 20l7.5 7.5"
+												/>
+											</svg>
+										</button>
+										<button type="button" class="wd-arrow" data-next aria-label="Siguiente">
+											<svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true">
+												<path
+													fill="transparent"
+													stroke="#fff"
+													stroke-linecap="round"
+													stroke-linejoin="round"
+													stroke-width="2"
+													d="M17.5 12.5 25 20l-7.5 7.5"
+												/>
+											</svg>
+										</button>
+									</div>
+									<div class="wd-dots" data-dots role="group" aria-label="Ir a imagen">
+										{images.map((_, i) => (
+											<button
+												type="button"
+												class:list={['wd-dot', i === 0 && 'is-active']}
+												data-dot={i}
+												aria-label={`Imagen ${i + 1} de ${images.length}`}
+												aria-current={i === 0 ? 'true' : 'false'}
+											>
+												<span aria-hidden="true" />
+											</button>
+										))}
+									</div>
+								</>
+							) : null
+						}
+					</div>
+				)
 			}
-			<figure class="work-card-gallery-figure">
-				<img
-					class="work-card-gallery-img"
-					data-gallery-img
-					hidden={firstIsVideo || undefined}
-					src={firstIsVideo ? (firstStatic?.src ?? TRANSPARENT_GIF) : first.src}
-					alt={firstIsVideo ? (firstStatic?.alt ?? first.alt) : first.alt}
-					loading="eager"
-					decoding="async"
-					width="1600"
-					height="900"
-				/>
-				<video
-					class="work-card-gallery-video"
-					data-gallery-video
-					hidden={!firstIsVideo || undefined}
-					src={firstIsVideo ? first.src : undefined}
-					controls
-					playsinline
-					preload="metadata"
-					width="1600"
-					height="900"
-					aria-label={firstIsVideo ? first.alt : 'Vídeo del proyecto'}
-				>
-				</video>
-			</figure>
 		</div>
-		{
-			hasCarousel ? (
-				<div class="work-card-dots" data-gallery-dots role="group" aria-label="Seleccionar imagen de la galería">
-					{images.map((_, i) => (
-						<button
-							type="button"
-							class:list={['work-card-dot', i === 0 && 'is-active']}
-							data-gallery-dot={i}
-							aria-label={`Imagen ${i + 1} de ${images.length}`}
-							aria-current={i === 0 ? 'true' : 'false'}
-						/>
-					))}
-				</div>
-			) : null
-		}
 	</div>
 
-	<nav class="work-card-project-nav" aria-label="Proyecto anterior o siguiente">
-		<div class="work-card-nav-prev">
+	<!-- Prev / Next -->
+	<nav class="wd-nav" aria-label="Proyecto anterior o siguiente">
+		<div class="wd-nav-prev">
 			{
 				prev ? (
-					<a class="work-card-nav-link" href={prev.href}>
-						<span class="work-card-nav-chevron" aria-hidden="true">‹</span>
-						{prev.title}
-					</a>
+					<h2 class="wd-nav-title">
+						<a class="wd-nav-link" href={prev.href}>‹ {prev.title}</a>
+					</h2>
 				) : null
 			}
 		</div>
-		<div class="work-card-nav-next">
+		<div class="wd-nav-spacer" aria-hidden="true"></div>
+		<div class="wd-nav-next">
 			{
 				next ? (
-					<a class="work-card-nav-link" href={next.href}>
-						{next.title}
-						<span class="work-card-nav-chevron" aria-hidden="true">›</span>
-					</a>
+					<h2 class="wd-nav-title">
+						<a class="wd-nav-link" href={next.href}>{next.title} ›</a>
+					</h2>
 				) : null
 			}
 		</div>
 	</nav>
 </section>
 
-<script define:vars={{ images, galleryRootId }}>
+<script define:vars={{ galleryRootId, count: images.length, hasCarousel }}>
 	(function () {
 		const root = document.getElementById(galleryRootId);
-		if (!root || !images || images.length <= 1) return;
+		if (!root) return;
 
-		const img = root.querySelector('[data-gallery-img]');
-		const video = root.querySelector('[data-gallery-video]');
-		const btnPrev = root.querySelector('[data-gallery-prev]');
-		const btnNext = root.querySelector('[data-gallery-next]');
-		const dots = root.querySelectorAll('[data-gallery-dot]');
-		if (!(img instanceof HTMLImageElement) || !(video instanceof HTMLVideoElement)) return;
+		// Fade-in del bloque (Framer: opacity .001 → 1 al montar)
+		requestAnimationFrame(() => root.classList.add('is-mounted'));
 
-		function slideIsVideo(s) {
-			return s.media === 'video' || /\.mp4($|\?)/i.test(s.src);
-		}
+		if (!hasCarousel || count <= 1) return;
+
+		const track = root.querySelector('[data-track]');
+		const slides = Array.from(root.querySelectorAll('[data-slide]'));
+		const dots = Array.from(root.querySelectorAll('[data-dot]'));
+		const btnPrev = root.querySelector('[data-prev]');
+		const btnNext = root.querySelector('[data-next]');
+		if (!(track instanceof HTMLElement)) return;
+
+		const INTERVAL = 8000; // intervalControl: 8
+		const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 		let index = 0;
+		let timer = 0;
+		let hovering = false;
 
-		function setSlide(i) {
-			index = (i + images.length) % images.length;
-			const slide = images[index];
-			if (slideIsVideo(slide)) {
-				video.removeAttribute('hidden');
-				video.src = slide.src;
-				video.setAttribute('aria-label', slide.alt);
-				video.load();
-				img.setAttribute('hidden', '');
-			} else {
-				video.setAttribute('hidden', '');
-				video.pause();
-				video.removeAttribute('src');
-				video.load();
-				img.removeAttribute('hidden');
-				img.src = slide.src;
-				img.alt = slide.alt;
-			}
-			dots.forEach((dot, j) => {
-				if (!(dot instanceof HTMLButtonElement)) return;
-				const on = j === index;
-				dot.classList.toggle('is-active', on);
-				dot.setAttribute('aria-current', on ? 'true' : 'false');
+		function applyTransform(offsetPx) {
+			// Cada slide ocupa 100% + gap (10px)
+			track.style.transform = `translateX(calc(${-index} * (100% + 10px) + ${offsetPx || 0}px))`;
+		}
+
+		function pauseVideos() {
+			slides.forEach((s) => {
+				const v = s.querySelector('video');
+				if (v && !v.paused) v.pause();
 			});
 		}
 
-		btnPrev?.addEventListener('click', () => setSlide(index - 1));
-		btnNext?.addEventListener('click', () => setSlide(index + 1));
-		dots.forEach((dot, j) => {
-			dot.addEventListener('click', () => setSlide(j));
+		function setSlide(i) {
+			index = (i + count) % count;
+			applyTransform(0);
+			slides.forEach((s, j) => {
+				const on = j === index;
+				s.setAttribute('aria-hidden', on ? 'false' : 'true');
+				if (on) s.classList.add('is-shown');
+			});
+			dots.forEach((d, j) => {
+				const on = j === index;
+				d.classList.toggle('is-active', on);
+				d.setAttribute('aria-current', on ? 'true' : 'false');
+			});
+			pauseVideos();
+		}
+
+		function stop() {
+			if (timer) window.clearInterval(timer);
+			timer = 0;
+		}
+		function start() {
+			stop();
+			if (reduceMotion || document.hidden || hovering) return;
+			timer = window.setInterval(() => setSlide(index + 1), INTERVAL);
+		}
+
+		btnPrev?.addEventListener('click', () => {
+			setSlide(index - 1);
+			start();
 		});
+		btnNext?.addEventListener('click', () => {
+			setSlide(index + 1);
+			start();
+		});
+		dots.forEach((d, j) =>
+			d.addEventListener('click', () => {
+				setSlide(j);
+				start();
+			})
+		);
 
 		root.addEventListener('keydown', (e) => {
-			if (images.length <= 1) return;
 			if (e.key === 'ArrowLeft') {
 				e.preventDefault();
 				setSlide(index - 1);
+				start();
 			} else if (e.key === 'ArrowRight') {
 				e.preventDefault();
 				setSlide(index + 1);
+				start();
 			} else if (e.key === 'Home') {
 				e.preventDefault();
 				setSlide(0);
+				start();
 			} else if (e.key === 'End') {
 				e.preventDefault();
-				setSlide(images.length - 1);
+				setSlide(count - 1);
+				start();
 			}
 		});
+
+		// Pausa autoplay al pasar el ratón (Framer: effectsHover)
+		root.addEventListener('mouseenter', () => {
+			hovering = true;
+			stop();
+		});
+		root.addEventListener('mouseleave', () => {
+			hovering = false;
+			start();
+		});
+		document.addEventListener('visibilitychange', () => (document.hidden ? stop() : start()));
+
+		// Drag/swipe (Framer: dragControl en móvil)
+		let dragging = false;
+		let startX = 0;
+		let dx = 0;
+		const viewport = root.querySelector('.wd-viewport');
+		if (viewport instanceof HTMLElement) {
+			viewport.addEventListener('pointerdown', (e) => {
+				if (e.pointerType === 'mouse' && e.button !== 0) return;
+				if (e.target instanceof HTMLVideoElement) return;
+				dragging = true;
+				startX = e.clientX;
+				dx = 0;
+				track.classList.add('is-dragging');
+				viewport.setPointerCapture(e.pointerId);
+				stop();
+			});
+			viewport.addEventListener('pointermove', (e) => {
+				if (!dragging) return;
+				dx = e.clientX - startX;
+				applyTransform(dx);
+			});
+			const end = () => {
+				if (!dragging) return;
+				dragging = false;
+				track.classList.remove('is-dragging');
+				const threshold = Math.min(80, viewport.clientWidth * 0.15);
+				if (dx <= -threshold) setSlide(index + 1);
+				else if (dx >= threshold) setSlide(index - 1);
+				else applyTransform(0);
+				dx = 0;
+				start();
+			};
+			viewport.addEventListener('pointerup', end);
+			viewport.addEventListener('pointercancel', end);
+		}
+
+		setSlide(0);
+		start();
 	})();
 </script>
 
 <style>
-	/* Mismo ancho útil que el header: el padre (.work-detail-page / .work-page) ya usa calc(100% - 2 * --site-pad) */
-	.work-card {
+	.wd,
+	.wd *,
+	.wd *::before,
+	.wd *::after {
+		box-sizing: border-box;
+	}
+
+	/* ==== Tokens Framer ==== */
+	.wd {
+		--wd-bg: #000;
+		--wd-fg: #fff;
+		--wd-line: #222225;
+		--wd-pill: #171717;
+		--wd-link-hover: rgba(255, 255, 255, 0.7);
+		--wd-ease: cubic-bezier(0.44, 0, 0.56, 1);
 		width: 100%;
-		max-width: none;
-		margin: 0;
-		padding: 0;
-		color: #f5f5f5;
-	}
-
-	.work-card-header {
-		display: grid;
-		grid-template-columns: minmax(0, 0.88fr) minmax(0, 1.12fr);
-		gap: clamp(1.5rem, 4vw, 3.25rem);
-		align-items: start;
-		margin-bottom: clamp(2rem, 5vw, 3rem);
-	}
-
-	.work-card-intro {
+		color: var(--wd-fg);
 		display: flex;
 		flex-direction: column;
-		gap: 0.85rem;
+		align-items: center;
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
 	}
 
-	.work-card-title {
+	/* ==== Header ==== */
+	.wd-header {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content: center;
+		gap: 10px;
+		width: 100%;
+		padding: 84px 30px 30px;
+		overflow: hidden;
+	}
+
+	.wd-pad {
+		position: relative;
+		display: flex;
+		flex-direction: row;
+		align-items: flex-start;
+		justify-content: center;
+		gap: 30px;
+		flex: 1 0 0;
+		min-width: 0;
+		padding: 30px 0;
+	}
+
+	/* Framer pinta los bordes con ::after (no ocupan espacio) */
+	.wd-pad::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 1px;
+		background: var(--wd-line);
+		pointer-events: none;
+	}
+
+	/* Appear (Framer thh4qa: opacity .001 → 1, spring 500/30/.1, delay .1s) */
+	.wd-appear {
+		opacity: 0.001;
+		animation: wd-fade 0.35s cubic-bezier(0.2, 0.7, 0.2, 1) 0.1s forwards;
+	}
+
+	@keyframes wd-fade {
+		to {
+			opacity: 1;
+		}
+	}
+
+	.wd-intro {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		justify-content: center;
+		gap: 15px;
+		flex: 1 0 0;
+		min-width: 0;
+		overflow: hidden;
+	}
+
+	.wd-title {
 		margin: 0;
-		font-family: 'Instrument Serif', Georgia, serif;
-		font-size: clamp(2rem, 5.2vw, 3.35rem);
+		width: 100%;
+		font-family: 'Inter Display', sans-serif;
+		font-size: 2.6rem; /* 41.6px */
 		font-weight: 400;
-		line-height: 1.05;
-		letter-spacing: -0.02em;
-		color: #fff;
-	}
-
-	.work-card-year {
-		width: fit-content;
-		padding: 0.1rem 0.42rem;
-		font-family: Inter, system-ui, sans-serif;
-		font-size: 0.78rem;
-		color: rgba(239, 239, 239, 0.92);
-		border: 1px solid rgba(255, 255, 255, 0.22);
-		border-radius: 0.2rem;
 		line-height: 1.2;
+		letter-spacing: 0;
+		text-align: left;
+		color: var(--wd-fg);
+		white-space: pre-wrap;
+		word-break: break-word;
 	}
 
-	.work-card-body {
-		font-family: Inter, system-ui, sans-serif;
-		font-size: clamp(0.86rem, 1.05vw, 0.96rem);
-		line-height: 1.42;
-		color: rgba(245, 245, 245, 0.88);
-		text-align: justify;
-		hyphens: auto;
-		text-wrap: pretty;
+	.wd-tags {
+		display: flex;
+		flex-direction: row;
+		align-items: flex-start;
+		gap: 10px;
+		width: 100%;
 	}
 
-	.work-card-body :global(p) {
-		margin: 0 0 0.75rem;
+	.wd-tag {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: min-content;
+		padding: 5px 9px;
+		font-family: 'Inter Display', sans-serif;
+		font-size: 13px;
+		font-weight: 400;
+		line-height: 1.2;
+		color: var(--wd-fg);
+		background: var(--wd-pill);
+		box-shadow: inset 0 0 0 1px var(--wd-line);
+		white-space: pre;
 	}
 
-	.work-card-body :global(p:last-child) {
-		margin-bottom: 0;
+	.wd-text {
+		position: relative;
+		z-index: 1;
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 20px;
+		flex: 1 0 0;
+		min-width: 0;
 	}
 
-	.work-card-body :global(strong) {
-		font-weight: 600;
-		color: #fff;
+	.wd-copy {
+		width: 100%;
+		font-family: 'Inter Display', sans-serif;
+		font-size: 1rem;
+		font-weight: 400;
+		line-height: 1.4;
+		color: var(--wd-fg);
+		white-space: pre-wrap;
+		word-break: break-word;
 	}
 
-	.work-card-gallery {
-		margin-bottom: 1.25rem;
+	.wd-copy :global(p) {
+		margin: 0;
 	}
 
-	.work-card-gallery:focus-visible {
+	.wd-copy :global(a) {
+		color: var(--wd-fg);
+		text-decoration: none;
+		transition: color 0.2s var(--wd-ease);
+	}
+
+	.wd-copy :global(a:hover) {
+		color: var(--wd-link-hover);
+	}
+
+	/* ==== Images ==== */
+	.wd-images {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		width: 100%;
+		padding: 0 30px;
+	}
+
+	.wd-images-pad {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 30px;
+		width: 100%;
+		padding: 0 0 30px;
+		/* Deja sitio a flechas (-60px) y dots (-40px) sin recortar */
+		overflow: visible;
+	}
+
+	.wd-images-pad::after {
+		content: '';
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		width: 100%;
+		height: 1px;
+		background: var(--wd-line);
+		pointer-events: none;
+	}
+
+	/* ---- Slideshow ---- */
+	.wd-slideshow {
+		position: relative;
+		width: 85%;
+		aspect-ratio: 16 / 9;
+		/* Framer: tras el slideshow hay 4 filas vacías (las de vídeos) separadas por el gap
+		   de 30px → 120px extra antes del padding-bottom. Medido en el original: 150px. */
+		margin-bottom: 120px;
+		opacity: 0.001;
+		transition: opacity 0.4s ease;
+		outline: none;
+	}
+
+	.wd-slideshow.is-mounted {
+		opacity: 1;
+	}
+
+	.wd-slideshow:focus-visible .wd-viewport {
 		outline: 2px solid rgba(255, 255, 255, 0.45);
 		outline-offset: 4px;
 	}
 
-	.work-card-gallery-frame {
-		position: relative;
-		background: #111;
-		overflow: hidden;
-		aspect-ratio: 16 / 9;
-	}
-
-	.work-card-gallery-figure {
-		margin: 0;
-		width: 100%;
-		height: 100%;
-	}
-
-	.work-card-gallery-img {
-		display: block;
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-	}
-
-	.work-card-gallery-img[hidden] {
-		display: none;
-	}
-
-	.work-card-gallery-video {
-		display: block;
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-	}
-
-	.work-card-gallery-video[hidden] {
-		display: none;
-	}
-
-	.work-card-gallery-arrow {
+	.wd-viewport {
 		position: absolute;
-		top: 50%;
-		transform: translateY(-50%);
-		z-index: 2;
-		width: 3rem;
-		height: 4.5rem;
+		inset: 0;
+		overflow: hidden;
+		border-radius: 0;
+		perspective: 1200px;
+		user-select: none;
+		touch-action: pan-y;
+	}
+
+	.wd-track {
 		display: flex;
+		flex-direction: row;
 		align-items: center;
-		justify-content: center;
+		gap: 10px;
+		width: 100%;
+		height: 100%;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		transform: translateX(0);
+		transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+		will-change: transform;
+	}
+
+	.wd-track.is-dragging {
+		transition: none;
+	}
+
+	.wd-slide {
+		position: relative;
+		flex: 0 0 100%;
+		width: 100%;
+		height: 100%;
+		/* Appear por slide (Framer: opacity 0 + y 15 → visible) */
+		opacity: 0;
+		transform: translateY(15px);
+		transition:
+			opacity 0.35s cubic-bezier(0.2, 0.7, 0.2, 1),
+			transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
+	}
+
+	.wd-slide.is-shown {
+		opacity: 1;
+		transform: none;
+	}
+
+	.wd-media {
+		display: block;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		object-position: center;
+		border-radius: inherit;
+		background: #000;
+	}
+
+	/* Flechas: fieldset inset -60px, botones 40×40 radio 40, fondo rgba(0,0,0,.2) */
+	.wd-arrows {
+		position: absolute;
+		inset: -60px;
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-between;
+		pointer-events: none;
+	}
+
+	.wd-arrow {
+		display: grid;
+		place-items: center;
+		width: 40px;
+		height: 40px;
 		margin: 0;
 		padding: 0;
 		border: none;
-		background: transparent;
+		border-radius: 40px;
+		background: rgba(0, 0, 0, 0.2);
 		color: #fff;
-		font-size: 2.25rem;
-		line-height: 1;
 		cursor: pointer;
-		opacity: 0.88;
-		transition: opacity 160ms ease;
+		pointer-events: auto;
+		overflow: hidden;
 	}
 
-	.work-card-gallery-arrow:hover {
-		opacity: 1;
+	.wd-arrow svg {
+		display: block;
 	}
 
-	.work-card-gallery-arrow:focus-visible {
+	.wd-arrow:focus-visible {
 		outline: 2px solid rgba(255, 255, 255, 0.5);
 		outline-offset: 2px;
 	}
 
-	.work-card-gallery-arrow--prev {
-		left: 0.15rem;
-	}
-
-	.work-card-gallery-arrow--next {
-		right: 0.15rem;
-	}
-
-	.work-card-dots {
+	/* Dots: píldora bottom -40px, fondo rgba(0,0,0,.5) + blur 50, puntos 5px */
+	.wd-dots {
+		position: absolute;
+		left: 50%;
+		bottom: -40px;
+		transform: translateX(-50%);
 		display: flex;
-		justify-content: center;
+		flex-direction: row;
 		align-items: center;
-		gap: 0.45rem;
-		margin-top: 1rem;
+		justify-content: center;
+		border-radius: 50px;
+		background: rgba(0, 0, 0, 0.5);
+		-webkit-backdrop-filter: blur(50px);
+		backdrop-filter: blur(50px);
+		overflow: hidden;
+		user-select: none;
 	}
 
-	.work-card-dot {
-		width: 6px;
-		height: 6px;
-		padding: 0;
+	.wd-dot {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		margin: 0;
+		padding: 10px 5px;
 		border: none;
-		border-radius: 999px;
-		background: rgba(255, 255, 255, 0.28);
+		background: transparent;
 		cursor: pointer;
-		transition:
-			background 160ms ease,
-			transform 160ms ease;
 	}
 
-	.work-card-dot.is-active {
+	.wd-dot:first-child {
+		padding-left: 10px;
+	}
+
+	.wd-dot:last-child {
+		padding-right: 10px;
+	}
+
+	.wd-dot span {
+		display: block;
+		width: 5px;
+		height: 5px;
+		border-radius: 50%;
 		background: #fff;
-		transform: scale(1.15);
+		opacity: 0.2;
+		transition: opacity 0.2s ease;
 	}
 
-	.work-card-dot:focus-visible {
+	.wd-dot.is-active span {
+		opacity: 1;
+	}
+
+	.wd-dot:focus-visible {
 		outline: 2px solid rgba(255, 255, 255, 0.45);
+		outline-offset: -2px;
+	}
+
+	/* ---- Rejilla de vídeos (Motion Graphics) ---- */
+	.wd-vrow {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content: center;
+		gap: var(--row-gap, 10px);
+		width: 100%;
+	}
+
+	.wd-vid {
+		position: relative;
+		flex: 1 0 0;
+		min-width: 0;
+		overflow: hidden;
+		background: transparent;
+	}
+
+	.wd-vid iframe {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		border: 0;
+		display: block;
+	}
+
+	/* ==== Prev / Next ==== */
+	.wd-nav {
+		display: flex;
+		flex-direction: row;
+		align-items: flex-start;
+		justify-content: center;
+		gap: 10px;
+		width: 100%;
+		padding: 50px 30px 100px;
+	}
+
+	.wd-nav-prev,
+	.wd-nav-next {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		gap: 10px;
+		flex: 1 0 0;
+		min-width: 0;
+		height: 35px;
+		overflow: clip;
+	}
+
+	.wd-nav-prev {
+		justify-content: flex-start;
+		padding: 0 0 0 40px;
+	}
+
+	.wd-nav-next {
+		justify-content: flex-end;
+		padding: 0 40px 0 0;
+	}
+
+	.wd-nav-spacer {
+		flex: 1 0 0;
+		height: 50px;
+	}
+
+	.wd-nav-title {
+		margin: 0;
+		font-family: 'Instrument Serif', Georgia, serif;
+		font-size: 1.5rem;
+		font-weight: 400;
+		line-height: 0.9;
+		letter-spacing: 0;
+		white-space: pre;
+		color: var(--wd-fg);
+	}
+
+	.wd-nav-link {
+		color: var(--wd-fg);
+		text-decoration: none;
+		transition: color 0.2s var(--wd-ease);
+	}
+
+	.wd-nav-link:hover {
+		color: var(--wd-link-hover);
+	}
+
+	.wd-nav-link:focus-visible {
+		outline: 2px solid rgba(255, 255, 255, 0.5);
 		outline-offset: 3px;
 	}
 
-	.work-card-project-nav {
-		display: flex;
-		justify-content: space-between;
-		align-items: baseline;
-		gap: 1.5rem;
-		padding-bottom: 0.25rem;
+	/* ==== Tablet (810–1199) ==== */
+	@media (min-width: 810px) and (max-width: 1199.98px) {
+		.wd-images-pad {
+			padding: 0 0 40px;
+		}
 	}
 
-	.work-card-nav-prev,
-	.work-card-nav-next {
-		min-width: 0;
-		flex: 0 1 auto;
-	}
-
-	.work-card-nav-next {
-		text-align: right;
-		margin-left: auto;
-	}
-
-	.work-card-nav-link {
-		font-family: 'Instrument Serif', Georgia, serif;
-		font-size: clamp(1.05rem, 2.2vw, 1.35rem);
-		font-weight: 400;
-		color: #fff;
-		text-decoration: none;
-		display: inline-flex;
-		align-items: baseline;
-		gap: 0.35rem;
-		transition: opacity 160ms ease;
-	}
-
-	.work-card-nav-link:hover {
-		opacity: 0.78;
-	}
-
-	.work-card-nav-chevron {
-		font-size: 0.95em;
-		opacity: 0.9;
-	}
-
-	@media (max-width: 720px) {
-		.work-card-header {
-			grid-template-columns: 1fr;
-			gap: 1.35rem;
+	/* ==== Móvil (≤809) ==== */
+	@media (max-width: 809.98px) {
+		.wd-header {
+			padding: 60px 15px 20px;
 		}
 
-		.work-card-body {
-			text-align: start;
-			hyphens: manual;
+		.wd-pad {
+			flex-direction: column;
+			align-self: stretch;
+			gap: 20px;
+			height: auto;
 		}
 
-		.work-card-gallery-arrow {
-			width: 2.5rem;
-			height: 3.5rem;
-			font-size: 1.85rem;
+		.wd-intro,
+		.wd-text {
+			flex: none;
+			width: 100%;
+		}
+
+		.wd-tags {
+			gap: 15px;
+		}
+
+		.wd-images {
+			padding: 0 15px;
+		}
+
+		.wd-images-pad {
+			gap: 15px;
+			padding: 0 0 40px;
+		}
+
+		.wd-slideshow {
+			width: 100%;
+			margin-bottom: 60px; /* 4 × gap 15px */
+		}
+
+		/* Sin sitio para flechas fuera en móvil: se llevan al borde interior */
+		.wd-arrows {
+			inset: 0 10px;
+		}
+
+		.wd-vrow {
+			flex-direction: column;
+		}
+
+		.wd-vid {
+			flex: none;
+			width: 100%;
+		}
+
+		.wd-nav {
+			flex-direction: column;
+		}
+
+		.wd-nav-prev,
+		.wd-nav-next {
+			flex: none;
+			justify-content: center;
+			width: 100%;
+			padding: 0;
+		}
+
+		.wd-nav-spacer {
+			flex: none;
+			width: 100%;
+			height: 25px;
 		}
 	}
 
 	@media (prefers-reduced-motion: reduce) {
-		.work-card-gallery-arrow,
-		.work-card-dot,
-		.work-card-nav-link {
+		.wd-appear {
+			animation: none;
+			opacity: 1;
+		}
+
+		.wd-slideshow,
+		.wd-track,
+		.wd-slide,
+		.wd-dot span,
+		.wd-nav-link,
+		.wd-copy :global(a) {
 			transition: none;
 		}
 	}

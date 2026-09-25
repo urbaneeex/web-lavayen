@@ -1,0 +1,148 @@
+---
+/** Banner de consentimiento de cookies (home y resto del sitio cuando se incluya). */
+---
+
+<div class="cookie-banner" id="cookie-banner" role="dialog" aria-labelledby="cookie-banner-title" aria-hidden="true" hidden>
+	<p id="cookie-banner-title" class="cookie-banner__title">Valoro tu privacidad</p>
+	<p class="cookie-banner__text">
+		Utilizo cookies propias y de terceros para analizar el tráfico y mejorar la experiencia. Puedes aceptar o
+		rechazar su uso.
+	</p>
+	<div class="cookie-banner__actions">
+		<button type="button" class="cookie-banner__btn cookie-banner__btn--accept" data-cookie-choice="accept">
+			Aceptar
+		</button>
+		<button type="button" class="cookie-banner__btn cookie-banner__btn--reject" data-cookie-choice="reject">
+			Rechazar
+		</button>
+	</div>
+</div>
+
+<style>
+	.cookie-banner {
+		position: fixed;
+		right: max(1rem, env(safe-area-inset-right, 0px));
+		bottom: max(1rem, env(safe-area-inset-bottom, 0px));
+		z-index: 2147483000;
+		width: min(calc(100vw - 2rem), 22rem);
+		padding: 1rem 1.05rem 1.05rem;
+		border-radius: 0.55rem;
+		background: rgba(12, 14, 22, 0.94);
+		border: 1px solid rgba(255, 255, 255, 0.12);
+		color: #f3f3f3;
+		box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+		backdrop-filter: blur(14px);
+		-webkit-backdrop-filter: blur(14px);
+		font-family: 'Inter Display', system-ui, -apple-system, sans-serif;
+	}
+
+	.cookie-banner[hidden] {
+		display: none !important;
+	}
+
+	.cookie-banner__title {
+		margin: 0 0 0.45rem;
+		font-size: 0.92rem;
+		font-weight: 500;
+		line-height: 1.25;
+	}
+
+	.cookie-banner__text {
+		margin: 0 0 0.85rem;
+		font-size: 0.78rem;
+		line-height: 1.45;
+		color: rgba(243, 243, 243, 0.78);
+	}
+
+	.cookie-banner__actions {
+		display: flex;
+		gap: 0.55rem;
+	}
+
+	.cookie-banner__btn {
+		flex: 1;
+		margin: 0;
+		padding: 0.48rem 0.65rem;
+		border-radius: 0.35rem;
+		font-family: inherit;
+		font-size: 0.78rem;
+		font-weight: 500;
+		line-height: 1.2;
+		cursor: pointer;
+		transition: background-color 160ms ease, border-color 160ms ease;
+	}
+
+	.cookie-banner__btn--accept {
+		border: 1px solid rgba(255, 255, 255, 0.22);
+		background: rgba(255, 255, 255, 0.12);
+		color: #fff;
+	}
+
+	.cookie-banner__btn--accept:hover {
+		background: rgba(255, 255, 255, 0.2);
+	}
+
+	.cookie-banner__btn--reject {
+		border: 1px solid rgba(255, 255, 255, 0.14);
+		background: transparent;
+		color: rgba(255, 255, 255, 0.82);
+	}
+
+	.cookie-banner__btn--reject:hover {
+		border-color: rgba(255, 255, 255, 0.28);
+	}
+
+	.cookie-banner__btn:focus-visible {
+		outline: 2px solid rgba(255, 255, 255, 0.55);
+		outline-offset: 2px;
+	}
+
+	@media (max-width: 640px) {
+		.cookie-banner {
+			left: max(1rem, env(safe-area-inset-left, 0px));
+			right: max(1rem, env(safe-area-inset-right, 0px));
+			width: auto;
+		}
+	}
+</style>
+
+<script is:inline>
+	(function () {
+		var KEY = 'lavayen-cookie-consent';
+		var banner = document.getElementById('cookie-banner');
+		if (!banner) return;
+
+		var open = function () {
+			banner.removeAttribute('hidden');
+			banner.setAttribute('aria-hidden', 'false');
+		};
+
+		try {
+			if (!localStorage.getItem(KEY)) open();
+		} catch {
+			open();
+		}
+
+		window.addEventListener('lavayen-open-cookies', function () {
+			open();
+		});
+
+		var close = function (value) {
+			try {
+				localStorage.setItem(KEY, value);
+			} catch {
+				/* ok */
+			}
+			banner.setAttribute('hidden', '');
+			banner.setAttribute('aria-hidden', 'true');
+		};
+
+		banner.addEventListener('click', function (e) {
+			var t = e.target;
+			if (!t || !t.closest) return;
+			var btn = t.closest('[data-cookie-choice]');
+			if (!btn) return;
+			close(btn.getAttribute('data-cookie-choice') || 'reject');
+		});
+	})();
+</script>

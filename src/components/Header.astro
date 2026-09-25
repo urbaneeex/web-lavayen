@@ -1,9 +1,10 @@
 ---
 /**
- * Cabecera global. Escritorio: isla al scroll. Móvil: hamburguesa | marca; menú en overlay
- * (el panel #nav-mobile va FUERA de <header> para evitar el bug de `transform` + `position:fixed`).
+ * Cabecera global — réplica Navbar Framer:
+ * Desktop Initial / Desktop Scroll / Phone / Phone Open.
+ * Island spring 800/70 · burger 0.5s · items -29px stagger 800/120.
  */
-import { SOCIAL_PROFILE_URLS } from '../site';
+import { INSTAGRAM_URL, LINKEDIN_URL } from '../site';
 
 interface Props {
 	theme?: 'hero' | 'dark';
@@ -14,29 +15,45 @@ const { theme = 'dark' } = Astro.props;
 const path = Astro.url.pathname.replace(/\/$/, '') || '/';
 const workHref = '/works';
 const fotosHref = '/fotos';
+const postersHref = '/posters';
 const onWorkPage = path === '/works' || path.startsWith('/works/');
 const onFotosPage = path === '/fotos';
+const onPostersPage = path === '/posters';
 const onContactPage = path === '/contacto' || path.endsWith('/contacto');
-const [instagramHref, linkedInHref] = SOCIAL_PROFILE_URLS;
+
+const desktopLinks = [
+	{ href: workHref, label: 'Work', current: onWorkPage },
+	{ href: fotosHref, label: 'Fotos', current: onFotosPage },
+	{ href: postersHref, label: 'Pósters', current: onPostersPage },
+	{ href: '/contacto', label: 'Contacto', current: onContactPage },
+] as const;
+
+const phoneLinks = [
+	{ href: workHref, label: 'Work', num: '01', current: onWorkPage, delays: { label: '0.1s', num: '0.2s', line: '0.15s' } },
+	{ href: fotosHref, label: 'Fotos', num: '02', current: onFotosPage, delays: { label: '0.15s', num: '0.25s', line: '0.2s' } },
+	{ href: postersHref, label: 'Pósters', num: '03', current: onPostersPage, delays: { label: '0.2s', num: '0.3s', line: '0.25s' } },
+	{ href: '/contacto', label: 'Contacto', num: '04', current: onContactPage, delays: { label: '0.25s', num: '0.35s', line: '0.3s' } },
+] as const;
 ---
 
 <header
 	id="hero-nav"
 	class:list={['site-header', 'hero-nav', theme === 'hero' ? 'hero-nav--theme-hero' : 'hero-nav--theme-dark']}
+	style="opacity: 0.001"
 	aria-label="Navegacion principal"
 >
-	<div class="nav-inner">
+	<div class="nav-bar">
 		<button
 			type="button"
 			class="nav-burger"
 			id="nav-burger"
 			aria-label="Abrir menú"
 			aria-expanded="false"
-			aria-controls="nav-mobile"
+			aria-controls="nav-phone"
 		>
 			<span class="nav-burger__icon" aria-hidden="true">
-				<span class="nav-burger-line"></span>
-				<span class="nav-burger-line"></span>
+				<span class="nav-burger-line nav-burger-line--top"></span>
+				<span class="nav-burger-line nav-burger-line--bottom"></span>
 			</span>
 		</button>
 		<a class="brand" id="nav-brand" href="/" aria-label="Inicio Angel Lavayen">
@@ -44,113 +61,171 @@ const [instagramHref, linkedInHref] = SOCIAL_PROFILE_URLS;
 				<svg viewBox="0 0 254 250" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
 					<path
 						d="M 254.002 121.68 C 254.002 130.31 253.112 174.25 218.242 210.66 C 212.072 217.07 178.452 250.82 125.392 250.29 C 78.222 249.81 47.662 222.59 39.762 215.34 C 26.052 202.72 -0.278 170.18 0.002 121.68 C 0.282 72.01 28.382 40.36 37.372 31.57 C 46.132 22.98 66.972 0 112.452 0 C 152.162 0 155.992 30.76 182.282 57.01 C 210.622 85.35 254.002 74.31 254.002 121.68 Z"
-					/>
+					></path>
 				</svg>
 			</span>
 			<span class="brand-text">Ángel Lavayen</span>
 		</a>
+		<span class="nav-separator" aria-hidden="true"></span>
 		<nav class="nav-links" aria-label="Secciones">
-			<a href={workHref} aria-current={onWorkPage ? 'page' : undefined}>Works</a>
-			<a href={fotosHref} aria-current={onFotosPage ? 'page' : undefined}>Fotos</a>
-			<a href="/contacto" aria-current={onContactPage ? 'page' : undefined}>Contacto</a>
+			{
+				desktopLinks.map((link) => (
+					<a href={link.href} aria-current={link.current ? 'page' : undefined}>
+						{link.label}
+					</a>
+				))
+			}
 		</nav>
 	</div>
-</header>
 
-<!-- Overlay fuera del header: anula el containing block creado por transform en .site-header -->
-<div
-	id="nav-mobile"
-	class="nav-mobile"
-	role="dialog"
-	aria-modal="true"
-	aria-label="Menú de navegación"
-	aria-hidden="true"
-	hidden
->
-	<div class="nav-mobile__inner">
-		<div class="nav-mobile__content">
-			<nav class="nav-mobile__nav" aria-label="Navegación móvil">
-				<ul class="nav-mobile__list">
-					<li>
-						<a
-							href={workHref}
-							class="nav-mobile__row"
-							aria-current={onWorkPage ? 'page' : undefined}
-							data-close-menu
-						>
-							<span>Works</span>
-							<span class="nav-mobile__num" aria-hidden="true">01</span>
-						</a>
-					</li>
-					<li>
-						<a
-							href={fotosHref}
-							class="nav-mobile__row"
-							aria-current={onFotosPage ? 'page' : undefined}
-							data-close-menu
-						>
-							<span>Fotos</span>
-							<span class="nav-mobile__num" aria-hidden="true">02</span>
-						</a>
-					</li>
-					<li>
-						<a
-							href="/contacto"
-							class="nav-mobile__row"
-							aria-current={onContactPage ? 'page' : undefined}
-							data-close-menu
-						>
-							<span>Contacto</span>
-							<span class="nav-mobile__num" aria-hidden="true">03</span>
-						</a>
-					</li>
+	<div id="nav-phone" class="phone-menu" role="dialog" aria-modal="true" aria-label="Menú de navegación" aria-hidden="true">
+		<div class="phone-backdrop" aria-hidden="true"></div>
+		<div class="phone-panel">
+			<nav class="phone-nav" aria-label="Navegación móvil">
+				<ul class="phone-list">
+					{
+						phoneLinks.map((link) => (
+							<li>
+								<a
+									href={link.href}
+									class="phone-row"
+									aria-current={link.current ? 'page' : undefined}
+									data-close-menu
+								>
+									<span class="phone-text">
+										<span class="phone-label" style={`--d: ${link.delays.label}`}>{link.label}</span>
+										<span class="phone-num" style={`--d: ${link.delays.num}`}>{link.num}</span>
+									</span>
+									<span class="phone-line" style={`--d: ${link.delays.line}`} aria-hidden="true"></span>
+								</a>
+							</li>
+						))
+					}
 				</ul>
-				<div class="nav-mobile__social">
-					<a href={linkedInHref} target="_blank" rel="noreferrer noopener" data-close-menu>LinkedIn</a>
-					<a href={instagramHref} target="_blank" rel="noreferrer noopener" data-close-menu>Instagram</a>
+				<div class="phone-social">
+					<a
+						href={LINKEDIN_URL}
+						class="phone-social__link"
+						style="--d: 0.4s"
+						target="_blank"
+						rel="noreferrer noopener"
+						data-close-menu
+					>
+						LinkedIn
+					</a>
+					<a
+						href={INSTAGRAM_URL}
+						class="phone-social__link"
+						style="--d: 0.45s"
+						target="_blank"
+						rel="noreferrer noopener"
+						data-close-menu
+					>
+						Instagram
+					</a>
 				</div>
 			</nav>
 		</div>
 	</div>
-</div>
+</header>
 
 <style>
 	.site-header.hero-nav {
+		--nav-display: 'Inter Display', sans-serif;
+		--island-ease: cubic-bezier(0.22, 1, 0.36, 1);
+		--island-dur: 0.42s;
+		--item-ease: cubic-bezier(0.16, 1, 0.3, 1);
+		--item-dur: 0.55s;
+		--burger-ease: cubic-bezier(0.32, 0.72, 0, 1);
 		position: fixed;
-		top: 1.15rem;
-		left: 50%;
-		transform: translateX(-50%);
-		width: calc(100% - (var(--site-pad, clamp(1.8rem, 4.8vw, 3rem)) * 2));
-		padding: 0;
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		gap: 1rem;
-		font-size: 0.82rem;
-		z-index: 99999;
-		transition:
-			width 280ms ease,
-			padding 280ms ease,
-			background-color 280ms ease,
-			border-color 280ms ease,
-			border-radius 280ms ease,
-			top 280ms ease,
-			box-shadow 280ms ease;
-	}
-
-	.hero-nav--theme-hero,
-	.hero-nav--theme-dark {
-		color: #fff;
-	}
-
-	.nav-inner {
+		top: 0;
+		left: 0;
 		width: 100%;
+		height: 60px;
+		z-index: 99999;
+		color: #fff;
+		pointer-events: none;
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+	}
+
+	.site-header.hero-nav.is-scrolled {
+		height: 84px;
+	}
+
+	.nav-bar {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		gap: 0.75rem;
-		padding: 0;
-		transition: padding 280ms ease;
+		gap: 0;
+		width: 100%;
+		height: 60px;
+		padding: 15px 30px;
+		box-sizing: border-box;
+		interpolate-size: allow-keywords;
+		pointer-events: auto;
+		background: rgba(15, 15, 15, 0);
+		border-radius: 0;
+		transition:
+			top var(--island-dur) var(--island-ease),
+			width var(--island-dur) var(--island-ease),
+			padding var(--island-dur) var(--island-ease),
+			gap var(--island-dur) var(--island-ease),
+			background-color var(--island-dur) var(--island-ease),
+			border-radius var(--island-dur) var(--island-ease),
+			backdrop-filter var(--island-dur) var(--island-ease),
+			-webkit-backdrop-filter var(--island-dur) var(--island-ease);
+	}
+
+	.site-header.hero-nav.is-scrolled .nav-bar {
+		justify-content: center;
+		gap: 30px;
+		padding: 15px 25px;
+		background: rgba(0, 0, 0, 0.5);
+		border-radius: 100px;
+		backdrop-filter: blur(10px);
+		-webkit-backdrop-filter: blur(10px);
+	}
+
+	@media (min-width: 810px) {
+		.site-header.hero-nav,
+		.site-header.hero-nav.is-scrolled {
+			height: 84px;
+			overflow: visible;
+		}
+
+		.nav-bar {
+			position: absolute;
+			left: 50%;
+			top: 0;
+			transform: translateX(-50%);
+			width: 100%;
+			max-width: 100%;
+			margin: 0;
+		}
+
+		.site-header.hero-nav.is-scrolled .nav-bar {
+			top: 12px;
+			width: max-content;
+		}
+	}
+
+	.nav-separator {
+		flex-shrink: 0;
+		width: 0;
+		height: 30px;
+		opacity: 0;
+		overflow: hidden;
+		background: rgba(245, 245, 245, 0.1);
+		pointer-events: none;
+		transition:
+			width var(--island-dur) var(--island-ease),
+			opacity var(--island-dur) var(--island-ease);
+	}
+
+	.site-header.hero-nav.is-scrolled .nav-separator {
+		width: 1px;
+		opacity: 1;
 	}
 
 	.nav-burger {
@@ -158,79 +233,76 @@ const [instagramHref, linkedInHref] = SOCIAL_PROFILE_URLS;
 		position: relative;
 		align-items: center;
 		justify-content: center;
-		width: 2.75rem;
-		height: 2.75rem;
+		width: 20px;
+		height: 21px;
 		margin: 0;
 		padding: 0;
 		border: none;
 		background: transparent;
 		color: inherit;
 		cursor: pointer;
-		border-radius: 0.2rem;
 		flex-shrink: 0;
+		overflow: hidden;
 	}
 
-	/* Misma longitud de trazo que la X clásica (1.2rem), al cruzarse coincide con «una sola» X */
 	.nav-burger__icon {
 		position: relative;
 		display: block;
-		width: 1.2rem;
-		height: 0.625rem;
-		flex-shrink: 0;
+		width: 20px;
+		height: 21px;
 	}
 
 	.nav-burger-line {
 		position: absolute;
 		left: 0;
 		right: 0;
-		height: 2px;
-		top: 0;
-		margin: 0;
+		height: 1px;
 		background: currentColor;
-		border-radius: 1px;
 		transform-origin: center;
-		transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+		transition:
+			transform 0.5s var(--burger-ease),
+			top 0.5s var(--burger-ease);
 	}
 
-	.nav-burger-line:nth-child(2) {
-		top: auto;
-		bottom: 0;
+	.nav-burger-line--top {
+		top: calc(35% - 0.5px);
 	}
 
-	.nav-burger[aria-expanded='true'] .nav-burger-line:nth-child(1) {
-		transform: translateY(0.25rem) rotate(45deg);
+	.nav-burger-line--bottom {
+		top: calc(65% - 0.5px);
 	}
 
-	.nav-burger[aria-expanded='true'] .nav-burger-line:nth-child(2) {
-		transform: translateY(-0.25rem) rotate(-45deg);
+	.nav-burger[aria-expanded='true'] .nav-burger-line--top,
+	.nav-burger[aria-expanded='true'] .nav-burger-line--bottom {
+		top: calc(50% - 0.5px);
 	}
 
-	.nav-burger:focus-visible {
-		outline: 2px solid rgba(255, 255, 255, 0.55);
-		outline-offset: 3px;
+	.nav-burger[aria-expanded='true'] .nav-burger-line--top {
+		transform: rotate(45deg);
+	}
+
+	.nav-burger[aria-expanded='true'] .nav-burger-line--bottom {
+		transform: rotate(-45deg);
 	}
 
 	.brand {
 		display: inline-flex;
 		align-items: center;
-		gap: 0.46rem;
+		gap: 10px;
 		font-family: 'Instrument Serif', Georgia, serif;
-		font-size: 1.3rem;
-		font-weight: 200;
-		line-height: 1;
+		font-size: 22px;
+		font-weight: 400;
+		line-height: 1.2;
 		text-decoration: none;
 		color: inherit;
-	}
-
-	.brand-text {
-		white-space: nowrap;
+		flex-shrink: 0;
 	}
 
 	.brand-mark {
 		display: inline-flex;
 		flex-shrink: 0;
-		width: 1.2rem;
-		height: 1.2rem;
+		width: 20px;
+		height: 20px;
 	}
 
 	.brand-mark svg {
@@ -241,269 +313,278 @@ const [instagramHref, linkedInHref] = SOCIAL_PROFILE_URLS;
 
 	.nav-links {
 		display: flex;
-		gap: 1.55rem;
+		align-items: center;
+		justify-content: flex-end;
+		gap: 30px;
+		font-family: var(--nav-display);
+		font-size: 14px;
+		font-weight: 500;
+		line-height: 1.2;
+		letter-spacing: 0;
+		transition: gap var(--island-dur) var(--island-ease);
+	}
+
+	.site-header.hero-nav.is-scrolled .nav-links {
+		gap: 20px;
+		mix-blend-mode: difference;
 	}
 
 	.nav-links a {
 		text-decoration: none;
 		color: inherit;
+		transition: opacity 0.2s ease;
 	}
 
-	.nav-links a[aria-current='page'] {
-		opacity: 1;
-		font-weight: 600;
+	.nav-links a:hover {
+		opacity: 0.4;
 	}
 
-	.site-header.hero-nav:not(.is-scrolled).past-hero {
-		mix-blend-mode: exclusion;
+	/* --- Phone / Phone Open --- */
+	.phone-menu {
+		display: none;
 	}
 
-	.site-header.hero-nav.is-scrolled {
-		top: 0.8rem;
-		width: fit-content;
-		max-width: calc(100% - 1.2rem);
-		mix-blend-mode: normal;
-		background: rgba(22, 24, 34, 0.95);
-		border: none;
-		border-radius: 999px;
-		box-shadow: 0 16px 34px rgba(8, 9, 14, 0.28);
-		isolation: isolate;
-		backdrop-filter: blur(18px) saturate(110%) brightness(0.9);
-		-webkit-backdrop-filter: blur(18px) saturate(110%) brightness(0.9);
-	}
-
-	.site-header.hero-nav.is-scrolled .nav-inner {
-		justify-content: flex-start;
-		gap: 1rem;
-		padding: 1rem 1.6rem;
-	}
-
-	.site-header.hero-nav.is-scrolled .brand {
-		font-size: 1.3rem;
-		white-space: nowrap;
-		flex-shrink: 0;
-	}
-
-	.site-header.hero-nav.is-scrolled .nav-links {
-		position: relative;
-		padding-left: 1.35rem;
-		gap: 1.45rem;
-		font-size: 0.86rem;
-	}
-
-	.site-header.hero-nav.is-scrolled .nav-links::before {
-		content: '|';
-		position: absolute;
-		left: 0;
-		top: 50%;
-		transform: translateY(-50%);
-		color: rgba(168, 177, 199, 0.45);
-		font-size: 0.92rem;
-		font-weight: 400;
-		line-height: 1;
-	}
-
-	@media (max-width: 900px) {
-		.nav-burger {
-			display: flex;
-			align-items: center;
-			justify-content: center;
-		}
-
-		.nav-links {
-			display: none;
-		}
-
+	@media (max-width: 809px) {
 		.site-header.hero-nav,
 		.site-header.hero-nav.is-scrolled {
-			/* Menos aire lateral que --site-pad; respeta notch/isla */
-			width: 100% !important;
-			max-width: 100% !important;
-			left: 0;
-			right: 0;
+			height: 60px;
+		}
+
+		.site-header.hero-nav.is-open {
+			height: 100%;
+			min-height: 100vh;
+			max-height: 100vh;
+			overflow: auto;
+			overscroll-behavior: none;
+		}
+
+		@supports (height: 100dvh) {
+			.site-header.hero-nav.is-open {
+				min-height: 100dvh;
+				max-height: 100dvh;
+			}
+		}
+
+		.nav-bar {
+			position: relative;
+			left: auto;
+			top: 0 !important;
 			transform: none;
-			box-sizing: border-box;
-			padding-left: max(0.7rem, env(safe-area-inset-left, 0px));
-			padding-right: max(0.7rem, env(safe-area-inset-right, 0px));
-			top: max(0.6rem, env(safe-area-inset-top, 0px)) !important;
-			mix-blend-mode: normal;
+			z-index: 2;
+			padding: 13px 15px;
 			background: transparent !important;
-			border: none !important;
 			border-radius: 0 !important;
-			box-shadow: none !important;
 			backdrop-filter: none !important;
 			-webkit-backdrop-filter: none !important;
-			isolation: auto;
+			width: 100% !important;
+			max-width: none !important;
+			margin: 0 !important;
+			gap: 0 !important;
+			transition: none;
 		}
 
-		.site-header.hero-nav:not(.is-scrolled).past-hero {
-			mix-blend-mode: normal;
-		}
-
-		.site-header.hero-nav.is-scrolled .nav-inner,
-		.site-header.hero-nav .nav-inner {
-			padding: 0;
-			justify-content: space-between;
-			width: 100%;
+		.nav-burger {
+			display: flex;
+			order: 0;
+			mix-blend-mode: difference;
 		}
 
 		.brand {
-			font-size: 1.45rem;
+			order: 3;
+			font-size: 16px;
+			gap: 10px;
 		}
-	}
 
-	@media (min-width: 901px) {
-		.nav-burger {
+		.brand-mark {
+			mix-blend-mode: difference;
+		}
+
+		.nav-links,
+		.nav-separator {
 			display: none !important;
 		}
-	}
 
-	/* --- Overlay: con JS pasa a document.body; cubre el viewport (svh) + safe-areas iOS --- */
-	.nav-mobile {
-		--nav-pad: var(--site-pad, clamp(1.8rem, 4.8vw, 3rem));
-		position: fixed;
-		inset: 0;
-		display: flex;
-		flex-direction: column;
-		width: 100%;
-		max-width: 100%;
-		margin: 0;
-		box-sizing: border-box;
-		padding: env(safe-area-inset-top, 0) env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0) env(
-			safe-area-inset-left,
-			0
-		);
-		z-index: 2147482000;
-		background: #000;
-		color: #fff;
-		overflow: hidden;
-		overscroll-behavior: none;
-		-webkit-tap-highlight-color: transparent;
-		touch-action: manipulation;
-		min-height: 100%;
-	}
+		.phone-menu {
+			display: flex;
+			flex-direction: column;
+			position: absolute;
+			inset: 0;
+			z-index: 1;
+			min-height: 100vh;
+			pointer-events: none;
+			opacity: 0;
+		}
 
-	@supports (height: 100dvh) {
-		.nav-mobile {
-			height: 100dvh;
-			max-height: 100dvh;
+		@supports (height: 100dvh) {
+			.phone-menu {
+				min-height: 100dvh;
+			}
+		}
+
+		.site-header.hero-nav.is-open .phone-menu {
+			pointer-events: auto;
+			opacity: 1;
+		}
+
+		.phone-backdrop {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 1px;
+			background: #000;
+			z-index: 0;
+			transition: height 0.5s var(--island-ease);
+		}
+
+		.site-header.hero-nav.is-open .phone-backdrop {
+			height: 100%;
+		}
+
+		.phone-panel {
+			position: relative;
+			z-index: 1;
+			flex: 1;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			min-height: 100%;
+			padding: 90px 15px 40px;
+			padding-bottom: max(40px, env(safe-area-inset-bottom, 0));
+			box-sizing: border-box;
+		}
+
+		.phone-list {
+			list-style: none;
+			margin: 0;
+			padding: 0;
+			display: flex;
+			flex-direction: column;
+			gap: 15px;
+		}
+
+		.phone-row {
+			display: flex;
+			align-items: center;
+			width: 100%;
+			padding: 0 0 10px;
+			text-decoration: none;
+			position: relative;
+			overflow: hidden;
+		}
+
+		.phone-text {
+			display: flex;
+			align-items: flex-start;
+			justify-content: flex-end;
+			width: 100%;
+			min-height: 29px;
+			position: relative;
+		}
+
+		.phone-label,
+		.phone-num {
+			font-family: var(--nav-display);
+			font-size: 21px;
+			font-weight: 400;
+			line-height: 1.2;
+			transform: translateY(29px);
+			transition: transform var(--item-dur) var(--item-ease) var(--d, 0s);
+		}
+
+		.phone-label {
+			position: absolute;
+			left: 0;
+			top: 0;
+			width: 75%;
+			color: #fff;
+		}
+
+		.phone-num {
+			width: 25%;
+			text-align: right;
+			color: rgb(34, 34, 37);
+			font-variant-numeric: tabular-nums;
+		}
+
+		.phone-line {
+			position: absolute;
+			left: -1px;
+			bottom: 0;
+			width: 1px;
+			height: 1px;
+			background: rgb(34, 34, 37);
+			transition: width var(--item-dur) var(--item-ease) var(--d, 0s), left var(--item-dur) var(--item-ease) var(--d, 0s);
+		}
+
+		.site-header.hero-nav.is-open .phone-label,
+		.site-header.hero-nav.is-open .phone-num {
+			transform: none;
+		}
+
+		.site-header.hero-nav.is-open .phone-line {
+			width: 100%;
+			left: 0;
+		}
+
+		.phone-social {
+			display: flex;
+			flex-direction: column;
+			gap: 10px;
+			margin-top: 40px;
+		}
+
+		.phone-social__link {
+			font-family: var(--nav-display);
+			font-size: 14px;
+			font-weight: 400;
+			line-height: 1.2;
+			color: #fff;
+			text-decoration: none;
+			width: max-content;
+			transform: translateY(29px);
+			opacity: 0.001;
+			transition:
+				transform var(--item-dur) var(--item-ease) var(--d, 0s),
+				opacity var(--item-dur) var(--item-ease) var(--d, 0s);
+		}
+
+		.site-header.hero-nav.is-open .phone-social__link {
+			transform: none;
+			opacity: 1;
+		}
+
+		.site-header.hero-nav.is-open .nav-burger,
+		.site-header.hero-nav.is-open .brand,
+		.site-header.hero-nav.is-open .brand-mark {
+			mix-blend-mode: normal;
+			color: #fff;
 		}
 	}
 
-	@supports (height: 100svh) {
-		.nav-mobile {
-			height: 100svh;
-			max-height: 100svh;
-		}
-	}
-
-	.nav-mobile[hidden] {
-		display: none !important;
-	}
-
-	:global(html.nav-mobile-open) {
-		overflow: hidden;
-	}
-
+	:global(html.nav-mobile-open),
 	:global(html.nav-mobile-open body) {
 		overflow: hidden;
 	}
 
-	/* El botón hamburguesa/X queda encima del overlay: misma X para abrir y cerrar */
-	:global(html.nav-mobile-open) .site-header.hero-nav {
-		z-index: 2147482010;
-		mix-blend-mode: normal;
-	}
-
-	:global(html.nav-mobile-open) .nav-burger,
-	:global(html.nav-mobile-open) .site-header.hero-nav .brand {
-		color: #fff;
-	}
-
-	.nav-mobile__inner {
-		display: flex;
-		flex: 1;
-		flex-direction: column;
-		min-height: 0;
-		width: 100%;
-		overflow: hidden;
-	}
-
-	.nav-mobile__content {
-		flex: 1 1 auto;
-		display: flex;
-		min-height: 0;
-		flex-direction: column;
-		align-items: stretch;
-		justify-content: center;
-		padding: 0.75rem var(--nav-pad) max(1.5rem, env(safe-area-inset-bottom, 0));
-		overflow-x: hidden;
-		overflow-y: auto;
-		-webkit-overflow-scrolling: touch;
-		overscroll-behavior: contain;
-	}
-
-	.nav-mobile__nav {
-		width: 100%;
-		text-align: left;
-	}
-
-	.nav-mobile__list {
-		list-style: none;
-		margin: 0;
-		padding: 0;
-	}
-
-	.nav-mobile__row {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 1.25rem;
-		padding: 0.95rem 0;
-		font-family: Inter, system-ui, -apple-system, sans-serif;
-		font-size: clamp(1.35rem, 4.2vw, 1.75rem);
-		font-weight: 600;
-		letter-spacing: -0.02em;
-		color: #fff;
-		text-decoration: none;
-		border-bottom: 1px solid rgba(255, 255, 255, 0.18);
-		width: 100%;
-		box-sizing: border-box;
-	}
-
-	.nav-mobile__row span:first-child {
-		color: #fff;
-	}
-
-	.nav-mobile__num {
-		font-size: 0.75em;
-		font-weight: 600;
-		color: rgba(255, 255, 255, 0.4);
-		font-variant-numeric: tabular-nums;
-	}
-
-	.nav-mobile__social {
-		display: flex;
-		flex-direction: column;
-		align-items: flex-start;
-		gap: 0.55rem;
-		margin-top: 1.75rem;
-	}
-
-	.nav-mobile__social a {
-		font-family: Inter, system-ui, -apple-system, sans-serif;
-		font-size: 0.95rem;
-		color: rgba(255, 255, 255, 0.88);
-		text-decoration: none;
+	@media (min-width: 810px) {
+		.nav-burger,
+		.phone-menu {
+			display: none !important;
+		}
 	}
 
 	@media (prefers-reduced-motion: reduce) {
-		.site-header.hero-nav {
-			transition: none;
-		}
-
-		.nav-burger-line {
-			transition: none;
+		.nav-bar,
+		.nav-separator,
+		.nav-links,
+		.nav-burger-line,
+		.phone-label,
+		.phone-num,
+		.phone-line,
+		.phone-social__link,
+		.phone-backdrop {
+			transition: none !important;
 		}
 	}
 </style>
@@ -511,22 +592,30 @@ const [instagramHref, linkedInHref] = SOCIAL_PROFILE_URLS;
 <script is:inline>
 	(function () {
 		const nav = document.getElementById('hero-nav');
-		const panel = document.getElementById('nav-mobile');
+		const panel = document.getElementById('nav-phone');
 		const burger = document.getElementById('nav-burger');
-		if (!panel || !burger) return;
+		if (!nav || !panel || !burger) return;
 
-		/* Un único sitio bajo <body> para el overlay: evita herencias de .hero-screen (overflow) y otras. */
-		if (panel.parentElement && panel.parentElement !== document.body) {
+		if (nav.parentElement !== document.body) {
 			try {
-				document.body.appendChild(panel);
+				document.body.appendChild(nav);
 			} catch {
 				/* ok */
 			}
 		}
 
+		const MOBILE_MAX = 809;
 		let scrollLockY = 0;
 
-		const clearScrollLock = () => {
+		const isMobileNav = function () {
+			return window.innerWidth <= MOBILE_MAX;
+		};
+
+		const isOpen = function () {
+			return nav.classList.contains('is-open');
+		};
+
+		const clearScrollLock = function () {
 			var docEl = document.documentElement;
 			if (docEl) docEl.classList.remove('nav-mobile-open');
 			var b = document.body;
@@ -537,15 +626,15 @@ const [instagramHref, linkedInHref] = SOCIAL_PROFILE_URLS;
 				b.style.right = '';
 				b.style.width = '';
 			}
-			var y = scrollLockY;
 			try {
-				window.scrollTo(0, y);
+				window.scrollTo(0, scrollLockY);
 			} catch {
 				/* ok */
 			}
 		};
 
-		const open = () => {
+		const open = function () {
+			if (!isMobileNav() || isOpen()) return;
 			scrollLockY = window.scrollY || 0;
 			if (document.documentElement) {
 				document.documentElement.classList.add('nav-mobile-open');
@@ -558,25 +647,20 @@ const [instagramHref, linkedInHref] = SOCIAL_PROFILE_URLS;
 				b.style.right = '0';
 				b.style.width = '100%';
 			}
-			panel.removeAttribute('hidden');
 			panel.setAttribute('aria-hidden', 'false');
 			burger.setAttribute('aria-expanded', 'true');
 			burger.setAttribute('aria-label', 'Cerrar menú');
-			var firstNav = panel.querySelector('.nav-mobile__nav a[href]');
-			try {
-				if (firstNav) firstNav.focus();
-			} catch {
-				/* ok */
-			}
+			nav.offsetHeight;
+			nav.classList.add('is-open');
 		};
 
-		const close = () => {
-			if (panel.hasAttribute('hidden')) return;
-			clearScrollLock();
-			panel.setAttribute('hidden', '');
+		const close = function () {
+			if (!isOpen()) return;
+			nav.classList.remove('is-open');
 			panel.setAttribute('aria-hidden', 'true');
 			burger.setAttribute('aria-expanded', 'false');
 			burger.setAttribute('aria-label', 'Abrir menú');
+			clearScrollLock();
 			try {
 				burger.focus();
 			} catch {
@@ -585,84 +669,90 @@ const [instagramHref, linkedInHref] = SOCIAL_PROFILE_URLS;
 		};
 
 		burger.addEventListener('click', function () {
-			if (panel.hasAttribute('hidden')) open();
-			else close();
+			if (isOpen()) close();
+			else open();
 		});
 
-		/* Misma marca que en el header: al pulsarla con el menú abierto se cierra (una sola instancia de logo) */
-		if (nav) {
-			nav.addEventListener('click', function (e) {
-				if (panel.hasAttribute('hidden')) return;
-				var t = e.target;
-				if (!t || !t.closest) return;
-				var a = t.closest('a.brand#nav-brand');
-				if (a) close();
-			});
-		}
-
-		panel.addEventListener('click', function (e) {
+		nav.addEventListener('click', function (e) {
 			var t = e.target;
-			if (t && t.closest && t.closest('a[href]')) {
-				var a = t.closest('a[href]');
-				if (a && panel.contains(a) && a !== burger) close();
-			}
+			if (!t || !t.closest) return;
+			if (t.closest('a.brand#nav-brand') && isOpen()) close();
+			if (t.closest('a[data-close-menu]') && isOpen()) close();
 		});
+
 		document.addEventListener('keydown', function (e) {
-			if (e.key === 'Escape' && !panel.hasAttribute('hidden')) {
+			if (e.key === 'Escape' && isOpen()) {
 				e.preventDefault();
 				close();
 			}
 		});
 
-		/* Cinta del hero / isla: solo > 900px */
-		var ISLAND_AFTER_PX = 42;
-		var DELTA_MIN = 2;
-		var lastY = window.scrollY;
-
-		var syncPastHero = function () {
-			if (!nav) return;
-			var vh = window.innerHeight;
-			nav.classList.toggle('past-hero', vh > 0 && window.scrollY >= vh);
+		var setIsland = function (on) {
+			if (isMobileNav()) {
+				nav.classList.remove('is-scrolled');
+				return;
+			}
+			nav.classList.toggle('is-scrolled', on);
 		};
 
-		var onScroll = function () {
-			if (!nav) return;
-			if (window.innerWidth <= 900) {
-				nav.classList.remove('is-scrolled');
-				syncPastHero();
-				lastY = window.scrollY;
+		/* Framer scrollDirection: bajar 4px → isla; subir 4px → barra completa. */
+		var SCROLL_DIR_PX = 4;
+		var lastY = window.scrollY || 0;
+		var scrollDir = '';
+		var anchorY = lastY;
+
+		var maxScroll = function () {
+			var el = document.documentElement;
+			var height = el ? el.scrollHeight : 0;
+			return Math.max(0, height - window.innerHeight);
+		};
+
+		var syncIsland = function () {
+			if (isMobileNav()) {
+				setIsland(false);
+				lastY = window.scrollY || 0;
 				return;
 			}
-			var y = window.scrollY;
-			syncPastHero();
-			if (y <= ISLAND_AFTER_PX) {
-				nav.classList.remove('is-scrolled');
-				lastY = y;
+			var y = window.scrollY || 0;
+			if (y < 0 || y > maxScroll()) return;
+			if (y <= 0) {
+				lastY = 0;
+				scrollDir = 'up';
+				anchorY = 0;
+				setIsland(false);
 				return;
 			}
-			var delta = y - lastY;
-			if (Math.abs(delta) >= DELTA_MIN) {
-				if (delta > 0) nav.classList.add('is-scrolled');
-				else nav.classList.remove('is-scrolled');
-			}
+			if (y === lastY) return;
+			var dir = y < lastY ? 'up' : 'down';
+			var prev = lastY;
 			lastY = y;
+			if (dir !== scrollDir) {
+				scrollDir = dir;
+				anchorY = prev;
+			}
+			if (Math.abs(y - anchorY) < SCROLL_DIR_PX) return;
+			setIsland(dir === 'down');
 		};
 
-		if (nav && lastY > ISLAND_AFTER_PX && window.innerWidth > 900) {
-			nav.classList.add('is-scrolled');
+		if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+			window.setTimeout(function () {
+				nav.style.transition = 'opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1)';
+				nav.style.opacity = '1';
+			}, 850);
+		} else {
+			nav.style.opacity = '1';
 		}
-		syncPastHero();
-		onScroll();
-		window.addEventListener('scroll', onScroll, { passive: true });
-		window.addEventListener('resize', function () {
-			syncPastHero();
-			if (window.innerWidth <= 900 && nav) {
-				nav.classList.remove('is-scrolled');
-			}
-			onScroll();
-			if (window.innerWidth > 900 && !panel.hasAttribute('hidden')) {
-				close();
-			}
-		}, { passive: true });
+
+		syncIsland();
+		window.addEventListener('scroll', syncIsland, { passive: true, capture: true });
+		document.addEventListener('scroll', syncIsland, { passive: true, capture: true });
+		window.addEventListener(
+			'resize',
+			function () {
+				if (!isMobileNav() && isOpen()) close();
+				syncIsland();
+			},
+			{ passive: true }
+		);
 	})();
 </script>

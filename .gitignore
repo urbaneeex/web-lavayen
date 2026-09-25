@@ -22,3 +22,7 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# dump regenerable de Framer (HTML/JS crudo). extracted/ y download.py sí se quedan.
+reference/framer-original/pages/
+reference/framer-original/js/

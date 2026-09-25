@@ -4,131 +4,314 @@ import { SOCIAL_PROFILE_URLS } from '../site';
 const [instagramHref, linkedInHref] = SOCIAL_PROFILE_URLS;
 
 /**
- * Pie global del sitio. variant:
- * - standalone: ancho viewport, padding lateral --site-pad, margin-top auto (p. ej. contacto)
- * - in-content: dentro de .content; sin padding horizontal extra (el contenedor ya acota el ancho)
+ * Pie global — réplica del footer Framer (3 columnas + marca).
  */
 interface Props {
 	variant?: 'standalone' | 'in-content';
 }
 
 const { variant = 'standalone' } = Astro.props;
+
+const pages = [
+	{ href: '/', label: 'Home' },
+	{ href: '/works', label: 'Work' },
+	{ href: '/fotos', label: 'Fotos' },
+	{ href: '/contacto', label: 'Contacto' },
+	{ href: '/404', label: '404' }
+] as const;
+
+const socials = [
+	{ href: instagramHref, label: 'Instagram', external: true },
+	{ href: linkedInHref, label: 'LinkedIn', external: true }
+] as const;
 ---
 
-<footer class:list={['site-footer', variant === 'in-content' && 'site-footer--in-content']} id="contact">
-	<div>
-		<h4>Pages</h4>
-		<div class="footer-links">
-			<a href="/">Home</a>
-			<a href="/works">Works</a>
-				<a href="/fotos">Fotos</a>
-			<a href="/contacto">Contacto</a>
-			<a href="/en/" hreflang="en">English</a>
+<footer class:list={['site-footer', variant === 'in-content' && 'site-footer--in-content']}>
+	<div class="site-footer__max">
+	<div class="site-footer__links">
+		<div class="site-footer__col">
+			<p class="site-footer__label">Pages</p>
+			{
+				pages.map((item) => (
+					<a class="footer-link" href={item.href}>
+						<span class="footer-link__clip">
+							<span class="footer-link__stack">
+								<span class="footer-link__line">{item.label}</span>
+								<span class="footer-link__line" aria-hidden="true">
+									{item.label}
+								</span>
+							</span>
+						</span>
+					</a>
+				))
+			}
+		</div>
+		<div class="site-footer__col">
+			<p class="site-footer__label">Socials</p>
+			{
+				socials.map((item) => (
+					<a class="footer-link" href={item.href} target="_blank" rel="noreferrer noopener">
+						<span class="footer-link__clip">
+							<span class="footer-link__stack">
+								<span class="footer-link__line">{item.label}</span>
+								<span class="footer-link__line" aria-hidden="true">
+									{item.label}
+								</span>
+							</span>
+						</span>
+					</a>
+				))
+			}
+		</div>
+		<div class="site-footer__col">
+			<p class="site-footer__label">Info</p>
+			<a class="footer-link" href="/legal/therms" target="_blank" rel="noreferrer noopener">
+				<span class="footer-link__clip">
+					<span class="footer-link__stack">
+						<span class="footer-link__line">Términos y condiciones</span>
+						<span class="footer-link__line" aria-hidden="true">Términos y condiciones</span>
+					</span>
+				</span>
+			</a>
+			<button type="button" class="footer-link footer-cookie-btn" data-open-cookies>
+				<span class="footer-link__clip">
+					<span class="footer-link__stack">
+						<span class="footer-link__line">Configurar Cookies</span>
+						<span class="footer-link__line" aria-hidden="true">Configurar Cookies</span>
+					</span>
+				</span>
+			</button>
 		</div>
 	</div>
-	<div>
-		<h4>Socials</h4>
-		<div class="footer-links">
-			<a href={instagramHref} target="_blank" rel="noreferrer noopener">Instagram</a>
-			<a href={linkedInHref} target="_blank" rel="noreferrer noopener">LinkedIn</a>
-		</div>
+	<div class="site-footer__rule" aria-hidden="true"></div>
+	<div class="site-footer__bar">
+		<h2 class="footer-brand">Ángel Lavayen</h2>
+		<p class="footer-copy">© 2026 Ángel Lavayen. All rights reserved.</p>
 	</div>
-	<div>
-		<h4>Info</h4>
-		<div class="footer-links">
-			<a href="/contacto">Términos y condiciones</a>
-			<a href="/contacto">Configurar Cookies</a>
-		</div>
-	</div>
-	<div class="footer-bottom">
-		<span class="footer-brand">Ángel Lavayen</span>
-		<span class="footer-copy">© 2026 Ángel Lavayen. All rights reserved.</span>
 	</div>
 </footer>
 
 <style>
+	.site-footer,
+	.site-footer * {
+		box-sizing: border-box;
+	}
+
+	/*
+	 * «Footer reveal» (réplica Framer): el pie queda pegado al fondo del viewport
+	 * (sticky, z-index 0) y el contenido de la página, opaco y por encima (z-index 1),
+	 * se desliza sobre él hasta destaparlo al final del scroll.
+	 */
 	.site-footer {
-		border-top: 1px solid rgba(255, 255, 255, 0.12);
-		display: grid;
-		grid-template-columns: repeat(3, minmax(0, 1fr));
-		gap: 1.2rem;
-		font-size: 1.02rem;
-		color: #f1f1f1;
+		width: 100%;
+		margin-top: auto;
 		background: #000;
+		color: #fff;
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+		position: sticky;
+		bottom: 0;
+		z-index: 0;
+	}
+
+	/* Contenido de página (hijos directos del body) que pasa por encima del pie */
+	:global(body > main),
+	:global(body > section) {
 		position: relative;
-		z-index: 8;
+		z-index: 1;
+	}
+
+	/* Fondo opaco por defecto (especificidad 0: cualquier regla de página lo sobreescribe) */
+	:global(:where(body > main, body > section)) {
+		background-color: #000;
+	}
+
+	.site-footer__max {
+		width: 100%;
+		max-width: 1440px;
+		margin: 0 auto;
+		padding: 0 30px;
 	}
 
 	.site-footer--in-content {
 		margin-top: 0;
-		padding-top: 1.6rem;
-		padding-bottom: 0;
 	}
 
-	.site-footer:not(.site-footer--in-content) {
-		margin-top: auto;
-		padding: 1.6rem var(--site-pad, clamp(1.8rem, 4.8vw, 3rem)) 2.2rem;
-	}
-
-	.site-footer h4 {
-		display: block;
-		margin: 0 0 0.55rem;
-		color: rgba(231, 231, 231, 0.45);
-		font-size: 0.95rem;
-		font-weight: 500;
-	}
-
-	.footer-links {
-		display: grid;
-		gap: 0.45rem;
-	}
-
-	.footer-links a,
-	.footer-links span {
-		color: #fff;
-		font-size: 1.02rem;
-	}
-
-	.footer-links a,
-	.footer-links a:visited,
-	.footer-links a:hover,
-	.footer-links a:focus-visible,
-	.footer-links a:active {
-		text-decoration: none;
-	}
-
-	.footer-bottom {
-		grid-column: 1 / -1;
+	.site-footer__links {
 		display: flex;
+		flex-direction: row;
+		align-items: flex-start;
+		width: 100%;
+		padding: 30px 0;
+	}
+
+	.site-footer__col {
+		flex: 1 1 0;
+		min-width: 0;
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 10px;
+		padding: 0 40px 0 0;
+	}
+
+	.site-footer__label {
+		margin: 0;
+		width: 100%;
+		font-family: 'Inter Display', sans-serif;
+		font-size: 16px;
+		font-weight: 400;
+		line-height: 19.2px;
+		color: rgba(245, 245, 245, 0.4);
+	}
+
+	.footer-link {
+		display: block;
+		margin: 0;
+		padding: 0;
+		border: 0;
+		background: none;
+		color: #fff;
+		text-decoration: none;
+		text-align: left;
+		cursor: pointer;
+		font: inherit;
+	}
+
+	.footer-link__clip {
+		display: block;
+		overflow: hidden;
+		height: 19.2px;
+	}
+
+	.footer-link__stack {
+		display: flex;
+		flex-direction: column;
+		transition: transform 0.45s cubic-bezier(0.33, 1, 0.68, 1);
+	}
+
+	.footer-link__line {
+		display: block;
+		font-family: 'Inter Display', sans-serif;
+		font-size: 16px;
+		font-weight: 400;
+		line-height: 19.2px;
+		color: #fff;
+		white-space: nowrap;
+	}
+
+	.footer-link:hover .footer-link__stack,
+	.footer-link:focus-visible .footer-link__stack {
+		transform: translateY(-50%);
+	}
+
+	.footer-link:focus-visible {
+		outline: 2px solid rgba(255, 255, 255, 0.65);
+		outline-offset: 3px;
+	}
+
+	.site-footer__rule {
+		width: 100%;
+		height: 1px;
+		background: rgb(34, 34, 37);
+	}
+
+	.site-footer__bar {
+		display: flex;
+		flex-direction: row;
 		align-items: center;
 		justify-content: space-between;
-		gap: 1rem;
-		margin-top: 0.85rem;
-		padding-top: 0.9rem;
-		border-top: 1px solid rgba(255, 255, 255, 0.12);
+		width: 100%;
+		padding: 20px 0;
 	}
 
 	.footer-brand {
+		margin: 0;
 		font-family: 'Instrument Serif', Georgia, serif;
-		font-size: clamp(1.55rem, 2.3vw, 2rem);
+		font-size: 28px;
+		font-weight: 400;
+		line-height: 33.6px;
 		color: #fff;
-		line-height: 1;
 	}
 
 	.footer-copy {
-		color: rgba(232, 232, 232, 0.62);
-		font-size: 0.86rem;
+		margin: 0;
+		font-family: 'Inter Display', sans-serif;
+		font-size: 14px;
+		font-weight: 400;
+		line-height: 14px;
+		color: rgba(255, 255, 255, 0.7);
+		white-space: nowrap;
 	}
 
-	@media (max-width: 640px) {
-		.site-footer {
-			grid-template-columns: 1fr;
-			gap: 1.2rem;
+	@media (max-width: 1199px) {
+		.site-footer__label,
+		.footer-link__line {
+			font-size: 15px;
+			line-height: 18px;
 		}
 
-		.footer-bottom {
+		.footer-link__clip {
+			height: 18px;
+		}
+
+		.footer-brand {
+			font-size: 26.25px;
+			line-height: 31.5px;
+		}
+	}
+
+	@media (max-width: 809px) {
+		.site-footer__max {
+			padding: 0 15px;
+		}
+
+		.site-footer__label,
+		.footer-link__line {
+			font-size: 14px;
+			line-height: 16.8px;
+		}
+
+		.footer-link__clip {
+			height: 16.8px;
+		}
+
+		.site-footer__bar {
 			flex-direction: column;
 			align-items: flex-start;
+			justify-content: flex-start;
+			gap: 5px;
+		}
+
+		.footer-brand {
+			font-size: 24.5px;
+			line-height: 29.4px;
+		}
+
+		.footer-copy {
+			white-space: normal;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.footer-link__stack {
+			transition: none;
+		}
+
+		.footer-link:hover .footer-link__stack,
+		.footer-link:focus-visible .footer-link__stack {
+			transform: none;
 		}
 	}
 </style>
+
+<script is:inline>
+	document.addEventListener('click', function (e) {
+		var t = e.target;
+		if (!t || !t.closest) return;
+		if (t.closest('[data-open-cookies]')) {
+			e.preventDefault();
+			window.dispatchEvent(new CustomEvent('lavayen-open-cookies'));
+		}
+	});
+</script>

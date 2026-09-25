@@ -1,0 +1,491 @@
+---
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { OG_IMAGE_DEFAULT_HEIGHT, OG_IMAGE_DEFAULT_URL, OG_IMAGE_DEFAULT_WIDTH, POSTER_GUMROAD, SITE_ORIGIN } from '../site';
+
+const title = 'Pósters digitales | Ángel Lavayen, director de arte';
+const description =
+	'Pósters de Ángel Lavayen: Take What’s Yours y Ramén. Prints digitales en A4, A3 y 50×70, listos para comprar.';
+const canonicalURL = new URL(Astro.url.pathname, SITE_ORIGIN).toString();
+
+const titleParts = [
+	{ text: 'P', italic: false },
+	{ text: 'ó', italic: true },
+	{ text: 'sters.', italic: false }
+] as const;
+
+const posters = [
+	{
+		title: "Take What's Yours - Poster / Digital print — A4·A3·50×70",
+		altPrint: "Póster Take What's Yours de Ángel Lavayen",
+		altScene: "Póster Take What's Yours colgado en una cocina",
+		scene: '/images/posters/take-whats-yours-scene.webp',
+		sceneW: 1376,
+		sceneH: 768,
+		print: '/images/posters/take-whats-yours.webp',
+		printW: 496,
+		printH: 702,
+		href: POSTER_GUMROAD.takeWhatsYours
+	},
+	{
+		title: 'Ramén - Poster / Digital print — A4·A3·50×70',
+		altPrint: 'Póster Ramén de Ángel Lavayen',
+		altScene: 'Póster Ramén en un interior',
+		scene: '/images/posters/ramen-scene.webp',
+		sceneW: 1280,
+		sceneH: 720,
+		print: '/images/posters/ramen.webp',
+		printW: 1000,
+		printH: 1414,
+		href: POSTER_GUMROAD.ramen
+	}
+];
+---
+
+<BaseLayout
+	title={title}
+	description={description}
+	canonicalURL={canonicalURL}
+	ogImage={OG_IMAGE_DEFAULT_URL}
+	ogImageWidth={OG_IMAGE_DEFAULT_WIDTH}
+	ogImageHeight={OG_IMAGE_DEFAULT_HEIGHT}
+>
+	<style slot="head">
+		* {
+			box-sizing: border-box;
+		}
+
+		html,
+		body {
+			margin: 0;
+			padding: 0;
+			font-family: 'Inter Display', Inter, system-ui, sans-serif;
+			background: #000;
+			color: #fff;
+		}
+
+		body {
+			cursor: none;
+			min-height: 100svh;
+			display: flex;
+			flex-direction: column;
+		}
+
+		a {
+			color: inherit;
+			text-decoration: none;
+		}
+
+		.posters-page {
+			flex: 1;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			width: 100%;
+			background: #000;
+		}
+
+		.posters-hero {
+			display: flex;
+			flex-direction: column;
+			align-items: flex-start;
+			justify-content: center;
+			width: 100%;
+			max-width: 1440px;
+			height: 360px;
+			padding: 84px 30px 30px;
+			overflow: hidden;
+		}
+
+		.posters-hero h1 {
+			margin: 0;
+			max-width: 1400px;
+			font-family: 'Instrument Serif', Georgia, serif;
+			font-size: 41.6px;
+			font-weight: 400;
+			line-height: 0.9;
+			text-align: left;
+			color: #fff;
+		}
+
+		.posters-word {
+			display: inline-block;
+		}
+
+		.posters-appear {
+			opacity: 0.001;
+			filter: blur(5px);
+			transform: translateY(15px);
+		}
+
+		.posters-appear.is-in {
+			animation: posters-appear 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+			animation-delay: var(--appear-delay, 0ms);
+		}
+
+		@keyframes posters-appear {
+			to {
+				opacity: 1;
+				filter: blur(0);
+				transform: translateY(0);
+			}
+		}
+
+		.posters-list {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			gap: 160px;
+			width: 100%;
+			max-width: 1440px;
+			padding: 0 30px 150px;
+		}
+
+		.poster {
+			display: flex;
+			flex-direction: column;
+			gap: 30px;
+			width: 100%;
+		}
+
+		.poster-visual {
+			display: grid;
+			grid-template-columns: minmax(0, 1fr) 382px;
+			align-items: center;
+			width: 100%;
+			background: rgba(255, 255, 255, 0.7);
+			overflow: hidden;
+		}
+
+		.poster-scene-wrap {
+			min-width: 0;
+			aspect-ratio: 16 / 9;
+			overflow: hidden;
+		}
+
+		.poster-scene {
+			display: block;
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+		}
+
+		.poster-print {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			align-self: center;
+			width: 382px;
+			height: 429.75px;
+			padding: 30px 60px;
+			overflow: hidden;
+			aspect-ratio: 0.888889 / 1;
+		}
+
+		.poster-print img {
+			display: block;
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+		}
+
+		.poster-info {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			justify-content: center;
+			gap: 20px;
+			width: 100%;
+			height: 30px;
+			min-height: 30px;
+			overflow: visible;
+		}
+
+		.poster-info h2 {
+			flex: 1;
+			margin: 0;
+			font-family: 'Instrument Serif', Georgia, serif;
+			font-size: 24px;
+			font-weight: 400;
+			line-height: 0.9;
+			color: #fff;
+		}
+
+		.cta-btn {
+			position: relative;
+			display: inline-flex;
+			flex-shrink: 0;
+			align-items: center;
+			justify-content: center;
+			gap: 5px;
+			padding: 10px 24px;
+			background: #0f0f0f;
+			overflow: hidden;
+			text-decoration: none;
+			color: #fff;
+		}
+
+		.cta-btn::after {
+			content: '';
+			position: absolute;
+			inset: 0;
+			border: 1px solid rgba(245, 245, 245, 0.1);
+			pointer-events: none;
+			z-index: 3;
+		}
+
+		.cta-btn__fill {
+			position: absolute;
+			left: 0;
+			right: 0;
+			bottom: -1px;
+			height: 1px;
+			background: #fff;
+			z-index: 1;
+			transition: height 0.45s cubic-bezier(0.33, 1, 0.68, 1);
+		}
+
+		.cta-btn__clip {
+			position: relative;
+			z-index: 2;
+			display: block;
+			overflow: hidden;
+			height: 19.2px;
+		}
+
+		.cta-btn__stack {
+			display: flex;
+			flex-direction: column;
+			transition: transform 0.45s cubic-bezier(0.33, 1, 0.68, 1);
+		}
+
+		.cta-btn__line {
+			display: block;
+			font-family: 'Inter Display', sans-serif;
+			font-size: 16px;
+			font-weight: 500;
+			line-height: 19.2px;
+			white-space: nowrap;
+		}
+
+		.cta-btn__line--on {
+			color: #fff;
+		}
+
+		.cta-btn__line--off {
+			color: #000;
+		}
+
+		.cta-btn:hover .cta-btn__fill,
+		.cta-btn:focus-visible .cta-btn__fill {
+			height: 100%;
+			bottom: 0;
+		}
+
+		.cta-btn:hover .cta-btn__stack,
+		.cta-btn:focus-visible .cta-btn__stack {
+			transform: translateY(-50%);
+		}
+
+		.cta-btn:focus-visible {
+			outline: 2px solid rgba(255, 255, 255, 0.65);
+			outline-offset: 3px;
+		}
+
+		@media (hover: hover) and (pointer: fine) {
+			a.poster-print {
+				cursor: none !important;
+			}
+		}
+
+		/* Tablet (<1200) */
+		@media (max-width: 1199px) {
+			.posters-hero {
+				height: 324px;
+			}
+
+			.posters-hero h1 {
+				font-size: 39px;
+			}
+
+			.poster-visual {
+				height: 429.75px;
+				grid-template-columns: minmax(0, 1fr) 382px;
+			}
+
+			.poster-scene-wrap {
+				height: 100%;
+				aspect-ratio: unset;
+			}
+
+			.poster-print {
+				height: 100%;
+			}
+
+			.poster-info h2 {
+				font-size: 22.5px;
+			}
+
+			.cta-btn__clip {
+				height: 18px;
+			}
+
+			.cta-btn__line {
+				font-size: 15px;
+				line-height: 18px;
+			}
+		}
+
+		/* Móvil (<810) */
+		@media (max-width: 809px) {
+			.posters-hero {
+				height: 253.188px;
+				padding: 50px 15px 20px;
+			}
+
+			.posters-hero h1 {
+				font-size: 36.4px;
+			}
+
+			.posters-list {
+				padding: 0 15px 150px;
+			}
+
+			.poster {
+				gap: 15px;
+			}
+
+			.poster-visual {
+				display: flex;
+				flex-direction: column;
+				align-items: stretch;
+				height: auto;
+			}
+
+			.poster-scene-wrap {
+				width: 100%;
+				height: auto;
+				aspect-ratio: 360 / 405;
+			}
+
+			.poster-print {
+				align-self: stretch;
+				width: 100%;
+				height: auto;
+				padding: 30px;
+				aspect-ratio: 360 / 484.6;
+			}
+
+			.poster-info {
+				gap: 40px;
+				min-height: 60px;
+				padding: 0;
+			}
+
+			.poster-info h2 {
+				font-size: 21px;
+				line-height: 1.1;
+			}
+
+			.cta-btn__clip {
+				height: 16.8px;
+			}
+
+			.cta-btn__line {
+				font-size: 14px;
+				line-height: 16.8px;
+			}
+		}
+
+		@media (prefers-reduced-motion: reduce) {
+			.posters-appear,
+			.posters-appear.is-in {
+				opacity: 1;
+				filter: none;
+				transform: none;
+				animation: none !important;
+			}
+
+			.cta-btn__fill,
+			.cta-btn__stack {
+				transition: none !important;
+			}
+		}
+
+		@media (hover: none), (pointer: coarse) {
+			body {
+				cursor: auto;
+			}
+		}
+	</style>
+
+	<Header theme="hero" />
+
+	<main class="posters-page" id="main">
+		<section class="posters-hero" aria-label="Pósters">
+			<h1>
+				{
+					titleParts.map((part, i) =>
+						part.italic ? (
+							<em class="posters-word posters-appear" style={`--appear-delay: ${i * 50}ms`}>{part.text}</em>
+						) : (
+							<span class="posters-word posters-appear" style={`--appear-delay: ${i * 50}ms`}>{part.text}</span>
+						)
+					)
+				}
+			</h1>
+		</section>
+
+		<div class="posters-list">
+			{
+				posters.map((p, i) => (
+					<article class="poster">
+						<div class="poster-visual">
+							<div class="poster-scene-wrap">
+								<img
+									class="poster-scene"
+									src={p.scene}
+									alt={p.altScene}
+									width={p.sceneW}
+									height={p.sceneH}
+									loading={i === 0 ? 'eager' : 'lazy'}
+									decoding="async"
+								/>
+							</div>
+							<a class="poster-print" href={p.href} target="_blank" rel="noreferrer noopener" aria-label={`Ver ${p.altPrint} en Gumroad`}>
+								<img
+									src={p.print}
+									alt={p.altPrint}
+									width={p.printW}
+									height={p.printH}
+									loading="lazy"
+									decoding="async"
+								/>
+							</a>
+						</div>
+						<div class="poster-info">
+							<h2>{p.title}</h2>
+							<a class="cta-btn" href={p.href} target="_blank" rel="noreferrer noopener">
+								<span class="cta-btn__fill" aria-hidden="true"></span>
+								<span class="cta-btn__clip">
+									<span class="cta-btn__stack">
+										<span class="cta-btn__line cta-btn__line--on">Comprar</span>
+										<span class="cta-btn__line cta-btn__line--off" aria-hidden="true">Comprar</span>
+									</span>
+								</span>
+							</a>
+						</div>
+					</article>
+				))
+			}
+		</div>
+	</main>
+
+	<Footer />
+
+	<script>
+		const parts = document.querySelectorAll<HTMLElement>('.posters-appear');
+		parts.forEach((el) => el.classList.add('is-in'));
+	</script>
+</BaseLayout>

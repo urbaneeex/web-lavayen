@@ -12,7 +12,11 @@ export const PERSON_LEGAL_NAME = 'Ángel Alejandro Lavayen Ruiz';
 export const PERSON_SHORT_NAME = 'Ángel Lavayen';
 
 /** Perfiles para JSON-LD sameAs y enlaces coherentes con el footer. */
-export const SOCIAL_PROFILE_URLS = [
-	'https://www.instagram.com/angeel_lav/',
-	'https://www.linkedin.com/in/angel-lavayen/'
-] as const;
+export const INSTAGRAM_URL = 'https://www.instagram.com/angeel_lav/';
+export const LINKEDIN_URL = 'https://www.linkedin.com/in/ángel-lavayen';
+export const SOCIAL_PROFILE_URLS = [INSTAGRAM_URL, LINKEDIN_URL] as const;
+
+export const POSTER_GUMROAD = {
+	takeWhatsYours: 'https://lavayenart.gumroad.com/l/kztogu?layout=profile',
+	ramen: 'https://lavayenart.gumroad.com/l/txvfvx'
+} as const;

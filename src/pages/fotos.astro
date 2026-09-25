@@ -1,7 +1,7 @@
 ---
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
-import SlideFrameLink from '../components/SlideFrameLink.astro';
+import HeroGodRays from '../components/HeroGodRays.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { SITE_ORIGIN } from '../site';
 
@@ -11,6 +11,24 @@ const description =
 const canonicalURL = new URL(Astro.url.pathname, SITE_ORIGIN).toString();
 const heroImg = '/images/foto-barco.webp';
 const ogImage = new URL(heroImg, SITE_ORIGIN).href;
+
+const heroWords = ['Fotos', 'que', 'nadie', 'me', 'pidió', 'hacer…'] as const;
+
+const ctaWords: { text: string; italic?: boolean; breakAfter?: boolean }[] = [
+	{ text: 'Esto' },
+	{ text: 'no' },
+	{ text: 'es' },
+	{ text: 'TikTok,' },
+	{ text: 'así' },
+	{ text: 'que' },
+	{ text: 'no' },
+	{ text: 'scrollees', italic: true },
+	{ text: 'más', breakAfter: true },
+	{ text: 'y' },
+	{ text: 'contacta' },
+	{ text: 'conmigo' },
+	{ text: '🤩' }
+];
 
 const fotos = [
 	{ src: '/images/foto-01.webp', alt: 'Fotografía en blanco y negro — galería personal de Ángel Lavayen (1 de 14)' },
@@ -35,8 +53,9 @@ const fotos = [
 	description={description}
 	canonicalURL={canonicalURL}
 	ogImage={ogImage}
+	ogImageWidth={3587}
+	ogImageHeight={2018}
 	ogLocaleAlternate="en_US"
-	cursorHoverSelector={'a, button, [role="button"], .photo'}
 >
 	<script
 		slot="head"
@@ -52,316 +71,599 @@ const fotos = [
 	/>
 
 	<style slot="head">
-			:root {
-				--site-pad: clamp(1.8rem, 4.8vw, 3rem);
+		* {
+			box-sizing: border-box;
+		}
+
+		html,
+		body {
+			margin: 0;
+			padding: 0;
+			font-family: 'Inter Display', Inter, system-ui, sans-serif;
+			background: #000;
+			color: #f5f5f5;
+		}
+
+		body {
+			cursor: none;
+			min-height: 100svh;
+			display: flex;
+			flex-direction: column;
+			-webkit-font-smoothing: antialiased;
+			-moz-osx-font-smoothing: grayscale;
+		}
+
+		a {
+			color: inherit;
+			text-decoration: none;
+		}
+
+		.fotos-page {
+			flex: 1;
+			width: 100%;
+			margin: 0;
+			padding: 0;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+		}
+
+		/* —— Hero (Framer Hero 1: 100vh, título difference) —— */
+		.fotos-hero {
+			position: relative;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			width: 100%;
+			height: 100vh;
+			overflow: hidden;
+			background: #000;
+		}
+
+		.fotos-hero__image {
+			position: absolute;
+			inset: 0;
+			overflow: hidden;
+		}
+
+		.fotos-hero__image img {
+			display: block;
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+			object-position: center;
+		}
+
+		.fotos-hero::after {
+			content: '';
+			position: absolute;
+			inset: 0;
+			pointer-events: none;
+			background: linear-gradient(
+				to top,
+				#000 0%,
+				rgba(0, 0, 0, 0.65) 10%,
+				transparent 22%
+			);
+			z-index: 1;
+		}
+
+		.fotos-hero__copy {
+			position: relative;
+			z-index: 2;
+			display: flex;
+			flex-direction: column;
+			align-items: flex-start;
+			justify-content: center;
+			gap: 5px;
+			width: 100%;
+			max-width: 1440px;
+			padding: 0 30px 0 80px;
+			mix-blend-mode: difference;
+		}
+
+		.fotos-hero h1 {
+			margin: 0;
+			font-family: 'Instrument Serif', Georgia, serif;
+			font-size: 41.6px;
+			font-weight: 400;
+			line-height: 49.92px;
+			text-align: left;
+			color: #fff;
+		}
+
+		.fotos-word {
+			display: inline-block;
+		}
+
+		.fotos-appear {
+			opacity: 0.001;
+			filter: blur(5px);
+			transform: translateY(15px);
+		}
+
+		.fotos-appear.is-in {
+			animation: fotos-appear 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+			animation-delay: var(--appear-delay, 0ms);
+		}
+
+		/* CTA: blur 5px + sube 15px, palabra a palabra. Spring 800/120, espera 0.1s y 0.15s entre palabras. */
+		.fotos-cta.is-in .fotos-appear {
+			animation: fotos-appear 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+			animation-delay: var(--appear-delay, 0.1s);
+		}
+
+		@keyframes fotos-appear {
+			to {
+				opacity: 1;
+				filter: blur(0);
+				transform: translateY(0);
+			}
+		}
+
+		/* —— Intro (Framer Introduction) —— */
+		.fotos-intro {
+			display: flex;
+			align-items: flex-start;
+			justify-content: center;
+			width: 100%;
+			max-width: 1440px;
+			padding: 100px 30px;
+			overflow: hidden;
+		}
+
+		.fotos-intro p {
+			margin: 0;
+			width: 100%;
+			max-width: 966px;
+			font-family: 'Inter Display', sans-serif;
+			font-size: 16px;
+			font-weight: 400;
+			line-height: 22.4px;
+			text-align: center;
+			color: #fff;
+		}
+
+		/* —— Galería (Framer: 1035/1440 ≈ 71.875%, 2 col, 16:9, gap 6) —— */
+		.fotos-grid {
+			width: 71.875%;
+			margin: 30px auto 0;
+			overflow: hidden;
+		}
+
+		.photo-grid {
+			display: grid;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 6px;
+			width: 100%;
+		}
+
+		.photo {
+			position: relative;
+			display: block;
+			aspect-ratio: 16 / 9;
+			overflow: hidden;
+			background: #000;
+		}
+
+		.photo img {
+			display: block;
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+		}
+
+		/* —— CTA (Framer Collaborate + God Rays + Vale) —— */
+		.fotos-cta-wrap {
+			width: 100%;
+			max-width: 1440px;
+			margin-top: 30px;
+			padding: 60px 30px 0;
+		}
+
+		.fotos-cta {
+			position: relative;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			width: 100%;
+			height: 580px;
+			padding: 40px 0 0;
+			margin: 0 0 60px;
+			background: #000;
+			overflow: hidden;
+		}
+
+		.fotos-cta__rays {
+			position: absolute;
+			left: 0;
+			right: 0;
+			top: 40px;
+			bottom: 0;
+			z-index: 0;
+			overflow: hidden;
+			pointer-events: none;
+		}
+
+		.fotos-cta__pad {
+			position: relative;
+			display: flex;
+			flex-direction: column;
+			align-items: flex-start;
+			justify-content: center;
+			gap: 15px;
+			width: 100%;
+			max-width: 1440px;
+			padding: 0 30px;
+		}
+
+		.fotos-cta__copy {
+			margin: 0;
+			width: 60%;
+			font-family: 'Instrument Serif', Georgia, serif;
+			font-size: 41.6px;
+			font-weight: 400;
+			font-feature-settings: 'blwf' on, 'cv09' on, 'cv03' on, 'cv04' on, 'cv11' on;
+			line-height: 1.2;
+			text-align: left;
+			color: #fff;
+			white-space: pre-wrap;
+			word-break: break-word;
+			position: relative;
+			z-index: 1;
+			mix-blend-mode: overlay;
+		}
+
+		.cta-break {
+			display: block;
+		}
+
+		.fotos-cta__copy .fotos-word {
+			display: inline-block;
+		}
+
+		.fotos-cta__copy em {
+			font-style: italic;
+		}
+
+		.cta-btn {
+			position: relative;
+			z-index: 1;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			gap: 5px;
+			padding: 10px 24px;
+			background: #000;
+			overflow: hidden;
+			text-decoration: none;
+			color: #fff;
+		}
+
+		.cta-btn__fill {
+			position: absolute;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			height: 0;
+			background: #fff;
+			z-index: 1;
+			transition: height 0.45s cubic-bezier(0.33, 1, 0.68, 1);
+		}
+
+		.cta-btn__clip {
+			position: relative;
+			z-index: 2;
+			display: block;
+			overflow: hidden;
+			height: 19.2px;
+		}
+
+		.cta-btn__stack {
+			display: flex;
+			flex-direction: column;
+			transition: transform 0.45s cubic-bezier(0.33, 1, 0.68, 1);
+		}
+
+		.cta-btn__line {
+			display: block;
+			font-family: 'Inter Display', sans-serif;
+			font-size: 16px;
+			font-weight: 500;
+			line-height: 19.2px;
+			white-space: nowrap;
+		}
+
+		.cta-btn__line--on {
+			color: #fff;
+		}
+
+		.cta-btn__line--off {
+			color: #000;
+		}
+
+		.cta-btn:hover .cta-btn__fill,
+		.cta-btn:focus-visible .cta-btn__fill {
+			height: 100%;
+		}
+
+		.cta-btn:hover .cta-btn__stack,
+		.cta-btn:focus-visible .cta-btn__stack {
+			transform: translateY(-50%);
+		}
+
+		.cta-btn:focus-visible {
+			outline: 2px solid rgba(255, 255, 255, 0.65);
+			outline-offset: 3px;
+		}
+
+		/* Tablet (<1200) */
+		@media (max-width: 1199px) {
+			.fotos-hero h1 {
+				font-size: 39px;
+				line-height: 46.8px;
 			}
 
-			* {
-				box-sizing: border-box;
+			.fotos-intro {
+				padding: 20px 30px;
 			}
 
-			html,
-			body {
-				margin: 0;
-				padding: 0;
-				font-family: Inter, system-ui, -apple-system, sans-serif;
-				background: #000;
-				color: #f5f5f5;
-			}
-
-			body {
-				cursor: none;
-				min-height: 100svh;
-				display: flex;
-				flex-direction: column;
-			}
-
-			a {
-				color: inherit;
-				text-decoration: none;
-			}
-
-			.fotos-page {
-				flex: 1;
-				width: calc(100% - (var(--site-pad) * 2));
-				margin: 0 auto;
-				padding: 0;
-			}
-
-			.fotos-hero {
-				position: relative;
-				margin: 0;
-				width: 100vw;
-				margin-left: calc(50% - 50vw);
-				margin-right: calc(50% - 50vw);
-				height: 100svh;
-				overflow: hidden;
-				border-radius: 0;
-				background: #000;
-			}
-
-			.fotos-hero img {
-				position: absolute;
-				inset: 0;
-				width: 100%;
-				height: 100%;
-				object-fit: cover;
-				object-position: center;
-				filter: none;
-			}
-
-			/* Degradado negro debajo de la imagen (fade hacia el fondo). */
-			.fotos-hero::after {
-				content: '';
-				position: absolute;
-				left: 0;
-				right: 0;
-				bottom: 0;
-				height: 35%;
-				background: linear-gradient(
-					to top,
-					rgba(0, 0, 0, 0.95) 0%,
-					rgba(0, 0, 0, 0.55) 45%,
-					rgba(0, 0, 0, 0) 100%
-				);
-				pointer-events: none;
-			}
-
-			.fotos-hero-text {
-				position: absolute;
-				left: var(--site-pad);
-				right: var(--site-pad);
-				top: 50%;
-				transform: translateY(-50%);
-				padding: 0;
-				font-family: 'Instrument Serif', Georgia, serif;
-				color: #fff;
-				font-weight: 400;
-				letter-spacing: -0.02em;
-				text-shadow: 0 12px 34px rgba(0, 0, 0, 0.6);
-				z-index: 1;
-				display: grid;
-				align-content: center;
-				gap: 0.55rem;
-				text-align: left;
-			}
-
-			.fotos-hero-title {
-				margin: 0;
-				font-family: 'Instrument Serif', Georgia, serif;
-				font-size: clamp(2.35rem, 6.5vw, 4rem);
-				font-weight: 400;
-				line-height: 1;
-				letter-spacing: -0.02em;
-			}
-
-			.fotos-hero-subtitle {
-				margin: 0;
-				font-family: 'Instrument Serif', Georgia, serif;
-				font-size: clamp(1.05rem, 1.9vw, 1.5rem);
-				line-height: 1.2;
-				font-weight: 400;
-				letter-spacing: -0.01em;
-				color: rgba(255, 255, 255, 0.88);
-				max-width: 48ch;
-			}
-
-			.fotos-copy {
-				padding: clamp(4.75rem, 9.5vw, 7.5rem) 0 clamp(4.75rem, 9.5vw, 7.5rem);
+			.fotos-intro p {
 				max-width: none;
-				margin: 0;
-			}
-
-			/* Párrafos largos: columna más estrecha y centrada en la página */
-			.fotos-copy-body {
-				max-width: min(100ch, 92%);
-				margin-inline: auto;
-			}
-
-			.fotos-copy-body p {
-				margin: 0 0 1.15rem;
-				font-size: clamp(0.95rem, 1.05vw, 1.02rem);
-				line-height: 1.65;
-				color: rgba(245, 245, 245, 0.9);
-				text-align: justify;
-			}
-
-			.fotos-copy-body p:last-of-type {
-				margin-bottom: 0;
-			}
-
-			.fotos-copy p:last-child {
-				margin-bottom: 0;
+				font-size: 15px;
+				line-height: 21px;
 			}
 
 			.fotos-grid {
-				padding: clamp(2rem, 4vw, 3rem) 0 clamp(4rem, 12vw, 7rem);
+				width: 100%;
+				max-width: none;
+				padding: 0 30px;
 			}
 
 			.photo-grid {
-				display: grid;
 				grid-template-columns: 1fr;
+			}
+
+			.fotos-cta__copy {
+				width: 70%;
+				font-size: 39px;
+			}
+
+			.cta-break {
+				display: none;
+			}
+
+			.cta-btn__clip {
+				height: 18px;
+			}
+
+			.cta-btn__line {
+				font-size: 15px;
+				line-height: 18px;
+			}
+		}
+
+		/* Móvil (<810) */
+		@media (max-width: 809px) {
+			.fotos-hero {
+				height: 100vh;
+				padding-bottom: 250px;
+			}
+
+			.fotos-hero__copy {
+				padding: 0 15px;
+			}
+
+			.fotos-hero h1 {
+				font-size: 36.4px;
+				line-height: 43.68px;
+			}
+
+			.fotos-intro {
+				min-height: 50vh;
+				align-items: center;
+				padding: 20px 15px;
+			}
+
+			.fotos-intro p {
+				font-size: 14px;
+				line-height: 19.6px;
+			}
+
+			.fotos-grid {
+				padding: 0 15px;
+			}
+
+			.fotos-cta-wrap {
+				padding: 40px 15px 0;
+			}
+
+			.fotos-cta {
+				height: 675px;
+				margin-bottom: 40px;
+			}
+
+			.fotos-cta__pad {
+				padding: 0 15px;
+			}
+
+			.fotos-cta__copy {
 				width: 100%;
-				max-width: 100%;
-				margin: 0 auto;
-				gap: clamp(0.65rem, 1vw, 0.95rem);
+				font-size: 36.4px;
 			}
 
-			/* Una columna en móvil, iPad (incl. horizontal ~1366px) y portátiles estrechos; dos columnas en pantallas amplias */
-			@media (min-width: 1400px) {
-				.photo-grid {
-					grid-template-columns: repeat(2, minmax(0, 1fr));
-					max-width: min(72rem, 88%);
-				}
-			}
-
-			.photo {
-				background: transparent;
-				overflow: hidden;
-				position: relative;
+			.cta-break {
 				display: block;
-				aspect-ratio: 16 / 9;
 			}
 
-			.photo img {
-				width: 100%;
-				height: 100%;
-				object-fit: cover;
-				display: block;
+			.cta-btn__clip {
+				height: 16.8px;
+			}
+
+			.cta-btn__line {
+				font-size: 14px;
+				line-height: 16.8px;
+			}
+		}
+
+		@media (prefers-reduced-motion: reduce) {
+			.fotos-appear,
+			.fotos-appear.is-in {
+				opacity: 1;
 				filter: none;
 				transform: none;
-				transition: none;
+				animation: none !important;
 			}
 
-			.photo:hover img {
-				transform: none;
+			.cta-btn__fill,
+			.cta-btn__stack {
+				transition: none !important;
 			}
 
-			/* CTA final tras la galería (tipografía serif + SlideFrameLink, alineado a la izquierda) */
-			.fotos-cta {
-				margin-top: 0;
-				padding: clamp(0.5rem, 1.2vw, 1rem) 0 clamp(3rem, 8vw, 5.5rem);
-				background: #000;
-				text-align: left;
+			html {
+				scroll-behavior: auto;
 			}
+		}
 
-			.fotos-cta-copy {
-				margin: 0 0 clamp(1.35rem, 2.5vw, 2rem);
-				font-family: 'Instrument Serif', Georgia, serif;
-				font-size: clamp(1.35rem, 2.2vw, 1.9rem);
-				font-weight: 400;
-				line-height: 1.22;
-				letter-spacing: -0.015em;
-				color: #fff;
-				max-width: none;
+		@media (hover: none), (pointer: coarse) {
+			body {
+				cursor: auto;
 			}
+		}
+	</style>
 
-			.fotos-cta-copy .fotos-cta-line {
-				display: block;
-			}
+	<Header theme="hero" />
 
-			.fotos-cta-copy .fotos-cta-line + .fotos-cta-line {
-				margin-top: 0.35em;
-			}
-
-			/* Segunda frase en una sola línea (en pantallas anchas); en móvil puede partirse */
-			.fotos-cta-line--body {
-				white-space: nowrap;
-			}
-
-			@media (max-width: 720px) {
-				.fotos-cta-line--body {
-					white-space: normal;
-				}
-			}
-
-			.fotos-cta-copy em {
-				font-style: italic;
-			}
-
-			@media (max-width: 640px) {
-				.fotos-hero-subtitle {
-					max-width: 34ch;
-				}
-			}
-
-			@media (prefers-reduced-motion: reduce) {
-				html {
-					scroll-behavior: auto;
-				}
-			}
-
-			@media (hover: none), (pointer: coarse) {
-				body {
-					cursor: auto;
-				}
-			}
-		</style>
-		<Header theme="dark" />
-
-		<main class="fotos-page" id="main">
-			<section class="fotos-hero" aria-label="Fotos">
+	<main class="fotos-page" id="main">
+		<section class="fotos-hero" aria-label="Fotos">
+			<div class="fotos-hero__image">
 				<img
 					src={heroImg}
 					alt="Fotografía en blanco y negro de un barco — imagen principal de la galería de Ángel Lavayen"
-					loading="eager"
+					width="3587"
+					height="2018"
+					fetchpriority="high"
+					decoding="async"
 				/>
-				<div class="fotos-hero-text">
-					<h1 class="fotos-hero-title">¿Sigues aquí?</h1>
-					<p class="fotos-hero-subtitle">Al final vas a tener buen gusto y todo.</p>
-				</div>
-			</section>
-
-			<section class="fotos-copy" aria-label="Texto sobre la galeria">
-				<div class="fotos-copy-body">
-					<p>
-						Ya que te has tomado la molestia de llegar hasta aquí, te diré la verdad: no es la cámara, es que
-						sé dónde mirar (aunque la cámara también costó lo suyo).
-					</p>
-
-					<p>
-						No, ya enserio… Mientras el resto del mundo hace fotos a su comida con un filtro de saturación al
-						200%, yo prefiero buscar la geometría en un faro verde o la mirada existencial de una cebra que
-						parece juzgarte más que tu cliente un lunes por la mañana.
-					</p>
-
-					<p>
-						Desde una mariposa azul que se cree la protagonista de un documental de la BBC hasta medusas que
-						parecen renderizadas con el mejor motor de iluminación de 2026. También me gusta que las líneas
-						hablen así que si un faro no está perfectamente centrado o una carretera no tiene la curva
-						perfecta… no me sirve. O por otro lado, esas parejas bajo la lluvia que parecen sacadas de una
-						película francesa que nadie entiende pero en realidad a todos nos encanta y pensamos &quot;ooooh, que
-						monos&quot;. O el vouyerismo de gente caminando en mercados que ni saben que acaban de formar parte de una
-						de mis fotos.
-					</p>
-
-					<p>
-						Te dejo disfrutarlas (o no).
-					</p>
-				</div>
-			</section>
-
-			<section class="fotos-grid" aria-label="Galeria de fotografias">
-				<div class="photo-grid">
+			</div>
+			<div class="fotos-hero__copy">
+				<h1>
 					{
-						fotos.map((f) => (
-							<div class="photo" aria-label={f.alt}>
-								<img src={f.src} alt={f.alt} loading="lazy" />
-							</div>
+						heroWords.map((word, i) => (
+							<>
+								{i > 0 ? ' ' : null}
+								<span class="fotos-word fotos-appear" style={`--appear-delay: ${i * 50}ms`}>{word}</span>
+							</>
 						))
 					}
+				</h1>
+			</div>
+		</section>
+
+		<section class="fotos-intro" aria-label="Introducción">
+			<p>
+				Este es probablemente el proyecto más inútil que tengo, pero es de los que más me gusta. Es el problema
+				de un aficionado con cámara.. ¡Espero que te gusten!
+			</p>
+		</section>
+
+		<section class="fotos-grid" aria-label="Galería de fotografías">
+			<div class="photo-grid">
+				{
+					fotos.map((f) => (
+						<div class="photo" aria-label={f.alt}>
+							<img src={f.src} alt={f.alt} width="1600" height="900" loading="lazy" decoding="async" />
+						</div>
+					))
+				}
+			</div>
+		</section>
+
+		<section class="fotos-cta-wrap" aria-label="Contacto">
+			<div class="fotos-cta">
+				<div class="fotos-cta__rays" aria-hidden="true">
+					<HeroGodRays />
 				</div>
-			</section>
+				<div class="fotos-cta__pad">
+					<h2 class="fotos-cta__copy">
+						{
+							ctaWords.map((word, i) => (
+								<>
+									{i > 0 && !ctaWords[i - 1].breakAfter ? ' ' : null}
+									{word.italic ? (
+										<em class="fotos-word fotos-appear" style={`--appear-delay: ${100 + i * 150}ms`}>{word.text}</em>
+									) : (
+										<span class="fotos-word fotos-appear" style={`--appear-delay: ${100 + i * 150}ms`}>{word.text}</span>
+									)}
+									{word.breakAfter ? <br class="cta-break" /> : null}
+								</>
+							))
+						}
+					</h2>
+					<a class="cta-btn" href="/contacto">
+						<span class="cta-btn__fill" aria-hidden="true"></span>
+						<span class="cta-btn__clip">
+							<span class="cta-btn__stack">
+								<span class="cta-btn__line cta-btn__line--on">Vale</span>
+								<span class="cta-btn__line cta-btn__line--off" aria-hidden="true">Vale</span>
+							</span>
+						</span>
+					</a>
+				</div>
+			</div>
+		</section>
+	</main>
 
-			<section class="fotos-cta" aria-label="Contacto">
-				<p class="fotos-cta-copy">
-					<span class="fotos-cta-line">Ya está bien ¿no?</span>
-					<span class="fotos-cta-line fotos-cta-line--body">Deja de perder el tiempo <em>scrolleando</em> y contacta conmigo ;D</span>
-				</p>
-				<SlideFrameLink href="/contacto" label="¡Vamos!" />
-			</section>
-		</main>
+	<Footer />
 
-		<Footer />
+	<script>
+		const heroWordsEls = document.querySelectorAll<HTMLElement>('.fotos-hero .fotos-appear');
+		heroWordsEls.forEach((el) => el.classList.add('is-in'));
+
+		const bootFotosCta = () => {
+			const fotosCta = document.querySelector('.fotos-cta');
+			const target = document.querySelector('.fotos-cta__pad') || fotosCta;
+			if (!fotosCta || !target || fotosCta.classList.contains('is-in')) return;
+
+			const play = () => {
+				if (fotosCta.classList.contains('is-in')) return;
+				fotosCta.classList.add('is-in');
+				window.removeEventListener('scroll', onScroll);
+				window.removeEventListener('resize', onScroll);
+				io?.disconnect();
+			};
+
+			const visible = () => {
+				const r = target.getBoundingClientRect();
+				const vh = window.innerHeight || 0;
+				return r.top < vh && r.bottom > 0;
+			};
+
+			const onScroll = () => {
+				if (visible()) play();
+			};
+
+			let io: IntersectionObserver | null = null;
+			if ('IntersectionObserver' in window) {
+				io = new IntersectionObserver(
+					(entries) => {
+						if (entries.some((entry) => entry.isIntersecting)) play();
+					},
+					{ threshold: 0 }
+				);
+				io.observe(target);
+			}
+
+			window.addEventListener('scroll', onScroll, { passive: true });
+			window.addEventListener('resize', onScroll, { passive: true });
+			requestAnimationFrame(onScroll);
+		};
+
+		if (document.readyState === 'loading') {
+			document.addEventListener('DOMContentLoaded', bootFotosCta);
+		} else {
+			bootFotosCta();
+		}
+	</script>
 </BaseLayout>
-

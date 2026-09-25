@@ -1,0 +1,657 @@
+---
+import Footer from '../../components/Footer.astro';
+import Header from '../../components/Header.astro';
+import HeroGodRays from '../../components/HeroGodRays.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { SITE_ORIGIN } from '../../site';
+
+const title = 'Ángel Lavayen | Política de Cookies';
+const description = 'Política de cookies del sitio web de Ángel Lavayen: tipos, duración y cómo desactivarlas.';
+const canonicalURL = new URL(Astro.url.pathname, SITE_ORIGIN).toString();
+---
+
+<BaseLayout
+	title={title}
+	description={description}
+	canonicalURL={canonicalURL}
+	robots="noindex, follow"
+	cursorHoverSelector=".site-header a, .site-header button, .nav-mobile a, .nav-mobile button, .site-footer a, .site-footer button, .cta-btn, .cookie-banner button, .legal-nav a, .legal-body a"
+>
+	<style slot="head">
+		* {
+			box-sizing: border-box;
+		}
+
+		html,
+		body {
+			margin: 0;
+			padding: 0;
+			background: #000;
+			color: #fff;
+			font-family: 'Inter Display', Inter, system-ui, sans-serif;
+			-webkit-font-smoothing: antialiased;
+			-moz-osx-font-smoothing: grayscale;
+		}
+
+		body {
+			cursor: none;
+			min-height: 100svh;
+			display: flex;
+			flex-direction: column;
+		}
+
+		.legal-page {
+			flex: 1;
+			width: 100%;
+			background: #000;
+			font-size: 16px;
+		}
+
+		.legal-wrap {
+			display: flex;
+			justify-content: center;
+			width: 100%;
+			max-width: 1800px;
+			margin: 0 auto;
+			padding: 100px 0 150px;
+		}
+
+		.legal-grid {
+			display: grid;
+			grid-template-columns: repeat(3, minmax(50px, 1fr));
+			gap: 50px;
+			width: 100%;
+			max-width: 90%;
+		}
+
+		.legal-nav {
+			display: flex;
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 20px;
+			padding: 50px 0 0;
+			min-width: 0;
+		}
+
+		.legal-nav__label {
+			margin: 0;
+			width: 100%;
+			height: 28px;
+			border-bottom: 1px solid #333;
+			color: #000;
+			font-family: 'Inter Display', sans-serif;
+			font-size: 20px;
+			font-weight: 600;
+			line-height: 1;
+		}
+
+		.legal-nav a {
+			display: flex;
+			align-items: center;
+			gap: 1px;
+			width: 100%;
+			color: #fff;
+			font-size: 1em;
+			font-weight: 400;
+			line-height: 1.4;
+			text-decoration: none;
+		}
+
+		.legal-nav a.is-dim {
+			opacity: 0.6;
+		}
+
+		.legal-nav__nudge {
+			flex: none;
+			width: 1px;
+			height: 5px;
+			background: #fff;
+			opacity: 0;
+			transition: width 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+		}
+
+		.legal-nav a:hover .legal-nav__nudge,
+		.legal-nav a:focus-visible .legal-nav__nudge {
+			width: 10px;
+		}
+
+		.legal-nav svg {
+			flex: none;
+			width: 20px;
+			height: 20px;
+			fill: #fff;
+		}
+
+		.legal-copy {
+			grid-column: span 2;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			gap: 30px;
+			min-width: 0;
+			padding: 0 0 40px;
+		}
+
+		.legal-copy > * {
+			width: 100%;
+		}
+
+		.legal-title {
+			margin: 0;
+			font-family: 'Instrument Serif', Georgia, serif;
+			font-size: 1.5em;
+			font-weight: 400;
+			line-height: 0.9;
+			color: #fff;
+		}
+
+		.legal-date {
+			margin: 0;
+			font-family: 'Inter Display', sans-serif;
+			font-size: 1.6em;
+			font-weight: 400;
+			line-height: 1.4;
+			font-feature-settings: 'blwf' on, 'cv09' on, 'cv03' on, 'cv04' on, 'cv11' on;
+			color: #fff;
+		}
+
+		.legal-body {
+			font-size: 1em;
+			line-height: 1.4;
+			color: #fff;
+			word-break: break-word;
+			text-align: justify;
+		}
+
+		.legal-body p,
+		.legal-body ul,
+		.legal-body li {
+			margin: 0;
+			padding: 0;
+			font-size: 1em;
+			font-weight: 400;
+			line-height: 1.4;
+			color: #fff;
+			text-align: justify;
+		}
+
+		.legal-body strong {
+			font-weight: 700;
+		}
+
+		.legal-body em {
+			font-style: italic;
+		}
+
+		.legal-body a {
+			color: #a5a5a5;
+			text-decoration: none;
+		}
+
+		.legal-body a:hover,
+		.legal-body a:focus-visible {
+			color: #000fe0;
+			text-decoration: underline;
+		}
+
+		.legal-body ul {
+			position: relative;
+			list-style: none;
+			padding-inline-start: 0;
+		}
+
+		.legal-body li {
+			padding-inline-start: 2ch;
+			list-style: none;
+		}
+
+		.legal-body li::before {
+			content: '•';
+			position: absolute;
+			inset-inline-start: 0;
+		}
+
+		.legal-cta {
+			position: relative;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			width: 100%;
+			height: 580px;
+			padding: 40px 0 0;
+			background: #000;
+			border-bottom: 1px solid #222225;
+			overflow: hidden;
+		}
+
+		.legal-cta__rays {
+			position: absolute;
+			left: 0;
+			right: 0;
+			top: 40px;
+			bottom: 0;
+			z-index: 0;
+			overflow: hidden;
+			pointer-events: none;
+		}
+
+		.legal-cta__pad {
+			position: relative;
+			z-index: 2;
+			display: flex;
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 30px;
+			width: 100%;
+			max-width: 1440px;
+			padding: 0 30px;
+		}
+
+		.legal-cta__copy {
+			margin: 0;
+			width: 60%;
+			font-family: 'Instrument Serif', Georgia, serif;
+			font-size: 2.6em;
+			font-weight: 400;
+			line-height: 1.2;
+			text-align: left;
+			color: #fff;
+			mix-blend-mode: overlay;
+			font-feature-settings: 'blwf' on, 'cv09' on, 'cv03' on, 'cv04' on, 'cv11' on;
+		}
+
+		.legal-cta__copy span {
+			display: inline-block;
+		}
+
+		.cta-appear {
+			opacity: 0.001;
+			filter: blur(5px);
+			transform: translateY(15px);
+		}
+
+		.legal-cta.is-in .cta-appear {
+			animation: legal-appear 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+			animation-delay: var(--appear-delay, 0ms);
+		}
+
+		@keyframes legal-appear {
+			to {
+				opacity: 1;
+				filter: none;
+				transform: translateY(0);
+			}
+		}
+
+		.cta-btn {
+			position: relative;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			padding: 10px 24px;
+			background: #000;
+			box-shadow: inset 0 0 0 1px rgba(245, 245, 245, 0.1);
+			overflow: hidden;
+			text-decoration: none;
+			color: #fff;
+		}
+
+		.cta-btn__fill {
+			position: absolute;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			height: 0;
+			background: #fff;
+			z-index: 1;
+			transition: height 0.45s cubic-bezier(0.33, 1, 0.68, 1);
+		}
+
+		.cta-btn__clip {
+			position: relative;
+			z-index: 2;
+			display: block;
+			overflow: hidden;
+			height: 1.2em;
+		}
+
+		.cta-btn__stack {
+			display: flex;
+			flex-direction: column;
+			transition: transform 0.45s cubic-bezier(0.33, 1, 0.68, 1);
+		}
+
+		.cta-btn__line {
+			display: block;
+			font-family: 'Inter Display', sans-serif;
+			font-size: 1em;
+			font-weight: 500;
+			line-height: 1.2;
+			white-space: nowrap;
+		}
+
+		.cta-btn__line--on {
+			color: #fff;
+		}
+
+		.cta-btn__line--off {
+			color: #000;
+		}
+
+		.cta-btn:hover .cta-btn__fill,
+		.cta-btn:focus-visible .cta-btn__fill {
+			height: 100%;
+		}
+
+		.cta-btn:hover .cta-btn__stack,
+		.cta-btn:focus-visible .cta-btn__stack {
+			transform: translateY(-50%);
+		}
+
+		.cta-btn:focus-visible,
+		.legal-nav a:focus-visible {
+			outline: 2px solid rgba(255, 255, 255, 0.65);
+			outline-offset: 3px;
+		}
+
+		@media (min-width: 810px) and (max-width: 1199.98px) {
+			.legal-page {
+				font-size: 15px;
+			}
+
+			.legal-wrap {
+				padding: 120px 0 150px;
+			}
+
+			.legal-grid {
+				max-width: 650px;
+			}
+		}
+
+		@media (max-width: 809.98px) {
+			.legal-page {
+				font-size: 14px;
+			}
+
+			.legal-wrap {
+				padding: 120px 0 100px;
+			}
+
+			.legal-grid {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				max-width: 90%;
+			}
+
+			.legal-nav,
+			.legal-copy {
+				align-self: stretch;
+				width: 100%;
+			}
+
+			.legal-copy {
+				grid-column: auto;
+			}
+
+			.legal-cta {
+				height: 80vh;
+			}
+
+			.legal-cta__pad {
+				padding: 0 15px;
+			}
+
+			.legal-cta__copy {
+				width: 100%;
+			}
+		}
+
+		@media (hover: none), (pointer: coarse) {
+			body {
+				cursor: auto;
+			}
+		}
+
+		@media (prefers-reduced-motion: reduce) {
+			.cta-appear {
+				animation: none;
+				opacity: 1;
+				filter: none;
+				transform: none;
+			}
+
+			.legal-nav__nudge,
+			.cta-btn__fill,
+			.cta-btn__stack {
+				transition: none;
+			}
+		}
+	</style>
+
+	<Header theme="dark" />
+	<main class="legal-page" id="main">
+		<div class="legal-wrap">
+			<div class="legal-grid">
+				<nav class="legal-nav" aria-label="Legal">
+					<h2 class="legal-nav__label">Legal</h2>
+					<a href="/legal/cookies-policy" aria-current="page">
+						<span>Política de Cookies</span>
+						<span class="legal-nav__nudge" aria-hidden="true"></span>
+						<svg viewBox="0 0 256 256" aria-hidden="true"><path d="M221.66,133.66l-72,72a8,8,0,0,1-11.32-11.32L196.69,136H40a8,8,0,0,1,0-16H196.69L138.34,61.66a8,8,0,0,1,11.32-11.32l72,72A8,8,0,0,1,221.66,133.66Z"></path></svg>
+					</a>
+					<a class="is-dim" href="/legal/therms">
+						<span>Términos y condiciones</span>
+						<span class="legal-nav__nudge" aria-hidden="true"></span>
+						<svg viewBox="0 0 256 256" aria-hidden="true"><path d="M221.66,133.66l-72,72a8,8,0,0,1-11.32-11.32L196.69,136H40a8,8,0,0,1,0-16H196.69L138.34,61.66a8,8,0,0,1,11.32-11.32l72,72A8,8,0,0,1,221.66,133.66Z"></path></svg>
+					</a>
+				</nav>
+				<article class="legal-copy">
+					<h2 class="legal-title">Política de Cookies</h2>
+					<p class="legal-date">Última actualización: 3 de mayo de 2025</p>
+					<div class="legal-body">
+						<p><strong>¿Qué son las cookies?<br /></strong><br /></p>
+						<p>Las cookies son pequeños archivos de datos que se colocan en su ordenador o dispositivo móvil cuando visita un sitio web, una aplicación móvil o utiliza un producto en línea. Las cookies se utilizan ampliamente para facilitar y ayudar a que la interacción entre los usuarios y los sitios web, las aplicaciones móviles y los productos en línea sean más rápidas y fáciles, así como para proporcionar información sobre informes.</p>
+						<p>Utilizamos dos tipos de cookies en nuestros sitios web: las cookies establecidas por Framer se denominan cookies de origen y las cookies establecidas por terceros que no sean Framer se denominan cookies de terceros. Puede obtener más información sobre cada cookie viendo nuestra lista actual de cookies a continuación.</p>
+						<p>También podemos recopilar información utilizando balizas web (también conocidas como "píxeles de seguimiento"). Las balizas web son imágenes electrónicas que se pueden usar en nuestros sitios web o notificaciones y ayudan a entregar cookies, contar las visitas, comprender el uso y la efectividad de la campaña y determinar si se ha abierto y actuado una notificación.</p>
+						<p><br /></p>
+						<p><strong>Tipos de cookies según su función</strong></p>
+
+						<ul>
+						<li><p><strong>Cookies esenciales:</strong> Estas cookies son necesarias para el funcionamiento básico del sitio web. Permiten la navegación por las páginas, el acceso a áreas seguras y el uso de funciones básicas. Sin estas cookies, el sitio web no funcionaría correctamente.<br /><br /></p>
+						</li>
+						<li><p><strong>Cookies de rendimiento y funcionales:</strong> Estas cookies se utilizan para mejorar el rendimiento y la funcionalidad de nuestros sitios web, pero no son esenciales para su uso. Sin embargo, sin estas cookies, ciertas funcionalidades como los vídeos pueden dejar de estar disponibles.<br /><br /></p>
+						</li>
+						<li><p><strong>Cookies de análisis:</strong> recopilan información para ayudarnos a comprender cómo se utilizan nuestros sitios web o qué tan efectivas son nuestras campañas de marketing, o para ayudarnos a personalizar nuestros sitios web para usted.<br /><br /></p>
+						</li>
+						<li><p><strong>Cookies de publicidad:</strong> Estas cookies se utilizan para hacer que los mensajes publicitarios sean más relevantes para usted. Realizan funciones como seleccionar anuncios que se basan en sus intereses, evitar que el mismo anuncio vuelva a aparecer continuamente y garantizar que los anuncios se muestren correctamente para los anunciantes.</p>
+						</li>
+
+						</ul>
+						<p><strong>Tipos de cookies según el tiempo que están activas</strong></p>
+
+						<ul>
+						<li><p><strong>Cookies de sesión:</strong> Estas cookies permanecen en el archivo de cookies de su navegador hasta que abandonas la página web, de modo que ninguna queda en su dispositivo.<br /><br /></p>
+						</li>
+						<li><p><strong>Cookies persistentes:</strong> Estas cookies permanecen en su dispositivo y nuestra web las lee cada vez que realiza una nueva visita. Estas cookies dejan de funcionar pasada una fecha concreta.</p>
+						</li>
+
+						</ul>
+						<p><strong>Cómo desactivar las cookies</strong></p>
+
+						<ul>
+						<li><p>Puede cambiar la configuración de su navegador para controlar qué cookies almacena el navegador. Si elige no activar una cookie o desactivarlas posteriormente, aún puede visitar nuestros sitios web, pero su capacidad para usar algunas funciones o áreas puede ser limitada. </p>
+						<p>A continuación tienes enlaces directos con información sobre cómo configurar las cookies en cada navegador:</p>
+
+						<ul>
+						<li><p><a href="https://support.mozilla.org/es/kb/habilitar-y-deshabilitar-cookies-que-los-sitios-we" target="_blank" rel="noreferrer noopener">Mozilla Firefox</a></p>
+						</li>
+						<li><p><a href="https://support.google.com/chrome/answer/95647?hl=es" target="_blank" rel="noreferrer noopener">Google Chrome</a></p>
+						</li>
+						<li><p><a href="https://support.apple.com/kb/ph21411?locale=es_ES" target="_blank" rel="noreferrer noopener">Safari</a></p>
+						</li>
+						<li><p><a href="http://windows.microsoft.com/es-es/windows-10/edge-privacy-faq" target="_blank" rel="noreferrer noopener">Edge</a></p>
+						</li>
+						<li><p><a href="https://support.google.com/chrome/answer/114662?hl=es&visit_id=1-636664625754483085-1648636281&rd=1&co=GENIE.Platform%3DAndroid&oco=1" target="_blank" rel="noreferrer noopener">Google Android</a></p>
+						</li>
+						<li><p><a href="https://support.microsoft.com/es-es/help/17442/windows-internet-explorer-delete-manage-cookies" target="_blank" rel="noreferrer noopener">Internet Explorer 8</a></p>
+						</li>
+						<li><p><a href="https://support.microsoft.com/es-es/help/278835/how-to-delete-cookie-files-in-internet-explorer" target="_blank" rel="noreferrer noopener">Internet Explorer 9</a></p>
+						</li>
+						<li><p><a href="https://support.microsoft.com/es-es/help/17442/windows-internet-explorer-delete-manage-cookies#ie=ie-10" target="_blank" rel="noreferrer noopener">Internet Explorer 11</a></p>
+						</li>
+						<li><p><a href="https://help.opera.com/en/latest/web-preferences/#cookies" target="_blank" rel="noreferrer noopener">Opera</a></p>
+						</li>
+						<li><p><a href="https://support.apple.com/es-es/HT201265" target="_blank" rel="noreferrer noopener">Safari Mobile</a><br /><br /></p>
+						</li>
+
+						</ul>
+						</li>
+						<li><p>Si se encuentra dentro de la Unión Europea puede optar por no recibir publicidad dirigida de los socios publicitarios utilizando: <a href="http://www.youronlinechoices.eu/" target="_blank" rel="noreferrer noopener">http://www.youronlinechoices.eu/</a><br /><br /></p>
+						</li>
+						<li><p>Para ver información sobre las opciones de exclusión voluntaria para dispositivos móviles, visite <a href="http://www.networkadvertising.org/mobile-choices" target="_blank" rel="noreferrer noopener">http://www.networkadvertising.org/mobile-choices</a>.</p>
+						</li>
+
+						</ul>
+						<p>Además, ciertas redes publicitarias de terceros, incluido Google, permiten a los usuarios optar por no participar o personalizar las preferencias asociadas con su navegación por Internet. Para obtener más información sobre esta función de Google, <a href="https://adssettings.google.com/u/0/authenticated?hl=en" target="_blank" rel="noreferrer noopener">haga clic aquí</a>.</p>
+						<p><strong>Cookies que utilizamos</strong>:</p>
+
+						<ul>
+						<li><p>Algoliasearch-client-js<br /><br />Proveedor: Algolia<br />Categoría: Funcional<br />Propósito: Necesario para optimizar la función de la barra de búsqueda del sitio web.<br />Duración: 1 año<br /><br /></p>
+						</li>
+						<li><p>historia</p>
+						<p>Proveedor: Framer<br />Categoría: Análisis<br />Propósito: ¿Se utiliza para generar datos sobre cómo el visitante utiliza el sitio web?Duración: 1 año<br /><br /></p>
+						</li>
+						<li><p>cookieconsent_status</p>
+						<p>Proveedor: Framer<br />Categoría: Esencial<br />Propósito: Determina si el usuario ha aceptado el cuadro de consentimiento de cookies.<br />Duración: 1 año<br /><br /></p>
+						</li>
+						<li><p>cookie_consent_desistir</p>
+						<p>Proveedor: Framer<br />Categoría: Análisis<br />Propósito: Determina si el usuario ha aceptado el cuadro de consentimiento de cookies.<br />Duración: 1 año<br /><br /></p>
+						</li>
+						<li><p>Sesión</p>
+						<p>Proveedor: Framer<br />Categoría: Análisis<br />Propósito: Token de sesión de usuario.<br />Duración: 6 meses<br /><br /></p>
+						</li>
+						<li><p>_ga</p>
+						<p>Proveedor: Google Analytics<br />Categoría: Análisis<br />Propósito: Se utiliza para generar datos estadísticos sobre cómo el visitante utiliza el sitio web<br />Duración: 2 años<br /><br /></p>
+						</li>
+						<li><p>_gid</p>
+						<p>Proveedor: Google Analytics<br />Categoría: Análisis<br />Propósito: Se utiliza para generar datos estadísticos sobre cómo el visitante utiliza el sitio web<br />Duración: 1 día<br /><br /></p>
+						</li>
+						<li><p>_gat</p>
+						<p>Proveedor: Google Analytics<br />Categoría: Análisis<br />Propósito: Utilizado por Google Analytics para reducir la tasa de solicitudes<br />Duración: 1 día<br /><br /></p>
+						</li>
+						<li><p>GPS</p>
+						<p>Proveedor: YouTube<br />Categoría: Publicidad<br />Propósito: Habilitar el seguimiento basado en la ubicación geográfica del GPS<br />Duración: 1 día<br /><br /></p>
+						</li>
+						<li><p>YSC</p>
+						<p>Proveedor: YouTube<br />Categoría: Publicidad<br />Propósito: Estadísticas de qué vídeos de YouTube ha visto el usuario<br />Duración: 1 día<br /><br /></p>
+						</li>
+						<li><p>PREF</p>
+						<p>Proveedor: YouTube<br />Categoría: Publicidad<br />Propósito: Rastrea las estadísticas del uso de vídeo por parte de los usuarios en los sitios web<br />Duración: 1 año<br /><br /></p>
+						</li>
+						<li><p>VISITOR_INFO1_LIVE</p>
+						<p>Proveedor: YouTube<br />Categoría: Publicidad<br />Propósito: Estima el ancho de banda de los usuarios en las páginas con vídeos integrados de YouTube<br />Duración: 6 meses<br /><br /></p>
+						</li>
+						<li><p>Lengua</p>
+						<p>Proveedor: LinkedIn<br />Categoría: Publicidad<br />Propósito: Recuerda la versión de idioma seleccionada por el usuario de un sitio web<br />Duración: Sesión<br /><br /></p>
+						</li>
+						<li><p>_gcl_au</p>
+						<p>Proveedor: Google AdSense<br />Categoría: Publicidad<br />Propósito: Utilizado por Google AdSense para la eficiencia de la publicidad en los sitios web que utilizan sus servicios<br />Duración: 3 meses<br /><br /></p>
+						</li>
+						<li><p>ATN</p>
+						<p>Proveedor: Atlas Solutions (Facebook)<br />Categoría: Publicidad<br />Propósito: Perfiles de comportamiento y seguimiento geográfico para publicidad<br />Duración: 2 años<br /><br /></p>
+						</li>
+						<li><p>AA003</p>
+						<p>Proveedor: Atlas Solutions (Facebook)<br />Categoría: Publicidad<br />Propósito: Recopilar información sobre el comportamiento del usuario para optimizar la relevancia de la publicidad en el sitio web<br />Duración: 3 meses<br /><br /></p>
+						</li>
+						<li><p>test_cookie</p>
+						<p>Proveedor: DoubleClick (Google)<br />Categoría: Publicidad<br />Propósito: Se utiliza para comprobar si el navegador del usuario admite cookies<br />Duración: 1 día<br /><br /></p>
+						</li>
+						<li><p>_fbp</p>
+						<p>Proveedor: Facebook<br />Categoría: Publicidad<br />Propósito: Servicios de publicidad como las ofertas en tiempo real de anunciantes externos<br />Duración: 3 meses<br /><br /></p>
+						</li>
+						<li><p>Fr</p>
+						<p>Proveedor: Facebook<br />Categoría: Publicidad<br />Propósito: Utilizado por Facebook para entregar productos publicitarios<br />Duración: 3 meses<br /><br /></p>
+						</li>
+						<li><p>tr</p>
+						<p>Proveedor: Facebook<br />Categoría: Publicidad<br />Propósito: Utilizado por Facebook para entregar productos publicitarios<br />Duración: Sesión<br /><br /></p>
+						</li>
+						<li><p>Bscookie</p>
+						<p>Proveedor: LinkedIn<br />Categoría: Publicidad<br />Propósito: Utilizado por el servicio de redes sociales, LinkedIn, para rastrear el uso de servicios integrados.<br />Duración: 2 años<br /><br /></p>
+						</li>
+						<li><p>Bcookie</p>
+						<p>Proveedor: LinkedIn<br />Categoría: Publicidad<br />Propósito: Utilizado por el servicio de redes sociales, LinkedIn, para rastrear el uso de servicios integrados.<br />Duración: 2 años<br /><br /></p>
+						</li>
+						<li><p>Lidc</p>
+						<p>Proveedor: LinkedIn<br />Categoría: Publicidad<br />Propósito: Utilizado por el servicio de redes sociales, LinkedIn, para rastrear el uso de servicios integrados<br />Duración: 1 día<br /><br /></p>
+						</li>
+						<li><p>Li_sugr</p>
+						<p>Proveedor: LinkedIn<br />Categoría: Publicidad<br />Propósito: Utilizado por el servicio de redes sociales, LinkedIn, para rastrear el uso de servicios integrados<br />Duración: 1 mes<br /><br /></p>
+						</li>
+						<li><p>Lisc</p>
+						<p>Proveedor: LinkedIn<br />Categoría: Publicidad<br />Propósito: Utilizado por el servicio de redes sociales, LinkedIn, para rastrear el uso de servicios integrados<br />Duración: 1 año<br /><br /></p>
+						</li>
+						<li><p>Historial de coincidencia de usuarios</p>
+						<p>Proveedor: LinkedIn<br />Categoría: Publicidad<br />Propósito: Se utiliza para rastrear a los visitantes en múltiples sitios web, con el fin de presentar publicidad relevante<br />Duración: 1 mes<br /><br /></p>
+						</li>
+						<li><p>Paddlejs_campaign_referrer</p>
+						<p>Proveedor: Paddle<br />Categoría: Análisis<br />Propósito: Rastrear los referentes de campañas para los visitantes<br />Duración: 1 mes</p>
+						</li>
+
+						</ul>
+						<p><strong>Actualización de esta política</strong></p>
+						<p>Le recomendamos que revise periódicamente esta página para obtener la información más reciente sobre la política. Su uso continuado de los sitios web constituye su acuerdo de estar sujeto a dichos cambios en esta política. Su único remedio, si no acepta los términos de esta Política, es interrumpir el uso y el acceso a los sitios web.</p>
+						<p><strong>Contacta con nosotros</strong></p>
+						<p>Si tiene preguntas o inquietudes con respecto a esta política o sobre las prácticas de privacidad de esta web, contáctenos por correo electrónico a <a href="mailto:info@lavayen.work" target="_blank" rel="noreferrer noopener">info@lavayen.work</a>, o explicando brevemente lo que desea en <a href="https://lavayen.work/contact" target="_blank" rel="noreferrer noopener">https://lavayen.work/contact</a> mediante el formulario que encontrará allí.</p>
+					</div>
+				</article>
+			</div>
+		</div>
+		<section class="legal-cta" aria-label="Cierre">
+			<div class="legal-cta__rays" aria-hidden="true">
+				<HeroGodRays />
+			</div>
+			<div class="legal-cta__pad">
+				<h2 class="legal-cta__copy">
+					<span class="cta-appear" style="--appear-delay: 0ms">¿Has</span>{' '}
+					<span class="cta-appear" style="--appear-delay: 50ms">terminado?</span>
+				</h2>
+				<a class="cta-btn" href="/">
+					<span class="cta-btn__fill" aria-hidden="true"></span>
+					<span class="cta-btn__clip">
+						<span class="cta-btn__stack">
+							<span class="cta-btn__line cta-btn__line--on">Volver al inicio</span>
+							<span class="cta-btn__line cta-btn__line--off" aria-hidden="true">Volver al inicio</span>
+						</span>
+					</span>
+				</a>
+			</div>
+		</section>
+	</main>
+	<Footer />
+	<script>
+		const bootLegalCta = () => {
+			const cta = document.querySelector('.legal-cta');
+			if (!cta || cta.classList.contains('is-in')) return;
+			const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+			const play = () => {
+				cta.classList.add('is-in');
+				window.removeEventListener('scroll', onScroll);
+				window.removeEventListener('resize', onScroll);
+			};
+			const onScroll = () => {
+				const r = cta.getBoundingClientRect();
+				const seen = Math.min(r.bottom, window.innerHeight) - Math.max(r.top, 0);
+				if (seen > 0) play();
+			};
+			if (reduced) {
+				play();
+				return;
+			}
+			onScroll();
+			window.addEventListener('scroll', onScroll, { passive: true });
+			window.addEventListener('resize', onScroll);
+		};
+		bootLegalCta();
+	</script>
+</BaseLayout>

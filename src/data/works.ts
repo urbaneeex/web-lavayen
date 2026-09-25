@@ -1,7 +1,8 @@
 /**
  * Proyectos Works: orden = orden en listado y en anterior/siguiente.
- * Galerías: `work-galleries.ts` (assets en public/images/works) — regenerar con
- *   npm run sync:works
+ * Galerías: `work-galleries.ts` (assets en public/images/works), descargadas 1:1 de
+ * lavayen.framer.website/work/<slug>. OJO: `npm run sync:works` las sobreescribiría
+ * con la carpeta local «IMAGES lavayen/TRABAJOS».
  */
 import { workGalleries } from './work-galleries';
 import type { WorkGalleryItem } from './work-gallery-types';
@@ -23,10 +24,26 @@ function listThumbnail(gallery: WorkGalleryItem[]): { src: string; alt: string }
 	return { src: '/favicon.svg', alt: gallery[0]!.alt };
 }
 
+export type WorkVideoEmbed = {
+	/** ID numérico del vídeo en Vimeo */
+	vimeoId: string;
+	/** Relación de aspecto CSS (p. ej. '16 / 9' o '9 / 16') */
+	aspect: string;
+	title: string;
+};
+
+/** Fila de vídeos embebidos (réplica de la ficha «Motion Graphics & Vídeo» en Framer) */
+export type WorkVideoRow = {
+	gap: number;
+	videos: WorkVideoEmbed[];
+};
+
 export type WorkProject = {
 	slug: string;
 	year: string;
 	title: string;
+	/** Etiqueta junto al año en la ficha (PERSONAL, VARIOS, cliente…) — igual que en Framer */
+	tag?: string;
 	/** Texto corto en el grid de /works */
 	desc?: string;
 	/** Imagen principal del listado (portada en /works, home) */
@@ -34,285 +51,286 @@ export type WorkProject = {
 	alt: string;
 	/** Galería en la ficha (mínimo una) */
 	gallery: WorkGalleryImage[];
-	/** HTML del bloque descriptivo (columna derecha). Usa template `` ` `` para varios `<p>`. */
+	/** HTML del texto principal de la ficha (columna derecha). */
 	detailHtml: string;
+	/** HTML del bloque de créditos (segundo párrafo, debajo del texto). */
+	creditsHtml?: string;
+	/** Si existe, la ficha muestra esta rejilla de vídeos en lugar del slideshow. */
+	videoRows?: WorkVideoRow[];
 };
 
 function g(slug: keyof typeof workGalleries): WorkGalleryItem[] {
 	return workGalleries[slug];
 }
 
+/** Créditos AGA — mismo HTML que en Framer (enlaces en nueva pestaña). */
+const CREDITS_AGA =
+	'<p>Directora creativa: <a href="https://belendepeter.myportfolio.com" target="_blank" rel="noopener">Belén de Pedro.</a><br>Producido en <a href="https://somosgrupoaga.com" target="_blank" rel="noopener">GRUPO AGA.</a></p>';
+
 export const workProjects: WorkProject[] = [
 	{
 		slug: 'la-sinfonia-del-caos',
 		year: '2025',
+		tag: 'PERSONAL',
 		title: 'La Sinfonía del Caos',
-		desc: 'Collages',
-		...(() => {
-			const gallery = g('la-sinfonia-del-caos');
-			return {
-				gallery,
-				img: '/images/symphony.webp',
-				alt: 'La Sinfonía del Caos — collages'
-			};
-		})(),
-		detailHtml: `
-			<p>Nadie dijo que la vida fuera silenciosa. De hecho, a veces es una orquesta sin alma de ruidos cotidianos. Y si eres de los que celebra estar en cada minuto en lugar de luchar contra ello, esta es tu colección.Hacer una colección de collages que hacen referencia a los maravillosos sonidos de nuestro día a día.</p>
-			<p><strong>Representación del Ruido y la Energía:</strong> Serie de collages que mezcla recortes pop, señales y animales en escenas de alto contraste. El azul eléctrico y los destellos funcionan como metáfora del estímulo constante y del ritmo urbano.</p>
-			<p><strong>Contraste entre Orden y Desorden:</strong> Composiciones que juegan con la simetría rota y capas superpuestas: lo cotidiano se vuelve casi abstracto, invitando a leer cada pieza como un fotograma de un caos controlado.</p>
-		`.trim()
+		desc: 'El ruido del día a día, convertido en collage.',
+		gallery: g('la-sinfonia-del-caos'),
+		img: '/images/symphony.webp',
+		alt: 'La Sinfonía del Caos — collages',
+		detailHtml:
+			'<p>Una colección de collages sobre los sonidos del día con el ruido cotidiano como materia prima. Para los que lo celebran en lugar de luchar contra él.</p>'
 	},
 	{
 		slug: 'womo-brand',
 		year: '2024',
+		tag: 'PERSONAL',
 		title: 'WOMO Brand',
-		desc: 'Branding',
-		...(() => {
-			const gallery = g('womo-brand');
-			return {
-				gallery,
-				img: '/images/womo.webp',
-				alt: 'WOMO Brand — branding'
-			};
-		})(),
-		detailHtml: `
-			<p>WOMO es una marca de ropa atemporal y minimalista, comprometida con la alta calidad de sus materiales y la responsabilidad ambiental, rechazando la moda rápida. Ofrece exclusividad y un fuerte sentido de comunidad a clientes que buscan una identidad más allá de la indumentaria. Las prendas están diseñadas para el uso diario, combinando diseño meticuloso con comodidad, durabilidad y versatilidad.</p>
-			<p>La solución aportada es una marca minimalista que juega una estética moderna y urbana usando blanco y negro como principales. El uso de colores neutros es una decisión clave, ya que es el epítome de lo atemporal y asegura que la marca no se vea atada a tendencias pasajeras. Esto refuerza la idea de durabilidad y versatilidad de las prendas. La identidad usa mucho espacio negativo, etiquetas sencillas y un packaging reservado. Esto comunica el concepto de exclusividad y de no ser una marca que grita por atención. La marca valora la sutileza por encima del ruido.</p>
-		`.trim()
+		desc: 'Identidad para una marca de ropa que no grita por atención.',
+		gallery: g('womo-brand'),
+		img: '/images/womo.webp',
+		alt: 'WOMO Brand — branding',
+		detailHtml:
+			'<p>Proyecto personal que hay que sacar cuando se pasa por la cabeza. Una marca de ropa que no grita. Minimalista, ecosostenible y hecha para durar. Blanco, negro, verde, espacio negativo y ya. El reto era comunicar exclusividad sin parecer que te lo estás creyendo demasiado.</p>'
 	},
 	{
 		slug: 'campana-pizzas-goodfellas',
 		year: '2025',
+		tag: 'FINDUS',
 		title: "Campaña de pizzas Goodfella's",
-		desc: 'Campaña para el lanzamiento de una gama de pizzas precocinadas nuevas de la marca Findus.',
-		...(() => {
-			const gallery = g('campana-pizzas-goodfellas');
-			return {
-				gallery,
-				img: '/images/goodfellas.avif',
-				alt: "Campaña de pizzas Goodfella's"
-			};
-		})(),
-		detailHtml: `
-			<p>Diseñar un key-visual y adaptarlo a una variedad de medios y formatos con una creatividad acorde a su brandbook.</p>
-			<p><strong>Foco en el Producto:</strong> La composición es limpia y directa. El producto es el "héroe" de la escena ocupando el mayor porcentaje de espacio y evitando las distracciones.</p>
-			<p>Usamos una paleta oscura (negros, grises oscuros, tonos ahumados), lo que permite que los colores del producto (amarillos, blancos y rojos) resalten con gran intensidad, haciendo que la comida se vea apetecible y de alta calidad.</p>
-		`.trim()
+		desc: 'Campaña de lanzamiento para la nueva gama de pizzas de Findus.',
+		gallery: g('campana-pizzas-goodfellas'),
+		img: '/images/goodfellas.avif',
+		alt: "Campaña de pizzas Goodfella's",
+		detailHtml:
+			'<p>Campaña de lanzamiento para la nueva gama de pizzas de Findus. KV principal y adaptaciones a PDV y exterior. Varios idiomas y formatos y un queso derritiéndose en todos.</p>',
+		creditsHtml: CREDITS_AGA
 	},
 	{
 		slug: 'amor-fatum',
 		year: '2022',
+		tag: 'PERSONAL',
 		title: 'Amor Fatum',
-		desc: 'Diseño de perfume',
-		...(() => {
-			const gallery = g('amor-fatum');
-			return {
-				gallery,
-				img: '/images/amor-fatum.webp',
-				alt: 'Amor Fatum — perfume'
-			};
-		})(),
-		detailHtml: `
-			<p>Imagina un viaje olfativo que capture la esencia misma de la existencia humana, desde su inicio hasta su plena madurez. Presentamos una innovadora colección de perfumes inspirada en el flujo incesante de un río, donde cada etapa de su recorrido se entrelaza con las fases de la vida de un hombre.</p>
-			<p>Concebimos la vida como un río caudaloso, un proceso continuo de experiencias y transformaciones. El hombre, en esta analogía, está representado por las piedras que yacen en su lecho.</p>
-			<p>Así como la corriente del agua moldea y pule las rocas a lo largo de su camino, las experiencias y los desafíos de la vida esculpen nuestro carácter y sabiduría.</p>
-			<p>La solución de diseño gráfico de "Amor fatum" es conceptual, sofisticada y atmosférica. Se enfoca en traducir la metáfora del río y las rocas pulidas por la vida a un lenguaje visual de lujo. Una marca lujosa, minimalista y orgánica. Se emplea una tipografía serif elegante y clásica en un tamaño reducido y con mucho aire, reforzando la sensación de alta gama y atemporalidad. El diseño utiliza la abstracción y la textura para contar la historia de la marca, elevando el packaging a una pieza de arte conceptual que resuena con el nombre "Amor fatum".</p>
-		`.trim()
+		desc: 'Tres perfumes, tres etapas de la vida.',
+		gallery: g('amor-fatum'),
+		img: '/images/amor-fatum.webp',
+		alt: 'Amor Fatum — perfume',
+		detailHtml:
+			'<p>Proyecto personal. Tres perfumes, un concepto: el paso del tiempo. Cada fragancia es una etapa – joven, adulto, anciano. Cuanto más pulida, más vivida.</p>'
 	},
 	{
 		slug: 'packaging',
-		year: '2023 · 2025',
+		year: '2023 · 2026',
+		tag: 'VARIOS',
 		title: 'Packaging',
-		desc: 'Diseño de ediciones promocionales especiales de libros',
-		...(() => {
-			const gallery = g('packaging');
-			return {
-				gallery,
-				img: '/images/packaging.webp',
-				alt: 'Packaging — ediciones promocionales de libros'
-			};
-		})(),
-		detailHtml: `
-			<p>Diseño y en algunos casos, adaptación de creatividades para usarlo en packaging para diversos sectores, incluyendo el editorial, el entretenimiento y productos de consumo.</p>
-			<p>Directora creativa: Belén de Pedro.</p>
-			<p>Producido en GRUPO AGA.</p>
-		`.trim()
+		desc: 'Ediciones especiales para bookstagramers. Cambias de libro, cambias de mundo.',
+		gallery: g('packaging'),
+		img: '/images/packaging.webp',
+		alt: 'Packaging — ediciones promocionales de libros',
+		detailHtml:
+			'<p>Ediciones especiales para envíos a bookstagramers e influencers de Grupo Anaya. Cada caja construye el universo del libro, no solo lo envuelve. Fantasía oscura, thriller, novela gráfica – cambias de libro, cambias de mundo.</p>',
+		creditsHtml: CREDITS_AGA
+	},
+	{
+		slug: 'logofolio',
+		year: '2024 · 2025',
+		tag: 'VARIOS',
+		title: 'Logofolio',
+		desc: 'Logos. Varios. Buenos.',
+		gallery: g('logofolio'),
+		img: '/images/logofolio.webp',
+		alt: 'Logofolio — identidades y logotipos',
+		// En Framer la ficha no tiene texto
+		detailHtml: ''
 	},
 	{
 		slug: 'carteleria',
 		year: '2022 · 2026',
+		tag: 'VARIOS',
 		title: 'Cartelería',
-		...(() => {
-			const gallery = g('carteleria');
-			return {
-				gallery,
-				img: '/images/carteleria.webp',
-				alt: 'Cartelería y gráfica de gran formato — Ángel Lavayen'
-			};
-		})(),
+		desc: 'Carteles para clientes variados. Sin más historia que la que se ve.',
+		gallery: g('carteleria'),
+		img: '/images/carteleria.webp',
+		alt: 'Cartelería y gráfica de gran formato — Ángel Lavayen',
 		detailHtml:
-			'<p>Una colección de trabajos de cartelería y gráfica de gran formato, diseñados para captar la atención de manera instantánea y transmitir mensajes claros.</p>'
+			'<p>Una colección de trabajos de cartelería y gráfica de gran formato, diseñados para captar la atención de manera instantánea y transmitir mensajes claros.</p>',
+		creditsHtml: CREDITS_AGA
 	},
 	{
 		slug: 'merchandising-museo-del-traje',
 		year: '2022',
+		tag: 'PERSONAL',
 		title: 'Merchandising Museo del Traje',
-		desc: 'Colección de productos para la tienda de merchandising del MDT',
+		desc: 'Arte de élite del Museo del Traje, en formato que cabe en el bolsillo.',
 		...(() => {
 			const gallery = g('merchandising-museo-del-traje');
 			const t = listThumbnail(gallery);
 			return { img: t.src, alt: t.alt, gallery };
 		})(),
 		detailHtml:
-			'<p>Diseñamos una serie de productos basados en algunas de las prendas que se exponen en el Museo Del Traje. El valor de este ejercicio esta en coger obras de élite y transformarlas en productos para masas.</p>'
+			'<p>Colecciones de producto inspiradas en diseñadores del museo. Cada pieza traduce la firma de un diseñador histórico a algo que puedes usar hoy. Arte de élite para el bolsillo de cualquier, literalmente.</p>'
 	},
 	{
+		// No publicado en el listado de Framer; se mantiene accesible por URL.
 		slug: 'beauty-pom-pom',
 		year: '2025',
 		title: 'Beauty Pom Pom',
 		desc: 'Sistema visual',
-		...(() => {
-			const gallery = g('beauty-pom-pom');
-			return {
-				gallery,
-				img: '/images/beauty.webp',
-				alt: 'Beauty Pom Pom — sistema visual'
-			};
-		})(),
-		detailHtml: `
-			<p>Este proyecto nace de la necesidad de fusionar la delicadeza del sector estético con una identidad visual robusta y sofisticada. Para Pom Pom - Beauty & Cosmetics, se desarrolló un sistema gráfico basado en la elegancia clásica, utilizando una tipografía script de trazos fluidos que evoca la precisión y el detalle de los tratamientos de pestañas y cuidado facial.</p>
-			<p>La paleta de colores —compuesta por gris carbón, arena y crema— se aleja de los códigos visuales tradicionales de la belleza para posicionar a la marca en un segmento de lujo orgánico y bienestar consciente. El resultado es una marca versátil, que transmite confianza y profesionalidad en cada punto de contacto, desde la papelería corporativa hasta su presencia digital.</p>
-		`.trim()
+		gallery: g('beauty-pom-pom'),
+		img: '/images/beauty.webp',
+		alt: 'Beauty Pom Pom — sistema visual',
+		detailHtml:
+			'<p>Sistema gráfico para Pom Pom – Beauty & Cosmetics: tipografía script de trazos fluidos y paleta de gris carbón, arena y crema. Lujo orgánico y bienestar consciente, de la papelería a lo digital.</p>'
 	},
 	{
 		slug: 'motion-graphics-video',
 		year: '2023 · 2025',
+		tag: 'VARIOS',
 		title: 'Motion Graphics & Vídeo',
-		desc: 'Diseño, desarrollo o montaje de productos audiovisuales.',
-		...(() => {
-			const gallery = g('motion-graphics-video');
-			return {
-				gallery,
-				img: 'https://framerusercontent.com/images/5WxYMrv83dUYz4Bw19cWsTXhAuA.gif?width=800&height=600',
-				alt: 'Motion graphics y vídeo — piezas audiovisuales y animación'
-			};
-		})(),
+		desc: 'Del Teatro Capitol al pasillo del supermercado. Si se mueve, algo mío hay detrás.',
+		gallery: g('motion-graphics-video'),
+		img: 'https://framerusercontent.com/images/5WxYMrv83dUYz4Bw19cWsTXhAuA.gif?width=800&height=600',
+		alt: 'Motion graphics y vídeo — piezas audiovisuales y animación',
 		detailHtml:
-			'<p>Diseño, desarrollo o montaje de productos audiovisuales.</p>'
+			'<p>De las pantallas del Teatro Capitol a los pasillos del supermercado. Storyboard, animación y montaje para campañas, eventos y retail.</p>',
+		// Misma rejilla de Vimeo que la ficha original
+		videoRows: [
+			{
+				gap: 10,
+				videos: [
+					{ vimeoId: '1130426251', aspect: '16 / 9', title: 'Shimano – Gravel' },
+					{ vimeoId: '1130426264', aspect: '16 / 9', title: 'Motion graphics 2' }
+				]
+			},
+			{
+				gap: 10,
+				videos: [{ vimeoId: '1152946988', aspect: '16 / 9', title: "I'm so lucky · Collage animado" }]
+			},
+			{
+				gap: 30,
+				videos: [
+					{ vimeoId: '1152947219', aspect: '9 / 16', title: 'Vertical 1' },
+					{ vimeoId: '1130425520', aspect: '0.561747 / 1', title: 'Vertical 2' },
+					{ vimeoId: '1130425499', aspect: '9 / 16', title: 'Vertical 3' }
+				]
+			},
+			{
+				gap: 30,
+				videos: [
+					{ vimeoId: '1130421654', aspect: '9 / 16', title: 'Vertical 4' },
+					{ vimeoId: '1130421674', aspect: '0.561747 / 1', title: 'Vertical 5' },
+					{ vimeoId: '1130421637', aspect: '9 / 16', title: 'Vertical 6' },
+					{ vimeoId: '1170389768', aspect: '9 / 16', title: 'Frenzy Navidad' }
+				]
+			}
+		]
 	},
 	{
 		slug: 'campanas-digitales',
 		year: '2023 · 2024',
+		tag: 'WARNER BROS ESPAÑA',
 		title: 'Campañas digitales',
-		desc: 'Banners animados HTML5',
-		...(() => {
-			const gallery = g('campanas-digitales');
-			return {
-				gallery,
-				img: '/images/campanas-digitales.webp',
-				alt: 'Campañas digitales — banners HTML5'
-			};
-		})(),
+		desc: 'Banners para estrenos de Warner Bros. El trabajo invisible que ves en todas partes.',
+		gallery: g('campanas-digitales'),
+		img: '/images/campanas-digitales.webp',
+		alt: 'Campañas digitales — banners para estrenos de Warner Bros',
 		detailHtml:
-			'<p>Adaptación y programación de banners HTML para campañas de películas de Warner Bros.</p>'
+			'<p>Banners animados en HTML5 para los estrenos de Warner bros. El trabajo invisible que ves en todas partes y nunca sabes quién lo hizo.</p>'
 	},
 	{
 		slug: 'diseno-editorial',
-		year: '2024 · 2025',
+		year: '2024 · 2026',
+		tag: 'VARIOS',
 		title: 'Diseño editorial',
-		desc: 'Maquetación y diseño editorial',
-		...(() => {
-			const gallery = g('diseno-editorial');
-			return {
-				gallery,
-				img: '/images/diseno-editorial.webp',
-				alt: 'Diseño editorial'
-			};
-		})(),
-		detailHtml: `
-			<p><strong>2024 · 2025</strong> · Varios</p>
-			<p>Muestro dominio en el diseño de folletos corporativos (como el proyecto Tiimi), catálogos de productos (como Invati Ultra Advanced) y otros documentos de comunicación visual. Mi trabajo se centra en traducir la identidad de marca a formatos editoriales coherentes, garantizando una maquetación óptima y preparando archivos con precisión técnica para la imprenta (CMYK, sangrados y cortes), asegurando un resultado final de alta calidad.</p>
-			<p>Directora creativa: Belén de Pedro.</p>
-			<p>Producido en GRUPO AGA.</p>
-		`.trim()
+		desc: 'Folletos, catálogos y piezas de comunicación.',
+		gallery: g('diseno-editorial'),
+		img: '/images/diseno-editorial.webp',
+		alt: 'Diseño editorial',
+		detailHtml:
+			'<p>Folletos corporativos, catálogos y piezas de comunicación para varios clientes. El trabajo que nadie ve hasta que está mal.</p>',
+		creditsHtml: CREDITS_AGA
 	},
 	{
 		slug: 'pio-pio',
 		year: '2023',
+		tag: 'PÍO PÍO SHOES',
 		title: 'Pío Pío',
-		...(() => {
-			const gallery = g('pio-pio');
-			return {
-				gallery,
-				img: '/images/pio-pio.webp',
-				alt: 'Pío Pío — branding infantil para calzado'
-			};
-		})(),
+		desc: 'Branding para una marca de zapatos infantiles. Identidad completa, mascota incluida.',
+		gallery: g('pio-pio'),
+		img: '/images/pio-pio.webp',
+		alt: 'Pío Pío — branding infantil para calzado',
 		detailHtml:
-			'<p>"Pío Pío" nació con la idea de crear un mundo de fantasía para los niños a través de sus zapatos. La paleta de colores cálida y vibrante, inspirada en los juegos al aire libre y los paisajes infantiles, transmite alegría y energía. El pollito, un personaje entrañable y lleno de vida, se convierte en el compañero ideal para las aventuras. La tipografía infantil y atrevida, diseñada especialmente para la marca, le da un toque de diversión y legibilidad, haciendo que los productos sean irresistibles para los pequeños. A través de este proyecto, buscamos construir una marca que no solo ofrezca calzado de calidad, sino que también fomente la imaginación y la creatividad de los más pequeños.</p>'
+			'<p>Branding para una mezcla de zapatos infantiles. Identidad completa: logo con mascota ilustrada, packaging, etiquetas, stickers y pin. El cliente eligió otra propuesta que hice pero esta me gusta más así que aquí está.</p>',
+		creditsHtml: CREDITS_AGA
 	},
 	{
 		slug: 'lesj-centro-estetico',
 		year: '2023',
+		tag: 'PERSONAL',
 		title: 'LESJ Centro estético',
-		desc: 'Branding',
-		...(() => {
-			const gallery = g('lesj-centro-estetico');
-			return {
-				gallery,
-				img: '/images/lesj.webp',
-				alt: 'LESJ Centro estético — branding'
-			};
-		})(),
-		detailHtml: `
-			<p>LESJ™ es una clínica de estética que prioriza la salud mental para lograr resultados físicos satisfactorios y duraderos. Combinamos medicina estética convencional con terapia psicológica.</p>
-			<p>Nuestra filosofía se basa en cuatro pilares de vida (Nutrición, Ejercicio, Reducción del Estrés y Calidad del Sueño), los cuales son la base para la salud. Guiamos a los clientes a mejorar estos hábitos, ya que ningún tratamiento es más efectivo.</p>
-			<p>El ícono principal es la abstracción de una hoja, que simboliza el crecimiento, el bienestar natural y la vida. Esta forma orgánica transmite la idea de un enfoque saludable y equilibrado. El símbolo de la hoja está segmentado en cuatro partes que se tocan o engranan sutilmente, representando los cuatro pilares fundamentales que deben estar en equilibrio para el bienestar del cliente. Se utiliza una tipografía moderna, limpia y sans-serif (sin serifa), con un peso de línea delgado, lo que aporta una sensación de sofisticación, limpieza y minimalismo.</p>
-		`.trim()
+		desc: 'Una clínica estética que pone la cabeza antes que el cuerpo.',
+		gallery: g('lesj-centro-estetico'),
+		img: '/images/lesj.webp',
+		alt: 'LESJ Centro estético — branding',
+		detailHtml:
+			'<p>Branding para una clínica estética con un enfoque poco común: primero la cabeza y después el cuerpo. Identidad minimalista construida sobre cuatro pilares de bienestar.</p>'
 	},
 	{
 		slug: 'shimano-days',
-		year: '2023 · 2025',
+		year: '2025',
+		tag: 'SHIMANO',
 		title: 'Shimano Days',
-		desc: 'Diseño de diversas piezas para un evento interno de novedades de Shimano.',
-		...(() => {
-			const gallery = g('shimano-days');
-			return {
-				gallery,
-				img: '/images/shimano.webp',
-				alt: 'Shimano Days — evento Shimano'
-			};
-		})(),
-		detailHtml: `
-			<p>El desafío consistió en diseñar un logo distintivo que capturara la esencia tanto del evento como de la marca. Además, había que desarrollar una amplia gama de materiales visuales, desde invitaciones y folletos hasta señalización y contenido digital, asegurando una experiencia coherente y atractiva para los colaboradores.</p>
-			<p>Presentemos un diseño moderno y funcional, con una sensación de energía y movimiento constante, muy apropiado para el mundo del ciclismo. Un sistema visual que se adapta a diversos formatos (invitaciones, señalización, contenido digital). Se opta por una tipografía sans-serif de palo seco, limpia y de alta legibilidad, lo que comunica eficiencia, tecnología y velocidad.</p>
-			<p>Directora creativa: Belén de Pedro.</p>
-			<p>Producido en GRUPO AGA.</p>
-		`.trim()
+		desc: 'Identidad para el evento interno de novedades de Shimano.',
+		gallery: g('shimano-days'),
+		img: '/images/shimano.webp',
+		alt: 'Shimano Days — evento Shimano',
+		detailHtml:
+			'<p>Identidad visual para el evento interno de novedades de Shimano. Logo, invitaciones, señalización y contenido digital – todo coherente y con energía de ciclismo.</p>',
+		creditsHtml: CREDITS_AGA
 	},
 	{
 		slug: 'diseno-ambiental',
 		year: '2023 · 2025',
+		tag: 'AMADEUS',
 		title: 'Diseño ambiental',
-		desc: 'Diseño de piezas decorativas para las oficinas de AMADEUS',
-		...(() => {
-			const gallery = g('diseno-ambiental');
-			return {
-				gallery,
-				img: '/images/diseno-ambiental.webp',
-				alt: 'Diseño ambiental — oficinas AMADEUS'
-			};
-		})(),
-		detailHtml: `
-			<p>Diseño e implementación de gráfica ambiental para la sede de Amadeus en Madrid. El proyecto consistió en la conceptualización y producción de vinilos de gran formato que integran la identidad de la marca con referencias al arte pop y contemporáneo. A través de la reinterpretación de iconos artísticos, logramos humanizar los espacios de trabajo, dotándolos de una personalidad única que refuerza los valores de innovación, exploración y colaboración de la compañía.</p>
-			<p>Directora creativa: Belén de Pedro.</p>
-			<p>Producido en GRUPO AGA.</p>
-		`.trim()
+		desc: 'Arte pop en las paredes de una empresa tecnológica. Alguien tenía que hacerlo.',
+		gallery: g('diseno-ambiental'),
+		img: '/images/diseno-ambiental.webp',
+		alt: 'Diseño ambiental — oficinas AMADEUS',
+		detailHtml:
+			'<p>Vinilos de gran formato para las oficinas de Amadeus en Madrid. Arte pop y contemporáneo en un espacio corporativo.</p>',
+		creditsHtml: CREDITS_AGA
 	}
 ];
 
 export function getWorkBySlug(slug: string): WorkProject | undefined {
 	return workProjects.find((p) => p.slug === slug);
+}
+
+/** Orden del listado /works, alineado con el original de Framer. */
+export const workListOrder = [
+	'la-sinfonia-del-caos',
+	'motion-graphics-video',
+	'campana-pizzas-goodfellas',
+	'campanas-digitales',
+	'womo-brand',
+	'packaging',
+	'logofolio',
+	'shimano-days',
+	'diseno-editorial',
+	'diseno-ambiental',
+	'amor-fatum',
+	'carteleria',
+	'merchandising-museo-del-traje',
+	'pio-pio',
+	'lesj-centro-estetico'
+] as const;
+
+export function getListedWorks(): WorkProject[] {
+	return workListOrder.map((slug) => {
+		const p = getWorkBySlug(slug);
+		if (!p) throw new Error(`Work no encontrado: ${slug}`);
+		return p;
+	});
 }
 
 /** Primer año en `year` (p. ej. "2023 · 2025") → fecha ISO para schema.org `datePublished`. */
@@ -326,10 +344,20 @@ export function getWorkNeighbors(slug: string): {
 	prev: WorkProject | null;
 	next: WorkProject | null;
 } | null {
+	const listed = getListedWorks();
+	const listedIndex = listed.findIndex((p) => p.slug === slug);
+	if (listedIndex !== -1) {
+		return {
+			current: listed[listedIndex]!,
+			prev: listedIndex > 0 ? listed[listedIndex - 1]! : null,
+			next: listedIndex < listed.length - 1 ? listed[listedIndex + 1]! : null
+		};
+	}
+
 	const i = workProjects.findIndex((p) => p.slug === slug);
 	if (i === -1) return null;
 	return {
-		current: workProjects[i],
+		current: workProjects[i]!,
 		prev: i > 0 ? workProjects[i - 1]! : null,
 		next: i < workProjects.length - 1 ? workProjects[i + 1]! : null
 	};

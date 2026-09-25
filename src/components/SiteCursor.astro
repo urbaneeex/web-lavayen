@@ -1,79 +1,104 @@
 ---
 /**
- * Punto amarillo: exclusion. Sobre works: dúo de píldoras gris claro (vertical + cápsula "View")
- * con exclusion — mismo criterio de fusión que el círculo, reaccionando al contenido bajo el puntero.
+ * Cursor custom — réplica del componente Framer «Cursor»
+ * (shared-lib, variantes Regular / View / Go / Button + pressed).
+ *
+ * Regular: 20×20, blanco, mix-blend-mode: difference
+ * View:    29×40 + píldora «Ver» (fichas de trabajo)
+ * Go:      29×29 + píldora «Ir» (enlaces externos)
+ * Button:  35×29 (nav, footer, CTA)
+ * Pressed: 16×16 (Regular) / 28×28 (Button) — View/Go no tienen pressed
+ * Spring:  stiffness 500 / damping 60 / mass 1
+ *
+ * El blend va en ESTE elemento (cápsula + píldora): un padre con
+ * z-index / opacity / transform aísla mix-blend-mode y el círculo
+ * se queda blanco sobre cualquier fondo.
  */
 interface Props {
+	/** Selectores que activan la variante Button (Framer: data-framer-cursor = 1u29ztf) */
 	hoverSelector: string;
-	workViewSelector?: string;
+	/** Selectores de la variante View («Ver») */
+	viewSelector?: string;
+	/** Selectores de la variante Go («Ir») */
+	goSelector?: string;
 }
 
-const { hoverSelector, workViewSelector = '.work-item-link, .featured-work-link' } = Astro.props;
+const { hoverSelector, viewSelector = '', goSelector = '' } = Astro.props;
 ---
 
 <span id="cursor-dot" class="cursor-dot" aria-hidden="true">
-	<span class="cursor-dot__track">
-		<span class="cursor-dot__dot" aria-hidden="true"></span>
-		<span class="cursor-dot__work" aria-hidden="true">
-			<span class="cursor-dot__pill cursor-dot__pill--v" aria-hidden="true"></span>
-			<span class="cursor-dot__pill cursor-dot__pill--h">View</span>
-		</span>
-	</span>
+	<span class="cursor-dot__label cursor-dot__view">Ver</span>
+	<span class="cursor-dot__label cursor-dot__go">Ir</span>
 </span>
-<script define:vars={{ hoverSelector, workViewSelector }}>
+
+<script define:vars={{ hoverSelector, viewSelector, goSelector }}>
 	const cursor = document.getElementById('cursor-dot');
-	const mm = window.matchMedia('(hover: hover) and (pointer: fine)');
+	const noHover = window.matchMedia('(any-hover: none)');
 	if (cursor) {
 		var inited = false;
-		var applyState = (target) => {
-			if (!target || !(target instanceof Element)) {
-				return;
-			}
-			var onWork = Boolean(target.closest(workViewSelector));
-			var onHover = Boolean(target.closest(hoverSelector));
-			cursor.classList.toggle('is-work-view', onWork);
-			cursor.classList.toggle('is-hovering', onHover && !onWork);
+		var pressed = false;
+
+		var hits = (el, sel) => Boolean(sel && el && el.closest && el.closest(sel));
+
+		var applyFromPoint = (x, y) => {
+			var el = document.elementFromPoint(x, y);
+			var onView = hits(el, viewSelector);
+			var onGo = !onView && hits(el, goSelector);
+			var onButton = !onView && !onGo && hits(el, hoverSelector);
+			cursor.classList.toggle('is-view', onView);
+			cursor.classList.toggle('is-go', onGo);
+			cursor.classList.toggle('is-button', onButton);
+			cursor.classList.toggle('is-pressed', pressed && !onView && !onGo);
 		};
 
-		var onWindowLeave = function () {
-			cursor.classList.remove('is-active', 'is-hovering', 'is-work-view');
+		var hide = function () {
+			cursor.classList.remove('is-active', 'is-button', 'is-view', 'is-go', 'is-pressed');
+			pressed = false;
 		};
 
 		var init = function () {
-			if (inited || !mm.matches) return;
+			if (inited || noHover.matches) return;
 			inited = true;
+			document.documentElement.classList.add('has-custom-cursor');
 
 			var onMove = (event) => {
+				if (event.pointerType === 'touch') return;
 				cursor.style.left = event.clientX + 'px';
 				cursor.style.top = event.clientY + 'px';
 				cursor.classList.add('is-active');
-				applyState(event.target);
+				applyFromPoint(event.clientX, event.clientY);
 			};
 
-			var onOver = (event) => {
-				applyState(event.target);
+			var onDown = (event) => {
+				if (event.pointerType === 'touch') return;
+				pressed = true;
+				applyFromPoint(event.clientX, event.clientY);
 			};
 
-			window.addEventListener('mousemove', onMove, { passive: true });
-			document.addEventListener('mouseover', onOver, true);
-			document.documentElement.addEventListener('mouseleave', onWindowLeave, false);
-			window.addEventListener('blur', onWindowLeave);
+			var onUp = (event) => {
+				pressed = false;
+				applyFromPoint(event.clientX, event.clientY);
+			};
+
+			window.addEventListener('pointermove', onMove, { passive: true });
+			window.addEventListener('pointerdown', onDown, { passive: true });
+			window.addEventListener('pointerup', onUp, { passive: true });
+			window.addEventListener('pointercancel', onUp, { passive: true });
+			document.documentElement.addEventListener('mouseleave', hide);
+			window.addEventListener('blur', hide);
 		};
 
-		if (mm.matches) {
-			init();
-		} else {
-			mm.addEventListener('change', function onMq() {
-				if (mm.matches) init();
-			});
-		}
+		if (!noHover.matches) init();
+		noHover.addEventListener('change', function () {
+			if (!noHover.matches) init();
+		});
 	}
 </script>
 
 <style is:global>
 	@media (hover: hover) and (pointer: fine) {
-		a.work-item-link,
-		a.featured-work-link {
+		html.has-custom-cursor,
+		html.has-custom-cursor * {
 			cursor: none !important;
 		}
 	}
@@ -82,139 +107,100 @@ const { hoverSelector, workViewSelector = '.work-item-link, .featured-work-link'
 		position: fixed;
 		top: 0;
 		left: 0;
-		width: 0;
-		height: 0;
+		width: 20px;
+		height: 20px;
+		margin: 0;
+		padding: 0;
+		border: 0;
+		border-radius: 200px;
+		background-color: #fff;
+		mix-blend-mode: difference;
 		overflow: visible;
 		pointer-events: none;
-		z-index: 2147483000;
+		z-index: 2147483001;
 		opacity: 0;
-		transition: opacity 120ms ease;
-	}
-
-	.cursor-dot__track {
-		position: absolute;
-		left: 0;
-		top: 0;
-		display: block;
-		transform: translate3d(-50%, -50%, 0);
-		will-change: transform;
-	}
-
-	/* Solo el círculo usa exclusion: mismo efecto “custom” de siempre. */
-	.cursor-dot__dot {
-		display: block;
-		width: 1.1rem;
-		height: 1.1rem;
-		border-radius: 999px;
-		background: #f4d234;
-		mix-blend-mode: exclusion;
-		transform: scale(0.7);
+		transform: translate(-50%, -50%);
 		transform-origin: center;
-		opacity: 1;
+		will-change: auto;
+		isolation: auto;
+		/* spring 500 / 60 / 1 (overdamped) + fade Framer 0.2s */
 		transition:
-			transform 110ms ease,
-			opacity 100ms ease;
-	}
-
-	/*
-	 * Referencia: píldora vertical + cápsula con «View» en negro, ambas gris/blanco
-	 * sólido; el bloque entero con exclusion = mismo lenguaje que .cursor-dot__dot
-	 * (inversión / contraste con lo que hay debajo al mover el cursor).
-	 */
-	.cursor-dot__work {
-		position: absolute;
-		left: 50%;
-		top: 50%;
-		display: flex;
-		flex-direction: row;
-		align-items: center;
-		justify-content: center;
-		gap: 0.3rem;
-		width: max-content;
-		pointer-events: none;
-		transform: translate(-50%, -50%) scale(0.9);
-		transform-origin: center;
-		opacity: 0;
-		visibility: hidden;
-		mix-blend-mode: exclusion;
-		-webkit-backface-visibility: hidden;
-		backface-visibility: hidden;
-		transition:
-			transform 150ms cubic-bezier(0.34, 1.1, 0.64, 1),
-			opacity 120ms ease,
-			visibility 0ms linear 120ms;
-	}
-
-	.cursor-dot__pill {
-		flex-shrink: 0;
-		border-radius: 9999px;
-		background: #e8e8e8;
-		box-sizing: border-box;
-	}
-
-	/* Cápsula alargada (como píldora de medicina en vertical) */
-	.cursor-dot__pill--v {
-		width: 0.35rem;
-		height: 1.1rem;
-	}
-
-	/* Cápsula horizontal: «View» centrada, Inter limpio */
-	.cursor-dot__pill--h {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		min-height: 1.12rem;
-		padding: 0.38rem 0.9rem 0.4rem;
-		font-family: Inter, system-ui, -apple-system, sans-serif;
-		font-size: 0.7rem;
-		font-weight: 600;
-		letter-spacing: 0.01em;
-		line-height: 1;
-		color: #0a0a0a;
-		white-space: nowrap;
+			opacity 0.2s linear,
+			width 280ms cubic-bezier(0.22, 1, 0.36, 1),
+			height 280ms cubic-bezier(0.22, 1, 0.36, 1);
 	}
 
 	.cursor-dot.is-active {
-		opacity: 0.95;
-	}
-
-	.cursor-dot.is-active .cursor-dot__dot {
-		transform: scale(1);
-	}
-
-	.cursor-dot.is-active.is-hovering .cursor-dot__dot {
-		transform: scale(1.6);
-	}
-
-	.cursor-dot.is-active.is-work-view .cursor-dot__dot {
-		opacity: 0;
-		transform: scale(0.3);
-		pointer-events: none;
-		transition: transform 100ms ease, opacity 80ms ease;
-	}
-
-	.cursor-dot.is-work-view .cursor-dot__work {
-		visibility: visible;
-		transition:
-			transform 150ms cubic-bezier(0.34, 1.1, 0.64, 1),
-			opacity 120ms ease,
-			visibility 0ms;
-	}
-
-	.cursor-dot.is-active.is-work-view .cursor-dot__work {
 		opacity: 1;
-		transform: translate(-50%, -50%) scale(1);
+	}
+
+	.cursor-dot.is-button {
+		width: 35px;
+		height: 29px;
+	}
+
+	.cursor-dot.is-view {
+		width: 29px;
+		height: 40px;
+	}
+
+	.cursor-dot.is-go {
+		width: 29px;
+		height: 29px;
+	}
+
+	.cursor-dot.is-pressed {
+		width: 16px;
+		height: 16px;
+	}
+
+	.cursor-dot.is-button.is-pressed {
+		width: 28px;
+		height: 28px;
+	}
+
+	.cursor-dot__label {
+		position: absolute;
+		left: 20px;
+		top: 50%;
+		transform: translateY(-50%);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 5px 12px;
+		border-radius: 19px;
+		background-color: #fff;
+		color: #000;
+		font-family: 'Inter Display', Inter, system-ui, sans-serif;
+		font-size: 1rem;
+		font-weight: 400;
+		line-height: 1.2;
+		letter-spacing: 0;
+		text-align: center;
+		white-space: pre;
+		opacity: 0;
+		pointer-events: none;
+		z-index: 1;
+		transition:
+			opacity 280ms cubic-bezier(0.22, 1, 0.36, 1),
+			left 280ms cubic-bezier(0.22, 1, 0.36, 1);
+	}
+
+	.cursor-dot.is-view .cursor-dot__view,
+	.cursor-dot.is-go .cursor-dot__go {
+		opacity: 1;
+		left: 35px;
+		top: 52%;
 	}
 
 	@media (prefers-reduced-motion: reduce) {
 		.cursor-dot,
-		.cursor-dot__dot,
-		.cursor-dot__work {
+		.cursor-dot__label {
 			transition: none;
 		}
 	}
 
-	@media (hover: none), (pointer: coarse) {
+	@media (any-hover: none) {
 		.cursor-dot {
 			display: none !important;
 		}

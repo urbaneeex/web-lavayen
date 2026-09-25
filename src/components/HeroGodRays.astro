@@ -1,0 +1,127 @@
+---
+/**
+ * Fondo del hero: shader WebGL "God Rays" (Paper Shaders, MIT).
+ * Misma librería y mismos parámetros que usa el componente God Rays de Framer
+ * en lavayen.framer.website (preset "Flowers" + colores custom).
+ */
+---
+
+<div class="hero-godrays" data-hero-godrays aria-hidden="true"></div>
+
+<style>
+	.hero-godrays {
+		position: absolute;
+		inset: 0;
+		z-index: 0;
+		width: 100%;
+		height: 100%;
+		background: rgb(0, 55, 255);
+		pointer-events: none;
+	}
+
+	.hero-godrays :global(canvas) {
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
+</style>
+
+<script>
+	/* Valores exactos del componente GodRays de Framer en el hero original */
+	const FRAMER_GODRAYS = {
+		colorBack: 'rgb(0, 55, 255)',
+		colors: ['rgba(255, 255, 255, 0.4)'],
+		frequency: 0.5,
+		spotty: 1.9,
+		midSize: 0,
+		midIntensity: 0.23,
+		density: 1,
+		blending: 1,
+		speed: 2,
+		offsetX: -0.55,
+		offsetY: 2,
+		fit: 'contain' as const,
+		scale: 1,
+		rotation: 0,
+		originX: 0.5,
+		originY: 0.5,
+		worldWidth: 0,
+		worldHeight: 0
+	};
+
+	async function boot() {
+		const { ShaderMount, godRaysFragmentShader, getShaderColorFromString, ShaderFitOptions } = await import(
+			'@paper-design/shaders'
+		);
+
+		function mount(el: HTMLElement) {
+		const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+		const p = FRAMER_GODRAYS;
+
+		const uniforms = {
+			u_colorBack: getShaderColorFromString(p.colorBack),
+			u_colors: p.colors.map(getShaderColorFromString),
+			u_colorsCount: p.colors.length,
+			u_frequency: p.frequency,
+			u_spotty: p.spotty,
+			u_midIntensity: p.midIntensity,
+			u_midSize: p.midSize,
+			u_density: p.density,
+			u_blending: p.blending,
+			u_fit: ShaderFitOptions[p.fit],
+			u_scale: p.scale,
+			u_rotation: p.rotation,
+			u_offsetX: p.offsetX,
+			u_offsetY: p.offsetY,
+			u_originX: p.originX,
+			u_originY: p.originY,
+			u_worldWidth: p.worldWidth,
+			u_worldHeight: p.worldHeight
+		};
+
+		let shader: ShaderMount | null = null;
+		try {
+			shader = new ShaderMount(el, godRaysFragmentShader, uniforms, undefined, reduceMotion.matches ? 0 : p.speed, 0);
+		} catch (err) {
+			/* Sin WebGL: se queda el color de fondo plano */
+			console.warn('[hero] WebGL no disponible, fondo plano.', err);
+			return;
+		}
+
+		reduceMotion.addEventListener('change', (e) => shader?.setSpeed(e.matches ? 0 : p.speed));
+
+		/* Pausar cuando el hero no está en pantalla (ahorra GPU) */
+		if ('IntersectionObserver' in window) {
+			const io = new IntersectionObserver(
+				(entries) => {
+					for (const entry of entries) {
+						shader?.setSpeed(entry.isIntersecting && !reduceMotion.matches ? p.speed : 0);
+					}
+				},
+				{ threshold: 0 }
+			);
+			io.observe(el);
+		}
+
+		document.addEventListener('visibilitychange', () => {
+			shader?.setSpeed(document.hidden || reduceMotion.matches ? 0 : p.speed);
+		});
+	}
+
+		document.querySelectorAll<HTMLElement>('[data-hero-godrays]').forEach((el) => {
+			if (el.dataset.mounted === '1') return;
+			el.dataset.mounted = '1';
+			mount(el);
+		});
+	}
+
+	/* El azul de fondo pinta al momento; el WebGL entra después del primer render. */
+	const start = () => {
+		const run = () => void boot();
+		if ('requestIdleCallback' in window) requestIdleCallback(run, { timeout: 1200 });
+		else window.setTimeout(run, 200);
+	};
+
+	if (document.readyState === 'complete') start();
+	else window.addEventListener('load', start, { once: true });
+</script>

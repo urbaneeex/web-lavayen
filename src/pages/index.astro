@@ -1,6 +1,7 @@
 ---
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
+import HeroGodRays from '../components/HeroGodRays.astro';
 import SlideFrameLink from '../components/SlideFrameLink.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getWorkBySlug } from '../data/works';
@@ -24,10 +25,10 @@ const keywords =
 /** Orden de la home = fuente única en data/works.ts */
 const homeSlugs = [
 	'la-sinfonia-del-caos',
-	'womo-brand',
+	'motion-graphics-video',
 	'campana-pizzas-goodfellas',
-	'amor-fatum',
-	'packaging'
+	'campanas-digitales',
+	'womo-brand'
 ] as const;
 
 const homeWorks = homeSlugs.map((slug) => {
@@ -50,8 +51,6 @@ const [workA, workB, workFeatured, workC, workD] = homeWorks;
 	ogImageWidth={OG_IMAGE_DEFAULT_WIDTH}
 	ogImageHeight={OG_IMAGE_DEFAULT_HEIGHT}
 	ogLocaleAlternate="en_US"
-	interWeights="400;500;600"
-	cursorHoverSelector={'a, button, [role="button"], .work-item-link, .featured-work-link, .work-item, .photo'}
 >
 	<link rel="alternate" hreflang="es" href={`${SITE_ORIGIN}/`} slot="head" />
 	<link rel="alternate" hreflang="en" href={`${SITE_ORIGIN}/en/`} slot="head" />
@@ -90,23 +89,25 @@ const [workA, workB, workFeatured, workC, workD] = homeWorks;
 				--light-text: #161616;
 				--muted: #5c5c5c;
 				--line: #d6d6d1;
-				--max: 1240px;
+				--max: 1200px;
 				--site-pad: clamp(1.8rem, 4.8vw, 3rem);
-				--hero-blue: #1848ff;
-				--hero-text: #7896b0;
+				--hero-blue: rgb(0, 55, 255);
 			}
 
 			* {
 				box-sizing: border-box;
+				-webkit-font-smoothing: inherit;
 			}
 
 			html,
 			body {
 				margin: 0;
 				padding: 0;
-				font-family: Inter, system-ui, -apple-system, sans-serif;
+				font-family: 'Inter Display', system-ui, -apple-system, sans-serif;
 				background: #000;
 				color: var(--light-text);
+				-webkit-font-smoothing: antialiased;
+				-moz-osx-font-smoothing: grayscale;
 			}
 
 			body {
@@ -118,93 +119,191 @@ const [workA, workB, workFeatured, workC, workD] = homeWorks;
 				text-decoration: none;
 			}
 
+			/* ===== HERO (Landing Hero Framer: 14o56qm) ===== */
 			.hero-screen {
 				position: relative;
-				min-height: 100svh;
-				overflow: hidden;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: space-between;
+				width: 100%;
+				height: 100vh;
+				padding: 0 0 100px;
 				background: var(--hero-blue);
+				overflow: hidden;
 			}
 
-			.hero-screen::before,
-			.hero-screen::after {
-				content: '';
-				position: absolute;
-				inset: -20%;
-				pointer-events: none;
+			/* Wrapper flex .5 — 98j8sn */
+			.hero-spacer {
+				position: relative;
+				z-index: 1;
+				flex: 0.5 0 0;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: center;
+				gap: 11px;
+				width: 100%;
+				max-width: 1440px;
+				height: 1px;
+				padding: 30px;
+				mix-blend-mode: overlay;
 			}
 
-			.hero-screen::before {
-				background:
-					radial-gradient(30rem 24rem at 69% 37%, rgba(136, 192, 255, 0.36), rgba(136, 192, 255, 0) 65%),
-					radial-gradient(32rem 44rem at 50% 70%, rgba(123, 174, 255, 0.32), rgba(123, 174, 255, 0) 62%),
-					radial-gradient(26rem 20rem at 45% 78%, rgba(39, 98, 255, 0.5), rgba(39, 98, 255, 0) 62%);
-				filter: blur(10px);
-				animation: drift-a 18s ease-in-out infinite alternate;
-			}
-
-			.hero-screen::after {
-				background:
-					radial-gradient(44rem 62rem at 50% 58%, rgba(166, 208, 255, 0.16), rgba(166, 208, 255, 0) 70%),
-					radial-gradient(22rem 19rem at 78% 30%, rgba(146, 201, 255, 0.26), rgba(146, 201, 255, 0) 72%);
-				animation: drift-b 22s ease-in-out infinite alternate;
-			}
-
+			/* Wrapper flex 3 — 1k9ej2 */
 			.hero-wrap {
 				position: relative;
 				z-index: 1;
-				width: calc(100% - (var(--site-pad) * 2));
-				margin: 0 auto;
-				min-height: 100svh;
-				display: grid;
-				/* El nav es fixed y va fuera de este bloque (evita stacking trap con z-index del wrap) */
-				grid-template-rows: 1fr auto;
-			}
-
-			.hero-center {
-				position: absolute;
-				inset: 0;
+				flex: 3 0 0;
 				display: flex;
+				flex-direction: column;
 				align-items: center;
 				justify-content: center;
-				text-align: center;
-				padding: 0 1rem 0;
+				gap: 11px;
+				width: 100%;
+				max-width: 1440px;
+				height: 1px;
+				padding: 30px;
+				mix-blend-mode: overlay;
 			}
 
-			/* Solo anular el margen del h1; tipografía la define .hero-copy (no usar inherit en font-size). */
 			h1.hero-copy {
 				margin: 0;
 			}
 
 			.hero-copy {
+				position: relative;
+				z-index: 1;
+				flex: none;
+				width: 80%;
 				margin: 0;
-				max-width: 80ch;
-				font-family: 'Instrument Serif', Georgia, serif;
-				font-size: clamp(1.85rem, 2.85vw, 3.05rem);
-				line-height: 1.16;
-				letter-spacing: -0.015em;
-				font-style: normal;
-				font-weight: 300;
-				color: color-mix(in srgb, var(--hero-text) 84%, #a7c2da 16%);
-				opacity: 0.85;
-				text-wrap: balance;
-				text-shadow: 0 0 1px rgba(60, 110, 170, 0.25);
-			}
-
-			.hero-copy .first-line-italic {
+				font-family: 'Instrument Serif', 'Instrument Serif Placeholder', Georgia, serif;
+				font-feature-settings: 'blwf' on, 'cv09' on, 'cv03' on, 'cv04' on, 'cv11' on;
+				font-size: 2.5rem;
 				font-style: italic;
+				font-weight: 400;
+				line-height: 1.2;
+				letter-spacing: 0;
+				text-align: center;
+				color: #fff;
+				word-break: break-word;
+				overflow-wrap: break-word;
 			}
 
+			.hero-copy .roman {
+				font-style: normal;
+			}
+
+			.hero-word {
+				display: inline-block;
+			}
+
+			.hero-line--mob {
+				display: none;
+			}
+
+			/* ajfxin — sin z-index: el overlay de los hijos tiene que ver el azul */
+			.hero-note-wrap {
+				position: relative;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: center;
+				gap: 5px;
+				width: 100%;
+				height: min-content;
+				padding: 0;
+			}
+
+			/* 2rkmld: overlay aquí, el filter del appear va en el hijo */
 			.hero-note {
-				position: absolute;
-				left: 50%;
-				bottom: 2.65rem;
-				transform: translateX(-50%);
-				text-align: center;
-				font-size: 0.9rem;
-				line-height: 1.35;
-				color: rgba(150, 187, 215, 0.44);
+				position: relative;
+				z-index: 1;
+				flex: none;
+				width: 100%;
+				mix-blend-mode: overlay;
+			}
+
+			.hero-note p {
 				margin: 0;
-				width: min(92%, 34rem);
+				font-family: 'Inter Display', 'Inter Display Placeholder', sans-serif;
+				font-size: 1rem;
+				font-weight: 400;
+				line-height: 1.4;
+				letter-spacing: 0;
+				text-align: center;
+				color: #fff;
+				word-break: break-word;
+			}
+
+			/* 19vd1ki */
+			.hero-arrow {
+				position: relative;
+				z-index: 1;
+				flex: none;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				width: 100%;
+				height: 34px;
+				mix-blend-mode: overlay;
+			}
+
+			.hero-arrow p {
+				margin: 0;
+				font-family: 'Inter Display', 'Inter Display Placeholder', sans-serif;
+				font-size: 1rem;
+				font-weight: 400;
+				line-height: 1.4;
+				text-align: center;
+				color: #fff;
+			}
+
+			/*
+			 * Appear Framer (H_4BMvy):
+			 *   título: word, startDelay .1, stagger delay .15, spring 800/120
+			 *   nota/flecha: element, startDelay 3, spring 200/120
+			 */
+			.hero-word,
+			.hero-block {
+				opacity: 0.001;
+				filter: blur(5px);
+				transform: translateY(15px);
+			}
+
+			.hero-word {
+				animation: hero-appear-word 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+				animation-delay: calc(0.1s + (var(--i, 0) * 0.15s));
+			}
+
+			.hero-block {
+				animation: hero-appear-block 1.05s cubic-bezier(0.25, 1, 0.32, 1) forwards;
+				animation-delay: calc(3s + (var(--i, 0) * 0.15s));
+			}
+
+			@keyframes hero-appear-word {
+				to {
+					opacity: 1;
+					filter: none;
+					transform: translateY(0);
+				}
+			}
+
+			@keyframes hero-appear-block {
+				to {
+					opacity: 1;
+					filter: none;
+					transform: translateY(0);
+				}
+			}
+
+			/* CTA reutiliza el mismo keyframe */
+			@keyframes hero-appear {
+				to {
+					opacity: 1;
+					filter: none;
+					transform: translateY(0);
+				}
 			}
 
 			.content {
@@ -213,57 +312,125 @@ const [workA, workB, workFeatured, workC, workD] = homeWorks;
 				padding: 2.5rem 0 2.8rem;
 			}
 
+			/* Framer Splitted Hero + Max Container (1440 / 745+695) */
 			.intro-split {
-				display: grid;
-				grid-template-columns: 1.02fr 0.98fr;
-				gap: clamp(0.8rem, 1.5vw, 1.2rem);
-				min-height: min(90svh, 900px);
-				background: #050505;
-				width: calc(100% - (var(--site-pad) * 2));
-				margin: 0 auto;
-				padding-top: 0;
-				padding-left: clamp(0.7rem, 1.5vw, 1rem);
-				padding-right: clamp(0.7rem, 1.5vw, 1rem);
-				padding-bottom: clamp(0.7rem, 1.5vw, 1rem);
-				border-radius: 0;
+				scroll-margin-top: 5rem;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: center;
+				width: 100%;
+				height: 100vh;
+				margin: 0;
+				padding: 0;
+				background: #000;
+				overflow: hidden;
+				-webkit-font-smoothing: antialiased;
+				-moz-osx-font-smoothing: grayscale;
+			}
+
+			.intro-split__max {
+				display: flex;
+				flex-direction: row;
+				align-items: stretch;
+				width: 100%;
+				max-width: 1440px;
+				height: 100%;
 			}
 
 			.intro-copy {
-				padding: clamp(2.1rem, 3.8vw, 3rem) clamp(1.25rem, 2.4vw, 2.5rem);
-				color: #f4f4f4;
-				display: grid;
-				align-content: start;
-				gap: 1rem;
-				background: #050505;
-				border-radius: 0.8rem;
+				flex: none;
+				width: calc(50% + 25px);
+				display: flex;
+				flex-direction: column;
+				justify-content: space-between;
+				min-width: 0;
+				height: 100%;
+				padding: 50px 0 50px 50px;
+				background: #000;
+			}
+
+			.intro-copy__pad {
+				display: flex;
+				flex-direction: column;
+				align-items: flex-start;
+				justify-content: flex-start;
+				gap: 50px;
+				width: 100%;
+				height: 100%;
+				padding: 100px 30px 0 0;
+				box-sizing: border-box;
+			}
+
+			.intro-about,
+			.software {
+				display: flex;
+				flex-direction: column;
+				align-items: flex-start;
+				gap: 10px;
+				width: 100%;
+				max-width: 1200px;
 			}
 
 			.intro-copy h2 {
 				margin: 0;
 				font-family: 'Instrument Serif', Georgia, serif;
-				font-size: clamp(1.95rem, 3.2vw, 2.65rem);
-				line-height: 0.96;
-				letter-spacing: -0.01em;
+				font-size: 40px;
+				font-weight: 400;
+				line-height: 1;
+				color: #fff;
 			}
 
-			.intro-copy p {
+			.intro-copy h2 em {
+				font-style: italic;
+			}
+
+			.intro-p {
 				margin: 0;
-				max-width: 62ch;
-				font-size: clamp(0.98rem, 0.98vw, 1.08rem);
-				line-height: 1.48;
-				color: rgba(244, 244, 244, 0.9);
-				text-align: justify;
-				text-justify: inter-word;
+				width: 90%;
+				font-family: 'Inter Display', sans-serif;
+				font-size: 16px;
+				font-weight: 400;
+				color: rgba(255, 255, 255, 0.4);
 			}
 
-			.intro-copy strong {
-				font-weight: 600;
+			.intro-p--loose {
+				line-height: 1.4;
+			}
+
+			.intro-p--tight {
+				line-height: 1.2;
+			}
+
+			.intro-p em {
+				font-style: italic;
+			}
+
+			.software h3 {
+				margin: 0;
+				font-family: 'Instrument Serif', Georgia, serif;
+				font-size: 24px;
+				font-weight: 400;
+				line-height: 1;
+				color: #fff;
+			}
+
+			.software p {
+				margin: 0;
+				width: 90%;
+				font-family: 'Inter Display', sans-serif;
+				font-size: 16px;
+				font-weight: 400;
+				line-height: 1.4;
+				color: rgba(255, 255, 255, 0.4);
 			}
 
 			.intro-photo {
+				flex: none;
+				width: calc(50% - 25px);
 				position: relative;
-				min-height: 100%;
-				border-radius: 0;
+				min-width: 0;
+				height: 100%;
 				overflow: hidden;
 			}
 
@@ -271,8 +438,7 @@ const [workA, workB, workFeatured, workC, workD] = homeWorks;
 				width: 100%;
 				height: 100%;
 				object-fit: cover;
-				object-position: 54% 45%;
-				filter: grayscale(100%) contrast(1.04);
+				object-position: center;
 				display: block;
 			}
 
@@ -297,25 +463,42 @@ const [workA, workB, workFeatured, workC, workD] = homeWorks;
 				color: var(--muted);
 			}
 
+			/* Framer Selected Work: max 1440, pad 0 30px 60px, grid 675+30+675 */
 			.work-showcase {
-				margin-top: 0.4rem;
+				width: 100%;
 				background: #000;
-				color: #f3f3f3;
-				padding: clamp(0.9rem, 1.7vw, 1.3rem) 0 0.6rem;
+				color: #fff;
+				-webkit-font-smoothing: antialiased;
+				-moz-osx-font-smoothing: grayscale;
+			}
+
+			.work-showcase__max {
+				width: 100%;
+				max-width: 1440px;
+				margin: 0 auto;
+				padding: 0 30px 0;
+			}
+
+			.work-showcase__head {
+				display: flex;
+				flex-direction: row;
+				align-items: flex-start;
+				padding: 30px 0;
 			}
 
 			.work-showcase h2 {
-				margin: 0 0 0.9rem;
-				font-size: clamp(1.95rem, 2.1vw, 2.4rem);
-				line-height: 1;
-				font-weight: 500;
-				letter-spacing: -0.01em;
+				margin: 0;
+				font-family: 'Inter Display', sans-serif;
+				font-size: 30.4px;
+				font-weight: 400;
+				line-height: 27.36px;
+				color: #fff;
 			}
 
 			.work {
 				display: grid;
-				grid-template-columns: repeat(2, minmax(0, 1fr));
-				gap: clamp(0.7rem, 1.2vw, 1.2rem);
+				grid-template-columns: 1fr 1fr;
+				gap: 30px;
 			}
 
 			.work-item {
@@ -323,12 +506,36 @@ const [workA, workB, workFeatured, workC, workD] = homeWorks;
 				min-width: 0;
 			}
 
+			/* Appear al scroll (Framer enter): opacity 0, y 15, spring 800/120 */
+			.scroll-in {
+				opacity: 0;
+				transform: translateY(15px);
+			}
+
+			.scroll-in.is-in {
+				animation: home-scroll-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) var(--d, 0.1s) both;
+			}
+
+			@keyframes home-scroll-in {
+				to {
+					opacity: 1;
+					transform: none;
+				}
+			}
+
+			.work-item--featured {
+				grid-column: 1 / -1;
+			}
+
 			.work-item-link {
-				display: grid;
-				gap: 0.58rem;
+				display: flex;
+				flex-direction: column;
+				align-items: stretch;
+				gap: 15px;
 				color: inherit;
 				text-decoration: none;
 				min-width: 0;
+				overflow: hidden;
 			}
 
 			.work-item-link:focus-visible {
@@ -338,7 +545,7 @@ const [workA, workB, workFeatured, workC, workD] = homeWorks;
 
 			.work-media {
 				margin: 0;
-				aspect-ratio: 16 / 11;
+				aspect-ratio: 1.4386 / 1;
 				background: #111;
 				overflow: hidden;
 			}
@@ -348,130 +555,73 @@ const [workA, workB, workFeatured, workC, workD] = homeWorks;
 				height: 100%;
 				object-fit: cover;
 				display: block;
-				transition: transform 220ms ease;
-			}
-
-			.work-item-link:hover .work-media img,
-			.work-item-link:focus-visible .work-media img {
-				transform: scale(1.015);
 			}
 
 			.work-meta {
-				display: grid;
-				gap: 0.25rem;
+				display: flex;
+				flex-direction: column;
+				align-items: flex-start;
+				gap: 10px;
+				width: 100%;
 			}
 
 			.work-year {
 				width: fit-content;
-				padding: 0.08rem 0.38rem;
-				font-size: 0.78rem;
-				color: rgba(239, 239, 239, 0.9);
-				border: 1px solid rgba(255, 255, 255, 0.2);
-				border-radius: 0.18rem;
-				line-height: 1.2;
+				padding: 5px 9px;
+				font-family: 'Inter Display', sans-serif;
+				font-size: 13px;
+				font-weight: 400;
+				line-height: 15.6px;
+				color: #fff;
+				background: rgb(23, 23, 23);
+				border: 0;
+			}
+
+			.work-meta__titles {
+				display: flex;
+				flex-direction: column;
+				align-items: flex-start;
+				justify-content: center;
+				gap: 5px;
+				width: 100%;
 			}
 
 			.work-item h3 {
 				margin: 0;
-				font-size: clamp(1.25rem, 1.55vw, 1.75rem);
+				font-family: 'Inter Display', sans-serif;
+				font-size: 22.4px;
 				font-weight: 500;
-				letter-spacing: -0.01em;
+				line-height: 26.88px;
+				color: #fff;
 			}
 
 			.work-item p {
 				margin: 0;
-				font-size: 1rem;
-				color: rgba(241, 241, 241, 0.78);
+				font-family: 'Inter Display', sans-serif;
+				font-size: 16px;
+				font-weight: 400;
+				line-height: 22.4px;
+				color: rgba(255, 255, 255, 0.7);
 			}
 
-			.featured-work {
-				margin-top: clamp(1rem, 1.8vw, 1.6rem);
-				background: #000;
-				color: #f2f2f2;
-				display: block;
-				min-width: 0;
-			}
-
-			.featured-work-link {
-				display: grid;
-				gap: 0.62rem;
-				color: inherit;
-				text-decoration: none;
-				min-width: 0;
-			}
-
-			.featured-work-link:hover .featured-meta h3,
-			.featured-work-link:focus-visible .featured-meta h3 {
-				text-decoration: underline;
-				text-underline-offset: 0.12em;
-			}
-
-			.featured-work-link:focus-visible {
-				outline: 2px solid rgba(255, 255, 255, 0.65);
-				outline-offset: 3px;
-			}
-
-			.featured-work-link:hover .featured-media img,
-			.featured-work-link:focus-visible .featured-media img {
-				transform: scale(1.015);
-			}
-
-			.featured-media {
-				margin: 0;
-				aspect-ratio: 16 / 9.2;
-				background: #090909;
-				overflow: hidden;
-			}
-
-			.featured-media img {
-				width: 100%;
-				height: 100%;
-				object-fit: cover;
-				display: block;
-				transition: transform 220ms ease;
-			}
-
-			.featured-meta {
-				display: grid;
-				gap: 0.32rem;
-			}
-
-			.featured-meta .work-year {
-				font-size: 0.74rem;
-			}
-
-			.featured-meta h3 {
-				margin: 0;
-				font-size: clamp(1.65rem, 2vw, 2.15rem);
-				line-height: 1.04;
-				font-weight: 500;
-				letter-spacing: -0.01em;
-			}
-
-			.featured-meta p {
-				margin: 0;
-				font-size: clamp(1rem, 1.08vw, 1.18rem);
-				color: rgba(241, 241, 241, 0.8);
-				max-width: 72ch;
-			}
-
-			.work-secondary {
-				margin-top: clamp(1.1rem, 2vw, 1.7rem);
-				display: grid;
-				gap: 0.62rem;
-			}
-
-			/* Wrapper en index (scoped): el <a> del componente no recibe selectores de esta hoja */
 			.index-more-projects {
-				margin-top: clamp(2.75rem, 5.2vw, 4.25rem);
+				margin-top: 60px;
 				width: 100%;
 				display: flex;
 				justify-content: center;
 			}
 
-			.index-cta-slide {
-				margin-top: 0.7rem;
+			.index-more-projects :global(.slide-frame-link) {
+				border: 0;
+				padding: 0;
+				font-family: 'Inter Display', sans-serif;
+				font-size: 13px;
+				font-weight: 500;
+				line-height: 15.6px;
+				letter-spacing: 0;
 			}
+
+			/* Framer CTA: 580px, God Rays + overlay, botón fill */
 
 			.photo-grid {
 				display: grid;
@@ -492,85 +642,196 @@ const [workA, workB, workFeatured, workC, workD] = homeWorks;
 			}
 
 			.cta {
-				margin-top: clamp(2rem, 4vw, 3rem);
-				width: 100vw;
-				margin-left: 50%;
-				transform: translateX(-50%);
-				min-height: clamp(22rem, 45vw, 34rem);
-				display: grid;
-				align-content: center;
-				gap: 1rem;
-				padding: clamp(2rem, 5vw, 3.6rem);
-				background:
-					radial-gradient(80rem 44rem at 72% 14%, rgba(255, 178, 205, 0.54), rgba(255, 178, 205, 0) 46%),
-					radial-gradient(64rem 36rem at 24% 92%, rgba(252, 169, 197, 0.46), rgba(252, 169, 197, 0) 48%),
-					radial-gradient(58rem 33rem at 48% 72%, rgba(170, 168, 215, 0.45), rgba(170, 168, 215, 0) 56%),
-					radial-gradient(85rem 48rem at 43% 46%, rgba(73, 113, 176, 0.88), rgba(73, 113, 176, 0.84) 60%);
-				overflow: hidden;
-				position: sticky;
-				top: 0;
-				z-index: 4;
-			}
-
-			.cta h2 {
+				position: relative;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: center;
+				width: 100%;
+				height: 580px;
+				padding: 40px 0 0;
 				margin: 0;
+				background: #000;
+				overflow: hidden;
+				-webkit-font-smoothing: antialiased;
+				-moz-osx-font-smoothing: grayscale;
+			}
+
+			.cta__rays {
+				position: absolute;
+				left: 0;
+				right: 0;
+				top: 40px;
+				bottom: 0;
+				z-index: 0;
+				overflow: hidden;
+				pointer-events: none;
+			}
+
+			.cta__pad {
+				position: relative;
+				z-index: 2;
+				display: flex;
+				flex-direction: column;
+				align-items: flex-start;
+				justify-content: center;
+				gap: 30px;
+				width: 100%;
+				max-width: 1440px;
+				padding: 0 30px;
+			}
+
+			.cta__copy {
+				margin: 0;
+				width: 100%;
+				max-width: 828px;
 				font-family: 'Instrument Serif', Georgia, serif;
-				font-size: clamp(1.5rem, 3vw, 3.8rem);
+				font-size: 41.6px;
 				font-weight: 400;
-				line-height: 1.05;
-				letter-spacing: -0.01em;
-				color: rgba(226, 233, 249, 0.95);
-				max-width: min(96vw, 58ch);
-				text-wrap: balance;
+				line-height: 49.92px;
+				text-align: left;
+				color: #fff;
+				mix-blend-mode: overlay;
 			}
 
-			.cta h2 em {
+			.cta__copy .cta-word {
+				display: inline-block;
+			}
+
+			.cta__copy em {
 				font-style: italic;
-				opacity: 0.95;
 			}
 
-			@keyframes drift-a {
-				0% {
-					transform: translate3d(-2.5%, -1.5%, 0) scale(0.98);
-				}
-				100% {
-					transform: translate3d(3%, 2.5%, 0) scale(1.03);
-				}
+			.cta-appear {
+				opacity: 0.001;
+				filter: blur(5px);
+				transform: translateY(15px);
 			}
 
-			@keyframes drift-b {
-				0% {
-					transform: translate3d(1.2%, -2.2%, 0);
-				}
-				100% {
-					transform: translate3d(-2.3%, 2.4%, 0);
-				}
+			.cta.is-in .cta-appear {
+				animation: hero-appear 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+				animation-delay: var(--appear-delay, 0ms);
 			}
 
-			@media (max-width: 900px) {
+			.cta-btn {
+				position: relative;
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				gap: 5px;
+				padding: 10px 24px;
+				background: #000;
+				overflow: hidden;
+				text-decoration: none;
+				color: #fff;
+			}
+
+			.cta-btn__fill {
+				position: absolute;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				height: 0;
+				background: #fff;
+				z-index: 1;
+				transition: height 0.45s cubic-bezier(0.33, 1, 0.68, 1);
+			}
+
+			.cta-btn__clip {
+				position: relative;
+				z-index: 2;
+				display: block;
+				overflow: hidden;
+				height: 19.2px;
+			}
+
+			.cta-btn__stack {
+				display: flex;
+				flex-direction: column;
+				transition: transform 0.45s cubic-bezier(0.33, 1, 0.68, 1);
+			}
+
+			.cta-btn__line {
+				display: block;
+				font-family: 'Inter Display', sans-serif;
+				font-size: 16px;
+				font-weight: 500;
+				line-height: 19.2px;
+				white-space: nowrap;
+			}
+
+			.cta-btn__line--on {
+				color: #fff;
+			}
+
+			.cta-btn__line--off {
+				color: #000;
+			}
+
+			.cta-btn:hover .cta-btn__fill,
+			.cta-btn:focus-visible .cta-btn__fill {
+				height: 100%;
+			}
+
+			.cta-btn:hover .cta-btn__stack,
+			.cta-btn:focus-visible .cta-btn__stack {
+				transform: translateY(-50%);
+			}
+
+			.cta-btn:focus-visible {
+				outline: 2px solid rgba(255, 255, 255, 0.65);
+				outline-offset: 3px;
+			}
+
+			/* Framer: tablet 810–1199, móvil <810 */
+			@media (max-width: 1199px) {
 				.hero-copy {
-					font-size: clamp(1.68rem, 6.2vw, 2.5rem);
-					max-width: 34ch;
+					width: 100%;
 				}
 
-				.hero-note {
-					font-size: 0.86rem;
-					bottom: 2.1rem;
+				.hero-arrow {
+					height: auto;
+				}
+			}
+
+			@media (max-width: 809px) {
+				.hero-screen {
+					padding-bottom: 80px;
+				}
+
+				.hero-spacer {
+					flex: none;
+					height: min-content;
+					min-height: 48px;
+					padding: 15px;
+				}
+
+				.hero-wrap {
+					flex: none;
+					height: min-content;
+					padding: 15px;
+				}
+
+				.hero-copy {
+					width: 100%;
+				}
+
+				.hero-line--desk {
+					display: none;
+				}
+
+				.hero-line--mob {
+					display: inline;
+				}
+
+				.hero-arrow {
+					height: auto;
 				}
 			}
 
 			@media (max-width: 640px) {
-				.hero-copy {
-					max-width: 16ch;
-					line-height: 1.1;
-				}
-
 				.photo-grid {
 					grid-template-columns: repeat(2, minmax(0, 1fr));
-				}
-
-				.work {
-					grid-template-columns: 1fr;
 				}
 
 				.photo:nth-child(1),
@@ -580,36 +841,176 @@ const [workA, workB, workFeatured, workC, workD] = homeWorks;
 				}
 			}
 
-			@media (max-width: 980px) {
-				.intro-split {
-					grid-template-columns: 1fr;
-					padding-top: 0;
-					padding-left: 0.7rem;
-					padding-right: 0.7rem;
-					padding-bottom: 0.7rem;
+			@media (max-width: 1199px) {
+				.intro-copy h2 {
+					font-size: 37.5px;
 				}
 
-				.intro-copy {
-					border-bottom: 0;
+				.intro-p,
+				.software p {
+					width: 100%;
+					font-size: 15px;
+				}
+
+				.software h3 {
+					font-size: 22.5px;
+				}
+
+				.work {
+					gap: 20px;
+				}
+
+				.work-showcase h2 {
+					font-size: 28.5px;
+					line-height: 25.65px;
+				}
+
+				.work-item h3 {
+					font-size: 21px;
+					line-height: 25.2px;
+				}
+
+				.work-item p {
+					font-size: 15px;
+					line-height: 21px;
+				}
+
+				.cta__copy {
+					max-width: 525px;
+					font-size: 39px;
+					line-height: 46.8px;
+				}
+
+				.cta-btn__clip {
+					height: 18px;
+				}
+
+				.cta-btn__line {
+					font-size: 15px;
+					line-height: 18px;
+				}
+			}
+
+			@media (max-width: 809px) {
+				.intro-split {
+					height: auto;
+					min-height: 0;
+				}
+
+				.intro-split__max {
+					flex-direction: column;
+					height: auto;
 				}
 
 				.intro-photo {
-					min-height: 26rem;
+					order: -1;
+					flex: none;
+					width: 100%;
+					height: auto;
+					aspect-ratio: 390 / 591;
+				}
+
+				.intro-copy {
+					flex: none;
+					width: 100%;
+					height: auto;
+					padding: 40px 20px 20px;
+				}
+
+				.intro-copy__pad {
+					height: auto;
+					gap: 60px;
+					padding: 100px 0 0;
+				}
+
+				.intro-copy h2 {
+					font-size: 35px;
+				}
+
+				.intro-p,
+				.software p {
+					width: 100%;
+					font-size: 14px;
+					text-align: justify;
+				}
+
+				.software h3 {
+					font-size: 21px;
+				}
+
+				.work-showcase__max {
+					padding: 20px 15px 0;
+				}
+
+				.work {
+					grid-template-columns: 1fr;
+					gap: 30px;
+				}
+
+				.work-showcase h2 {
+					font-size: 26.6px;
+					line-height: 23.94px;
+				}
+
+				.work-item h3 {
+					font-size: 19.6px;
+					line-height: 23.52px;
+				}
+
+				.work-item p {
+					font-size: 14px;
+					line-height: 19.6px;
+				}
+
+				.cta {
+					height: 675px;
+				}
+
+				.cta__pad {
+					padding: 0 15px;
+				}
+
+				.cta__copy {
+					max-width: 360px;
+					font-size: 36.4px;
+					line-height: 43.68px;
+				}
+
+				.cta-btn__clip {
+					height: 16.8px;
+				}
+
+				.cta-btn__line {
+					font-size: 14px;
+					line-height: 16.8px;
 				}
 			}
 
 			@media (prefers-reduced-motion: reduce) {
-				.hero-screen::before,
-				.hero-screen::after {
+				.hero-word,
+				.hero-block,
+				.hero-appear {
 					animation: none !important;
+					opacity: 1;
+					filter: none;
+					transform: none;
 				}
 
 				.hero-copy,
 				.hero-note,
 				.work-media img,
-				.featured-media img,
-				.cta a {
+				.cta-btn__fill,
+				.cta-btn__stack {
 					transition: none !important;
+				}
+
+				.cta-appear,
+				.scroll-in,
+				.scroll-in.is-in {
+					opacity: 1;
+					filter: none;
+					transform: none;
+					animation: none !important;
 				}
 
 				html {
@@ -623,143 +1024,316 @@ const [workA, workB, workFeatured, workC, workD] = homeWorks;
 				}
 			}
 		</style>
+		<Header theme="hero" />
+
 		<section class="hero-screen" aria-label="Portada">
-			<Header theme="hero" />
+			<HeroGodRays />
+
+			<div class="hero-spacer" aria-hidden="true"></div>
 
 			<div class="hero-wrap">
-				<div class="hero-center">
-					<h1 class="hero-copy">
-						<span class="first-line-italic">
-							Ey! Soy Ángel. <br />
-							Director de Arte, diseñador gráfico y Motion Grapher
-							</span>
-							en Madrid. <br />
-							Experto en promesas que no voy a cumplir. Te diseñaré un logo tan potente que tu empresa atraerá unicornios,
-							 tus ventas subirán un 1000% mientras duermes y, básicamente, te cambiaré la vida...*
-					</h1>
+				<h1 class="hero-copy">
+					<span class="hero-word roman" style="--i: 0">Hola</span>
+					<span class="hero-word" style="--i: 2">stalker.🕵️</span>
+					<span class="hero-word roman" style="--i: 4">¡Bienvenid@!</span>
+					<span class="hero-word roman" style="--i: 5">Soy</span>
+					<span class="hero-word" style="--i: 7">Ángel.</span>
+					<br />
+					<span class="hero-line hero-line--desk">
+						<span class="hero-word" style="--i: 8">Director</span>
+						<span class="hero-word" style="--i: 9">de</span>
+						<span class="hero-word" style="--i: 10">Arte,</span>
+						<span class="hero-word" style="--i: 11">Diseñador</span>
+						<span class="hero-word" style="--i: 12">Gráfico</span>
+						<span class="hero-word" style="--i: 13">&amp;</span>
+						<span class="hero-word" style="--i: 14">Motion</span>
+					</span>
+					<span class="hero-line hero-line--mob">
+						<span class="hero-word" style="--i: 8">Director</span>
+						<span class="hero-word" style="--i: 9">de</span>
+						<span class="hero-word" style="--i: 10">Arte</span>
+						<span class="hero-word" style="--i: 11">y</span>
+						<span class="hero-word" style="--i: 12">diseñador</span>
+						<span class="hero-word" style="--i: 13">multimedia</span>
+						<span class="hero-word" style="--i: 15">en</span>
+						<span class="hero-word" style="--i: 16">Madrid.</span>
+					</span>
+				</h1>
+			</div>
+
+			<div class="hero-note-wrap">
+				<div class="hero-note">
+					<p class="hero-block" style="--i: 0">Scrollea para ver mi trabajo, que supongo</p>
+					<p class="hero-block" style="--i: 1">que es lo que has venido a ver. 👀</p>
 				</div>
-				<p class="hero-note">
-					*Este es un anuncio profesional generico<br />
-					Puedes saltartelo haciendo scroll ↓
-				</p>
+				<div class="hero-arrow">
+					<p class="hero-block" style="--i: 2" aria-hidden="true">↓</p>
+				</div>
 			</div>
 		</section>
 
-		<section class="intro-split" aria-label="Presentacion">
+		<section class="intro-split" id="about" aria-label="Presentacion">
+			<div class="intro-split__max">
 			<div class="intro-copy">
-				<h2>¿Saltándote los anuncios, eh?<br />De eso vivimos, ¿sabes?</h2>
-				<p>
-					Bueno... ya que estas aqui aprovecho para contarte que en cuanto al diseño prefiero centrarme en lo
-					importa: <strong>la jerarquia visual, el ritmo del movimiento y la estrategia de comunicacion.</strong>
-				</p>
-				<p>
-					Mi trabajo no es cambiarte la vida, es hacer que tu marca deje de ser invisible. Diseño para que el
-					espectador se detenga, no porque le hayamos prometido el cielo, sino porque lo que esta viendo tiene
-					un proposito claro y una estetica impecable.
-				</p>
-				<p>
-					Con una solida trayectoria en agencia, me especializo en transformar conceptos estrategicos en piezas
-					visuales de alto impacto. Mi experiencia abarca desde el desarrollo de Branding y Diseño Editorial
-					hasta la creación de contenido dinamico mediante Motion Graphics y Edición de Vídeo.
-				</p>
-				<p>
-					He trabajado en proyectos integrales que incluyen campañas digitales e impresas, packaging y
-					dirección visual de marca, aportando siempre un equilibrio entre vision estratégica y ejecución
-					técnica detallada.
-				</p>
+				<div class="intro-copy__pad">
+					<div class="intro-about">
+						<h2 class="scroll-in" data-appear="0" style="--d: 0.1s">Si eres <em>reclutador</em> puedes leer esto.</h2>
+						<p class="intro-p intro-p--loose scroll-in" data-appear="0" style="--d: 0.1s">
+							Me imagino que tienes prisa y que no es el primer portafolio que ves esta semana así que te
+							ahorro el discurso motivaciónal y voy al grano.
+						</p>
+						<p class="intro-p intro-p--tight scroll-in" data-appear="0" style="--d: 0.1s">
+							Llevo tres años en el sector transformando esos <em>briefings</em> chulos de nuestros clientes
+							en piezas visuales que funcionan. Mi trabajo se mueve entre la estrategia y la ejecución
+							técnica: desde campañas integrales (digitales e impresas) y <em>packaging</em>, hasta
+							desarrollo de <em>branding</em>, diseño editorial y contenidos dinámicos en
+							<em>Motion Graphics</em>.
+						</p>
+						<p class="intro-p intro-p--loose scroll-in" data-appear="0.5" style="--d: 0.15s">
+							Sin humos ni dramas con los cambios de última hora y clavando los <em>deadlines</em>. Si te
+							cuadra lo que ves, abajo tienes los proyectos.
+						</p>
+					</div>
+					<div class="software scroll-in" data-appear="0.5" style="--d: 0.15s">
+						<h3>Software</h3>
+						<p>Illustrator</p>
+						<p>Photoshop</p>
+						<p>InDesign</p>
+						<p>After Effects</p>
+						<p>Premiere Pro</p>
+						<p>Framer</p>
+						<p>Canva</p>
+					</div>
+				</div>
 			</div>
 			<div class="intro-photo">
 				<img
 					src="/images/lavayen-pic.webp"
 					alt="Retrato de Ángel Alejandro Lavayen Ruiz, director de arte y diseñador gráfico en Madrid"
+					width="1728"
+					height="2368"
 					loading="lazy"
+					decoding="async"
 				/>
+			</div>
 			</div>
 		</section>
 
-		<div class="content">
-			<main>
-				<section id="work" class="work-showcase" aria-labelledby="work-title">
-					<h2 id="work-title">Selected Work</h2>
-					<div class="work">
-						<article class="work-item">
-							<a class="work-item-link" href={`/works/${workA.slug}/`}>
-								<figure class="work-media">
-									<img src={workA.img} alt={workA.alt} loading="lazy" />
-								</figure>
-								<div class="work-meta">
-									<span class="work-year">{workA.year}</span>
+		<section id="work" class="work-showcase" aria-labelledby="work-title">
+			<div class="work-showcase__max">
+				<div class="work-showcase__head">
+					<h2 id="work-title" class="scroll-in" data-appear="0" style="--d: 0.1s">Algunos de ellos 👌</h2>
+				</div>
+				<div class="work">
+					<article class="work-item scroll-in" data-appear="0" style="--d: 0.1s">
+						<a class="work-item-link" href={`/works/${workA.slug}/`}>
+							<figure class="work-media">
+								<img src={workA.img} alt={workA.alt} width="1439" height="1000" loading="lazy" decoding="async" />
+							</figure>
+							<div class="work-meta">
+								<span class="work-year">{workA.year}</span>
+								<div class="work-meta__titles">
 									<h3>{workA.title}</h3>
 									<p>{workA.desc ?? ''}</p>
 								</div>
-							</a>
-						</article>
-						<article class="work-item">
-							<a class="work-item-link" href={`/works/${workB.slug}/`}>
-								<figure class="work-media">
-									<img src={workB.img} alt={workB.alt} loading="lazy" />
-								</figure>
-								<div class="work-meta">
-									<span class="work-year">{workB.year}</span>
-									<h3>{workB.title}</h3>
-									<p>{workB.desc ?? ''}</p>
-								</div>
-							</a>
-						</article>
-					</div>
-
-					<article class="featured-work">
-						<a class="featured-work-link" href={`/works/${workFeatured.slug}/`}>
-							<figure class="featured-media">
-								<img src={workFeatured.img} alt={workFeatured.alt} loading="lazy" />
-							</figure>
-							<div class="featured-meta">
-								<span class="work-year">{workFeatured.year}</span>
-								<h3>{workFeatured.title}</h3>
-								<p>{workFeatured.desc ?? ''}</p>
 							</div>
 						</a>
 					</article>
+					<article class="work-item scroll-in" data-appear="0" style="--d: 0.1s">
+						<a class="work-item-link" href={`/works/${workB.slug}/`}>
+							<figure class="work-media">
+								<img src={workB.img} alt={workB.alt} width="1439" height="1000" loading="lazy" decoding="async" />
+							</figure>
+							<div class="work-meta">
+								<span class="work-year">{workB.year}</span>
+								<div class="work-meta__titles">
+									<h3>{workB.title}</h3>
+									<p>{workB.desc ?? ''}</p>
+								</div>
+							</div>
+						</a>
+					</article>
+					<article class="work-item work-item--featured scroll-in" data-appear="0" style="--d: 0.1s">
+						<a class="work-item-link" href={`/works/${workFeatured.slug}/`}>
+							<figure class="work-media">
+								<img src={workFeatured.img} alt={workFeatured.alt} width="1439" height="1000" loading="lazy" decoding="async" />
+							</figure>
+							<div class="work-meta">
+								<span class="work-year">{workFeatured.year}</span>
+								<div class="work-meta__titles">
+									<h3>{workFeatured.title}</h3>
+									<p>{workFeatured.desc ?? ''}</p>
+								</div>
+							</div>
+						</a>
+					</article>
+					<article class="work-item scroll-in" data-appear="0" style="--d: 0.1s">
+						<a class="work-item-link" href={`/works/${workC.slug}/`}>
+							<figure class="work-media">
+								<img src={workC.img} alt={workC.alt} width="1439" height="1000" loading="lazy" decoding="async" />
+							</figure>
+							<div class="work-meta">
+								<span class="work-year">{workC.year}</span>
+								<div class="work-meta__titles">
+									<h3>{workC.title}</h3>
+									<p>{workC.desc ?? ''}</p>
+								</div>
+							</div>
+						</a>
+					</article>
+					<article class="work-item scroll-in" data-appear="0" style="--d: 0.1s">
+						<a class="work-item-link" href={`/works/${workD.slug}/`}>
+							<figure class="work-media">
+								<img src={workD.img} alt={workD.alt} width="1439" height="1000" loading="lazy" decoding="async" />
+							</figure>
+							<div class="work-meta">
+								<span class="work-year">{workD.year}</span>
+								<div class="work-meta__titles">
+									<h3>{workD.title}</h3>
+									<p>{workD.desc ?? ''}</p>
+								</div>
+							</div>
+						</a>
+					</article>
+				</div>
+				<div class="index-more-projects">
+					<SlideFrameLink href="/works" label="Más proyectos" />
+				</div>
+			</div>
+		</section>
 
-					<section class="work-secondary" aria-label="Mas proyectos destacados">
-						<div class="work">
-							<article class="work-item">
-								<a class="work-item-link" href={`/works/${workC.slug}/`}>
-									<figure class="work-media">
-										<img src={workC.img} alt={workC.alt} loading="lazy" />
-									</figure>
-									<div class="work-meta">
-										<span class="work-year">{workC.year}</span>
-										<h3>{workC.title}</h3>
-										<p>{workC.desc ?? ''}</p>
-									</div>
-								</a>
-							</article>
-							<article class="work-item">
-								<a class="work-item-link" href={`/works/${workD.slug}/`}>
-									<figure class="work-media">
-										<img src={workD.img} alt={workD.alt} loading="lazy" />
-									</figure>
-									<div class="work-meta">
-										<span class="work-year">{workD.year}</span>
-										<h3>{workD.title}</h3>
-										<p>{workD.desc ?? ''}</p>
-									</div>
-								</a>
-							</article>
-						</div>
-						<div class="index-more-projects">
-							<SlideFrameLink href="/works" label="Más proyectos" />
-						</div>
-					</section>
-				</section>
+		<section class="cta" aria-label="Contacto">
+			<div class="cta__rays" aria-hidden="true">
+				<HeroGodRays />
+			</div>
+			<div class="cta__pad">
+				<h2 class="cta__copy">
+					<span class="cta-word cta-appear" style="--appear-delay: 0ms">Probablemente</span>
+					{' '}
+					<em class="cta-word cta-appear" style="--appear-delay: 50ms">trabajar</em>
+					{' '}
+					<em class="cta-word cta-appear" style="--appear-delay: 100ms">conmigo</em>
+					<br />
+					<span class="cta-word cta-appear" style="--appear-delay: 150ms">sea</span>
+					{' '}
+					<span class="cta-word cta-appear" style="--appear-delay: 200ms">una</span>
+					{' '}
+					<span class="cta-word cta-appear" style="--appear-delay: 250ms">experiencia…</span>
+					{' '}
+					<span class="cta-word cta-appear" style="--appear-delay: 300ms">¿curiosa?</span>
+					<br />
+					<span class="cta-word cta-appear" style="--appear-delay: 350ms">Así</span>
+					{' '}
+					<span class="cta-word cta-appear" style="--appear-delay: 400ms">que,</span>
+					{' '}
+					<span class="cta-word cta-appear" style="--appear-delay: 450ms">¿por</span>
+					{' '}
+					<span class="cta-word cta-appear" style="--appear-delay: 500ms">qué</span>
+					{' '}
+					<span class="cta-word cta-appear" style="--appear-delay: 550ms">no?</span>
+				</h2>
+				<a class="cta-btn" href="/contacto">
+					<span class="cta-btn__fill" aria-hidden="true"></span>
+					<span class="cta-btn__clip">
+						<span class="cta-btn__stack">
+							<span class="cta-btn__line cta-btn__line--on">Just Do It!</span>
+							<span class="cta-btn__line cta-btn__line--off" aria-hidden="true">Just Do It!</span>
+						</span>
+					</span>
+				</a>
+			</div>
+		</section>
 
-				<section class="cta">
-					<h2>Probablemente <em>trabajar conmigo</em> sea una experiencia... <br />¿curiosa?<br /> Así que, ¿por qué no?</h2>
-					<SlideFrameLink href="/contacto" label="Just Do It!" class="index-cta-slide" />
-				</section>
-			</main>
+		<Footer />
 
-			<Footer variant="in-content" />
-		</div>
+		<script>
+			const bootCta = () => {
+				const cta = document.querySelector('.cta');
+				const target = document.querySelector('.cta__pad') || cta;
+				if (!cta || !target || cta.classList.contains('is-in')) return;
+
+				const play = () => {
+					if (cta.classList.contains('is-in')) return;
+					cta.classList.add('is-in');
+					window.removeEventListener('scroll', onScroll);
+					window.removeEventListener('resize', onScroll);
+					io?.disconnect();
+				};
+
+				const visible = () => {
+					const r = target.getBoundingClientRect();
+					const vh = window.innerHeight || 0;
+					return r.top < vh && r.bottom > 0;
+				};
+
+				const onScroll = () => {
+					if (visible()) play();
+				};
+
+				let io: IntersectionObserver | null = null;
+				if ('IntersectionObserver' in window) {
+					io = new IntersectionObserver(
+						(entries) => {
+							if (entries.some((entry) => entry.isIntersecting)) play();
+						},
+						{ threshold: 0 }
+					);
+					io.observe(target);
+				}
+
+				window.addEventListener('scroll', onScroll, { passive: true });
+				window.addEventListener('resize', onScroll, { passive: true });
+				requestAnimationFrame(onScroll);
+			};
+
+			const bootScrollIn = () => {
+				const nodes = [...document.querySelectorAll<HTMLElement>('.scroll-in')];
+				if (!nodes.length) return;
+				if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+					nodes.forEach((node) => node.classList.add('is-in'));
+					return;
+				}
+
+				const pending = new Set(nodes);
+				const reveal = (node: HTMLElement) => {
+					if (!pending.has(node)) return;
+					pending.delete(node);
+					node.classList.add('is-in');
+				};
+
+				const ratio = (node: HTMLElement) => {
+					const rect = node.getBoundingClientRect();
+					const vh = window.innerHeight || 0;
+					if (!rect.height || vh <= 0) return 0;
+					const visible = Math.min(rect.bottom, vh) - Math.max(rect.top, 0);
+					return Math.max(0, visible) / rect.height;
+				};
+
+				const scan = () => {
+					pending.forEach((node) => {
+						const need = Number(node.dataset.appear || '0');
+						const seen = ratio(node);
+						if (need <= 0 ? seen > 0 : seen >= need) reveal(node);
+					});
+					if (!pending.size) {
+						window.removeEventListener('scroll', scan);
+						window.removeEventListener('resize', scan);
+					}
+				};
+
+				window.addEventListener('scroll', scan, { passive: true });
+				window.addEventListener('resize', scan, { passive: true });
+				scan();
+			};
+
+			if (document.readyState === 'loading') {
+				document.addEventListener('DOMContentLoaded', () => {
+					bootCta();
+					bootScrollIn();
+				});
+			} else {
+				bootCta();
+				bootScrollIn();
+			}
+		</script>
 </BaseLayout>

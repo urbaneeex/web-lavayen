@@ -1,0 +1,612 @@
+---
+import Footer from '../../components/Footer.astro';
+import Header from '../../components/Header.astro';
+import HeroGodRays from '../../components/HeroGodRays.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { SITE_ORIGIN } from '../../site';
+
+const title = 'Ángel Lavayen | Términos y condiciones';
+const description = 'Términos y condiciones del sitio web de Ángel Lavayen.';
+const canonicalURL = new URL(Astro.url.pathname, SITE_ORIGIN).toString();
+---
+
+<BaseLayout
+	title={title}
+	description={description}
+	canonicalURL={canonicalURL}
+	robots="noindex, follow"
+	cursorHoverSelector=".site-header a, .site-header button, .nav-mobile a, .nav-mobile button, .site-footer a, .site-footer button, .cta-btn, .cookie-banner button, .legal-nav a, .legal-body a"
+>
+	<style slot="head">
+		* {
+			box-sizing: border-box;
+		}
+
+		html,
+		body {
+			margin: 0;
+			padding: 0;
+			background: #000;
+			color: #fff;
+			font-family: 'Inter Display', Inter, system-ui, sans-serif;
+			-webkit-font-smoothing: antialiased;
+			-moz-osx-font-smoothing: grayscale;
+		}
+
+		body {
+			cursor: none;
+			min-height: 100svh;
+			display: flex;
+			flex-direction: column;
+		}
+
+		.legal-page {
+			flex: 1;
+			width: 100%;
+			background: #000;
+			font-size: 16px;
+		}
+
+		.legal-wrap {
+			display: flex;
+			justify-content: center;
+			width: 100%;
+			max-width: 1800px;
+			margin: 0 auto;
+			padding: 100px 0 150px;
+		}
+
+		.legal-grid {
+			display: grid;
+			grid-template-columns: repeat(3, minmax(50px, 1fr));
+			gap: 50px;
+			width: 100%;
+			max-width: 90%;
+		}
+
+		.legal-nav {
+			display: flex;
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 20px;
+			padding: 50px 0 0;
+			min-width: 0;
+		}
+
+		.legal-nav__label {
+			margin: 0;
+			width: 100%;
+			height: 28px;
+			border-bottom: 1px solid #333;
+			color: #000;
+			font-family: 'Inter Display', sans-serif;
+			font-size: 20px;
+			font-weight: 600;
+			line-height: 1;
+		}
+
+		.legal-nav a {
+			display: flex;
+			align-items: center;
+			gap: 1px;
+			width: 100%;
+			color: #fff;
+			font-size: 1em;
+			font-weight: 400;
+			line-height: 1.4;
+			text-decoration: none;
+		}
+
+		.legal-nav a.is-dim {
+			opacity: 0.6;
+		}
+
+		.legal-nav__nudge {
+			flex: none;
+			width: 1px;
+			height: 5px;
+			background: #fff;
+			opacity: 0;
+			transition: width 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+		}
+
+		.legal-nav a:hover .legal-nav__nudge,
+		.legal-nav a:focus-visible .legal-nav__nudge {
+			width: 10px;
+		}
+
+		.legal-nav svg {
+			flex: none;
+			width: 20px;
+			height: 20px;
+			fill: #fff;
+		}
+
+		.legal-copy {
+			grid-column: span 2;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			gap: 30px;
+			min-width: 0;
+			padding: 0 0 40px;
+		}
+
+		.legal-copy > * {
+			width: 100%;
+		}
+
+		.legal-title {
+			margin: 0;
+			font-family: 'Instrument Serif', Georgia, serif;
+			font-size: 1.5em;
+			font-weight: 400;
+			line-height: 0.9;
+			color: #fff;
+		}
+
+		.legal-date {
+			margin: 0;
+			font-family: 'Inter Display', sans-serif;
+			font-size: 1.6em;
+			font-weight: 400;
+			line-height: 1.4;
+			font-feature-settings: 'blwf' on, 'cv09' on, 'cv03' on, 'cv04' on, 'cv11' on;
+			color: #fff;
+		}
+
+		.legal-body {
+			font-size: 1em;
+			line-height: 1.4;
+			color: #fff;
+			word-break: break-word;
+		}
+
+		.legal-body p,
+		.legal-body ul,
+		.legal-body li {
+			margin: 0;
+			padding: 0;
+			font-size: 1em;
+			font-weight: 400;
+			line-height: 1.4;
+			color: #fff;
+		}
+
+		.legal-body strong {
+			font-weight: 700;
+		}
+
+		.legal-body em {
+			font-style: italic;
+		}
+
+		.legal-body a {
+			color: #a5a5a5;
+			text-decoration: none;
+		}
+
+		.legal-body a:hover,
+		.legal-body a:focus-visible {
+			color: #000fe0;
+			text-decoration: underline;
+		}
+
+		.legal-body ul {
+			position: relative;
+			list-style: none;
+			padding-inline-start: 0;
+		}
+
+		.legal-body li {
+			padding-inline-start: 2ch;
+			list-style: none;
+		}
+
+		.legal-body li::before {
+			content: '•';
+			position: absolute;
+			inset-inline-start: 0;
+		}
+
+		.legal-cta {
+			position: relative;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			width: 100%;
+			height: 580px;
+			padding: 40px 0 0;
+			background: #000;
+			border-bottom: 1px solid #222225;
+			overflow: hidden;
+		}
+
+		.legal-cta__rays {
+			position: absolute;
+			left: 0;
+			right: 0;
+			top: 40px;
+			bottom: 0;
+			z-index: 0;
+			overflow: hidden;
+			pointer-events: none;
+		}
+
+		.legal-cta__pad {
+			position: relative;
+			z-index: 2;
+			display: flex;
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 30px;
+			width: 100%;
+			max-width: 1440px;
+			padding: 0 30px;
+		}
+
+		.legal-cta__copy {
+			margin: 0;
+			width: 60%;
+			font-family: 'Instrument Serif', Georgia, serif;
+			font-size: 2.6em;
+			font-weight: 400;
+			line-height: 1.2;
+			text-align: left;
+			color: #fff;
+			mix-blend-mode: overlay;
+			font-feature-settings: 'blwf' on, 'cv09' on, 'cv03' on, 'cv04' on, 'cv11' on;
+		}
+
+		.legal-cta__copy span {
+			display: inline-block;
+		}
+
+		.cta-appear {
+			opacity: 0.001;
+			filter: blur(5px);
+			transform: translateY(15px);
+		}
+
+		.legal-cta.is-in .cta-appear {
+			animation: legal-appear 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+			animation-delay: var(--appear-delay, 0ms);
+		}
+
+		@keyframes legal-appear {
+			to {
+				opacity: 1;
+				filter: none;
+				transform: translateY(0);
+			}
+		}
+
+		.cta-btn {
+			position: relative;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			padding: 10px 24px;
+			background: #000;
+			box-shadow: inset 0 0 0 1px rgba(245, 245, 245, 0.1);
+			overflow: hidden;
+			text-decoration: none;
+			color: #fff;
+		}
+
+		.cta-btn__fill {
+			position: absolute;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			height: 0;
+			background: #fff;
+			z-index: 1;
+			transition: height 0.45s cubic-bezier(0.33, 1, 0.68, 1);
+		}
+
+		.cta-btn__clip {
+			position: relative;
+			z-index: 2;
+			display: block;
+			overflow: hidden;
+			height: 1.2em;
+		}
+
+		.cta-btn__stack {
+			display: flex;
+			flex-direction: column;
+			transition: transform 0.45s cubic-bezier(0.33, 1, 0.68, 1);
+		}
+
+		.cta-btn__line {
+			display: block;
+			font-family: 'Inter Display', sans-serif;
+			font-size: 1em;
+			font-weight: 500;
+			line-height: 1.2;
+			white-space: nowrap;
+		}
+
+		.cta-btn__line--on {
+			color: #fff;
+		}
+
+		.cta-btn__line--off {
+			color: #000;
+		}
+
+		.cta-btn:hover .cta-btn__fill,
+		.cta-btn:focus-visible .cta-btn__fill {
+			height: 100%;
+		}
+
+		.cta-btn:hover .cta-btn__stack,
+		.cta-btn:focus-visible .cta-btn__stack {
+			transform: translateY(-50%);
+		}
+
+		.cta-btn:focus-visible,
+		.legal-nav a:focus-visible {
+			outline: 2px solid rgba(255, 255, 255, 0.65);
+			outline-offset: 3px;
+		}
+
+		@media (min-width: 810px) and (max-width: 1199.98px) {
+			.legal-page {
+				font-size: 15px;
+			}
+
+			.legal-wrap {
+				padding: 120px 0 150px;
+			}
+
+			.legal-grid {
+				max-width: 650px;
+			}
+		}
+
+		@media (max-width: 809.98px) {
+			.legal-page {
+				font-size: 14px;
+			}
+
+			.legal-wrap {
+				padding: 120px 0 100px;
+			}
+
+			.legal-grid {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				max-width: 90%;
+			}
+
+			.legal-nav,
+			.legal-copy {
+				align-self: stretch;
+				width: 100%;
+			}
+
+			.legal-copy {
+				grid-column: auto;
+			}
+
+			.legal-cta {
+				height: 80vh;
+			}
+
+			.legal-cta__pad {
+				padding: 0 15px;
+			}
+
+			.legal-cta__copy {
+				width: 100%;
+			}
+		}
+
+		@media (hover: none), (pointer: coarse) {
+			body {
+				cursor: auto;
+			}
+		}
+
+		@media (prefers-reduced-motion: reduce) {
+			.cta-appear {
+				animation: none;
+				opacity: 1;
+				filter: none;
+				transform: none;
+			}
+
+			.legal-nav__nudge,
+			.cta-btn__fill,
+			.cta-btn__stack {
+				transition: none;
+			}
+		}
+	</style>
+
+	<Header theme="dark" />
+	<main class="legal-page" id="main">
+		<div class="legal-wrap">
+			<div class="legal-grid">
+				<nav class="legal-nav" aria-label="Legal">
+					<h2 class="legal-nav__label">Legal</h2>
+					<a class="is-dim" href="/legal/cookies-policy">
+						<span>Política de Cookies</span>
+						<span class="legal-nav__nudge" aria-hidden="true"></span>
+						<svg viewBox="0 0 256 256" aria-hidden="true"><path d="M221.66,133.66l-72,72a8,8,0,0,1-11.32-11.32L196.69,136H40a8,8,0,0,1,0-16H196.69L138.34,61.66a8,8,0,0,1,11.32-11.32l72,72A8,8,0,0,1,221.66,133.66Z"></path></svg>
+					</a>
+					<a href="/legal/therms" aria-current="page">
+						<span>Términos y condiciones</span>
+						<span class="legal-nav__nudge" aria-hidden="true"></span>
+						<svg viewBox="0 0 256 256" aria-hidden="true"><path d="M221.66,133.66l-72,72a8,8,0,0,1-11.32-11.32L196.69,136H40a8,8,0,0,1,0-16H196.69L138.34,61.66a8,8,0,0,1,11.32-11.32l72,72A8,8,0,0,1,221.66,133.66Z"></path></svg>
+					</a>
+				</nav>
+				<article class="legal-copy">
+					<h2 class="legal-title">Términos y condiciones</h2>
+					<p class="legal-date">Última actualización: 3 de mayo de 2025</p>
+					<div class="legal-body">
+						<p><strong>Titularidad</strong></p>
+					<p>Este sitio es propiedad y está operado por <strong>Ángel Alejandro Lavayen Ruiz</strong> (en adelante, el <strong> 'Titular'</strong>), con domicilio en <strong>Calle Idioma Esperanto, 20, BD, 28017, Madrid, España,</strong> número de N.I.F <strong>02795379M</strong>.</p>
+					<p>Correo electrónico: <strong>angel@lavayen.work</strong></p>
+					<p><strong>Descripción y Uso del Servicio</strong></p>
+					<p>A través del sitio web <strong>lavayen.work</strong> (en adelante, la '<strong>Aplicación'),</strong> el Titular<strong> </strong>presenta su portafolio profesional y ofrece los siguientes servicios y productos (en adelante, el '<strong>Servicio</strong>'):</p>
+					<ul>
+						<li><p><strong>Presentación del Portafolio:</strong> Exhibición de trabajos realizados en las áreas de branding, diseño y contenido para redes sociales, edición de vídeo y packaging, con el fin de mostrar las habilidades y el estilo del Titular.</p></li>
+						<li><p><strong>Servicios de Diseño Gráfico Personalizado:</strong> Información sobre los servicios de diseño gráfico ofrecidos [creación de identidades visuales, diseño de logotipos, desarrollo de contenido para plataformas sociales, edición de vídeo, diseño de packaging, etc.], y los medios para contactar al Titular para solicitar presupuestos o información adicional.</p></li>
+						<li><p><strong>Venta de 'Cuadros' Digitales:</strong> Oferta y comercialización de obras artísticas digitales en formato JPG y PDF para su descarga por parte de los usuarios que realicen la compra a través de la Aplicación.</p></li>
+					</ul>
+					<p><strong>Uso del Servicio por el Usuario</strong></p>
+					<p>"El acceso y uso de la Aplicación atribuye la condición de 'Usuario' (en adelante, el <strong>'Usuario'</strong>) e implica la aceptación plena y sin reservas de los presentes Términos y Condiciones, así como de la Política de Privacidad y la Política de Cookies.</p>
+					<p>El Usuario se compromete a utilizar la Aplicación, sus contenidos y servicios de conformidad con la ley, la moral, las buenas costumbres y el orden público, así como con lo dispuesto en los presentes Términos y Condiciones.</p>
+					<p>En particular, el Usuario se abstendrá de:</p>
+					<ul>
+						<li><p>Utilizar la Aplicación de forma que pueda dañar, inutilizar, sobrecargar o deteriorar la misma o impedir la normal utilización o disfrute por parte de otros Usuarios.</p></li>
+						<li><p>Intentar acceder a áreas restringidas de la Aplicación sin la debida autorización.</p></li>
+						<li><p>Introducir o difundir en la Aplicación virus informáticos o cualesquiera otros sistemas o programas que puedan causar daños en los sistemas informáticos del Titular o de terceros.</p></li>
+						<li><p>Utilizar la Aplicación con fines ilícitos, ilegales, contrarios a la buena fe y al orden público.</p></li>
+						<li><p>Reproducir, distribuir, comunicar públicamente, transformar o modificar los contenidos de la Aplicación, incluyendo las imágenes del portafolio y los 'cuadros' digitales (salvo en los términos de la licencia de uso específica para estos últimos tras su compra), a menos que cuente con la expresa autorización por escrito del Titular o esté legalmente permitido.</p></li>
+						<li><p>Utilizar los datos personales de otros Usuarios sin su consentimiento.</p></li>
+						<li><p>A no recabar datos con finalidad publicitaria, remitir publicidad de cualquier clase o comunicaciones con fines de venta u otras de naturaleza comercial. Tampoco podrá poner a disposición de terceros, con cualquier finalidad, datos recabados en el Servicio.</p></li>
+					</ul>
+					<p>En caso de incumplir estas obligaciones, los usuarios deberán responder frente a aquellos. De igual forma en caso de dañar, inutilizar, sobrecargar, deteriorar o impedir la normal utilización de los materiales e información contenidos en el Servicio, los sistemas de información o los documentos, archivos y toda clase de contenidos almacenados en cualquier equipo informático del Servicio, de sus miembros o de cualquier usuario del Servicio.</p>
+					<p><strong>Licencia de Uso de los 'Cuadros' digitales</strong></p>
+					<p>Al adquirir un 'Cuadro' digital a través de la Aplicación, el Titular (Ángel Alejandro Lavayen Ruiz) otorga al Usuario una licencia no exclusiva, intransferible y mundial para el uso personal y no comercial del archivo digital adquirido. Esta licencia permite al Usuario:</p>
+					<ul>
+						<li><p>Descargar y almacenar el archivo digital en sus dispositivos electrónicos.</p></li>
+						<li><p>Visualizar el archivo digital para uso personal.</p></li>
+						<li><p>Imprimir el archivo digital para exhibición personal, sin fines comerciales.</p></li>
+					</ul>
+					<p>Queda expresamente prohibido al Usuario:</p>
+					<ul>
+						<li><p>Reproducir, distribuir, comunicar públicamente, transformar, ceder, prestar, vender o revender el archivo digital o cualquier copia del mismo, ya sea en formato digital o impreso, con fines comerciales o lucrativos.</p></li>
+						<li><p>Modificar el archivo digital de ninguna manera sin la autorización expresa y por escrito del Titular.</p></li>
+						<li><p>Utilizar el archivo digital en productos o servicios destinados a la venta o distribución comercial.</p></li>
+						<li><p>Eliminar o alterar cualquier marca de agua, atribución de autoría o aviso legal incluido en el archivo digital.</p></li>
+					</ul>
+					<p>Todos los derechos de propiedad intelectual sobre los 'Cuadros' digitales, incluyendo sin limitación los derechos de autor sobre la obra artística, el diseño y el archivo digital en sí mismos, permanecen en exclusiva titularidad de Ángel Alejandro Lavayen Ruiz. La presente licencia de uso no implica la transferencia de ningún derecho de propiedad intelectual al Usuario."</p>
+					<p><strong>Enlaces externos</strong></p>
+					<p>Puede que desde el la Aplicacion se le remita a otros sitios web a través de enlaces.</p>
+					<p>Sin embargo, el Titular no tiene ningún control sobre esos sitios o su contenido, sujetos a sus propios términos y condiciones. Por tanto, el Titular  no es responsable de la calidad, veracidad o exactitud de la información contenida en aquellos.</p>
+					<p><strong>Edad</strong></p>
+					<p>Para hacer uso de el Servicio declara que es mayor de edad y que dispone de la capacidad legal necesaria para vincularse por este acuerdo y utilizar el sitio de conformidad con sus términos y condiciones, que comprendes y reconoce en su totalidad.</p>
+					<p>Si contrata en nombre de una empresa el Servicio, reconoce disponer de autorización y la representación adecuada en nombre de la organización para ello.</p>
+					<p>Declara que toda la información que proporciona para acceder al Servicio, antes y durante su utilización, es verdadera, completa y precisa.</p>
+					<p><strong>Propiedad intelectual e industrial</strong></p>
+					<p>El contenido y la información del Servicio (entre otros datos, texto, sonido o imagen), así como los elementos de hardware o software utilizados para proporcionar tal contenido e información, son propiedad del Titular o bien dispone de las autorizaciones correspondientes para su uso.</p>
+					<p>Además, se prohíbe la modificación, reproducción, duplicación, copia, distribución, venta, reventa y demás formas de explotación para fines comerciales o equivalentes del Servicio.</p>
+					<p>Para cualquier otro uso del contenido del Servicio necesitas nuestro consentimiento previo por escrito.</p>
+					<p><strong>Contenido de Usuario</strong></p>
+					<p>Puedes contribuir al Servicio enviándonos mensajes a nuestra dirección de correo electrónico o a través del formulario de contacto (<a href="https://lavayen.work/contact" target="_blank" rel="noreferrer noopener">https://lavayen.work/contact</a>)</p>
+					<p>Podemos usar tu Contenido de distintas maneras, tales como: mostrarlo en el sitio web, reformatearlo, traducirlo a otros idiomas, editarlo para aportar claridad, corregir errores, promocionarlo o distribuirlo.</p>
+					<p>En consecuencia, al enviarnos Contenido, usted otorga al Titular una licencia mundial, no exclusiva, gratuita, transferible y sublicenciable para utilizar ese Contenido hasta que sea retirado.</p>
+					<p>Eso significa que el contenido sigue siendo tuyo, pero el Titular, gracias a esa licencia de uso, puede:</p>
+					<ul>
+						<li><p>Usar, reproducir, modificar, adaptar, traducir, distribuir y publicar el Contenido, crear obras derivadas a partir de él, mostrarlo y exhibirlo en todo el mundo, por cualquier medio conocido y para cualquier fin legítimo.</p></li>
+						<li><p>Usar el nombre que envíes en relación con ese Contenido.</p></li>
+					</ul>
+					<p>No obstante, el Titular se reserva el derecho de no publicar aquellos contenidos o informaciones que sean falsas o contrarias a los derechos de terceros.</p>
+					<p><strong>Precio e impuestos</strong></p>
+					<p>Los precios de los productos ofertados en la Aplicación están indicados en euros (€) e incluyen el impuesto del valor añadido (IVA) aplicable a estos servicios en España.</p>
+					<p>En caso de que el lugar de residencia o domicilio del cliente sea otro estado miembro de la Unión Europea o un tercer estado, el precio de la reserva puede sufrir modificaciones si el tipo impositivo aplicable es diferente.</p>
+					<p><strong>Pagos e impuestos</strong></p>
+					<p>Para contratar nuestros servicios de branding, packaging, redes sociales o edición de vídeo (<a href="https://lavayen.work/services" target="_blank" rel="noreferrer noopener">https://lavayen.work/services</a>) es imprescindible abonar el 40% del importe total del presupuesto, aprobado previamente por el Usuario. El 60% restante, deberá ser abonado para poder hacer efectiva la entrega de todos los archivos finales.<br /><br />El pago del Servicio contratado se podrá realizar:</p>
+					<ul>
+						<li><p>Mediante transferencia bancaria a la cuenta que indique el Titular en el presupuesto.</p></li>
+					</ul>
+					<p>Para comprar los archivos descargables de la tienda (<a href="https://lavayen.work/shop" target="_blank" rel="noreferrer noopener">https://lavayen.work/shop</a>) alojada en la Aplicación se pagarán en su totalidad para poder hacer uso y disfrute.</p>
+					<p>El pago del producto se podrá realizar:</p>
+					<ul>
+						<li><p>Mediante tarjeta de crédito o débito VISA o MasterCard, haciendo uso de la plataforma <a href="https://stripe.com/es" target="_blank" rel="noreferrer noopener">Stripe</a>.</p></li>
+					</ul>
+					<p>En este sentido, el Titular informa a los titulares de las tarjetas de crédito y débito que es <a href="https://stripe.com/es" target="_blank" rel="noreferrer noopener">Stripe</a> el responsable de las transacciones en la tienda online.</p>
+					<p><strong>Validez de las ofertas</strong></p>
+					<p>Los productos ofertados en el Servicio, y los precios de éstos, estarán disponibles para su adquisición mientras se encuentren en el catálogo visualizado por medio de la web.</p>
+					<p>En todo caso, el Titular se reserva el derecho de efectuar en el Servicio las modificaciones que considere oportunas, pudiendo actualizar funciones del Servicio según el mercado.</p>
+					<p>Los precios de los Servicios que aparecen en la web son orientativos, mientras que el precio de los productos son válidos únicamente en el momento de la compra. El Titular se reserva el derecho de cambiar los precios sin aviso previo.</p>
+					<p>Te informamos que a pesar de las actualizaciones que se realizan a los precios del Servicio, éstos podrían contener errores. Corregiremos con prontitud todos los errores que aparezcan, pero no serán vinculantes con el Servicio.</p>
+					<p><strong>Exclusión de garantías y responsabilidad</strong></p>
+					<p>Salvo en aquellos casos expresamente descritos en los presentes términos y condiciones y hasta donde la ley permita, el Titular no se responsabiliza por los daños y perjuicios de cualquier naturaleza que puedan deberse a la falta de exactitud, exhaustividad o actualidad, incluidos errores y omisiones, de la información contenida en el Servicio. De igual forma, tampoco de cualquier deber o compromiso de verificar o vigilar sus contenidos e informaciones.</p>
+					<p>Igualmente, el Titular no garantiza la disponibilidad y continuidad del funcionamiento de los Servicios. El Titular procurará advertir con suficiente antelación de las interrupciones que pudieran suceder en el funcionamiento del Servicio siempre que ello sea posible.</p>
+					<p>El Titular incluye, con toda la extensión permitida por el ordenamiento jurídico, cualquier responsabilidad por los daños y perjuicios de toda naturaleza que puedan deberse a la falta de disponibilidad o de continuidad del funcionamiento del Servicio. De igual manera, respecto a la defraudación de la utilidad que los usuarios hubiesen podido atribuir al Servicio.</p>
+					<p>Asimismo, el Titular incluye cualquier responsabilidad por los daños y perjuicios de toda naturaleza que pudieran deberse a la utilización del Servicio y de sus contenidos por parte de los usuarios, clientes o profesionales, o que puedan deberse a la falta de veracidad, vigencia o autenticidad de la información que los usuarios proporcionan a otros acerca de sí mismos. En particular, el Titular incluye cualquier responsabilidad por los daños y perjuicios de toda naturaleza que puedan deberse a la suplantación de la personalidad de un tercero efectuada por un usuario en cualquier clase de comunicación realizada a través del Servicio.</p>
+					<p><strong>Derecho de desistimiento, cambios, devoluciones y reembolsos</strong></p>
+					<p><strong>Derecho de desistimiento</strong></p>
+					<p>Los servicios de branding, packaging, redes sociales y edición de vídeo son confeccionados conforme a las especificaciones del usuario o claramente personalizados, por tanto no les será aplicable el derecho de desistimiento de acuerdo al <strong>artículo 103, letra c)</strong> del <em>Real Decreto Legislativo 1/2007, de 16 de noviembre, por el que se aprueba el texto refundido de la Ley General para la Defensa de los Consumidores y Usuarios y otras leyes complementarias</em>.</p>
+					<p>Los productos digitales que se venden en la Aplicación son de naturaleza no reembolsable por lo que no les será aplicable el derecho de desistimiento de acuerdo al <strong>artículo 103, letra c)</strong> del <em>Real Decreto Legislativo 1/2007, de 16 de noviembre, por el que se aprueba el texto refundido de la Ley General para la Defensa de los Consumidores y Usuarios y otras leyes complementarias</em>.</p>
+					<p><strong>Cambios y devoluciones</strong></p>
+					<p>Sin perjuicio de lo establecido en la sección de 'Derecho de Desistimiento, Cambios, Devoluciones y Reembolsos' respecto a la naturaleza no reembolsable de los productos digitales, en caso de que el Usuario experimente problemas técnicos que le impidan la correcta descarga del archivo digital adquirido, y siempre que estos problemas sean atribuibles a la Aplicación o a un fallo técnico por parte del Titular, el Usuario deberá comunicarlo a la mayor brevedad posible a través de los medios de contacto indicados en estos Términos y Condiciones (preferiblemente a info@lavayen.work).</p>
+					<p>Tras verificar y confirmar que el problema de descarga es imputable a la Aplicación o al Titular, se ofrecerá al Usuario una solución, que podrá consistir en un nuevo intento de descarga del archivo o, en caso de imposibilidad técnica persistente, el reembolso del importe abonado por dicho archivo digital. Esta será la única excepción a la política general de no reembolso para productos digitales."</p>
+					<p>Si una vez recibido el producto el mismo llegara dañado o en malas condiciones, el Titular permite cambiarlo por uno nuevo en un plazo de treinta (30) días naturales, a contar desde la fecha de su recepción, y sin coste adicional.</p>
+					<p>La devolución de los artículos adquiridos deberá empaquetarse cuidadosamente e incluir el albarán de entrega. Para la devolución, contacta con nosotros en <a href="mailto:info@lavayen.work" target="_blank" rel="noreferrer noopener"><strong>info@lavayen.work</strong></a><strong>.</strong></p>
+					<p>Si la misma no pudiera realizarse por correo postal ordinario, una vez que la solicitud haya sido confirmada, el transportista se pondrá en contacto con usted para concretar el día y la hora de recogida, sin cargos adicionales.</p>
+					<p>Por otro lado, si por error te fuera entregado un producto distinto al solicitado, comunícalo en <a href="mailto:info@lavayen.work" target="_blank" rel="noreferrer noopener"><strong>info@lavayen.work</strong></a> y se te entregará el producto correcto, recogiendo el primero, sin ningún cargo adicional para ti.</p>
+					<p><br /></p>
+					<p><strong>Modificaciones y nulidad</strong></p>
+					<p>Podremos actualizar los términos y condiciones del Servicio en el futuro, así como características y funciones del propio Servicio. Sin embargo, esto no afectará negativamente la calidad de ningún servicio específico que se haya acordado expresamente proporcionar.</p>
+					<p>El Titular se compromete a informar de los cambios en términos y condiciones colocando un aviso en un lugar prominente de nuestro sitio web y/o por correo electrónico.</p>
+					<p>Si cualquier cláusula incluida en nuestros términos y condiciones fuese declarada, total o parcialmente, nula o ineficaz, la misma solo afectará a dicha disposición o a la parte de la misma que resulte nula o ineficaz. Subsistirán los términos y condiciones en todo lo demás, teniéndose tal disposición, o la parte de la misma que resultase afectada, por no puesta.</p>
+					<p><strong>Reclamaciones y acciones derivadas del contrato</strong></p>
+					<p>Este Servicio se rige por la legislación española.</p>
+					<p>Con el fin de simplificar la resolución de reclamaciones por la vía civil y reducir costes, no excluimos la posibilidad de someternos ante un Arbitraje de Equidad de la Corte de Arbitraje de las Cámaras de Comercio e Industria.</p>
+					<p>En este sentido, y según la normativa aplicable, el Titular informa de la existencia de una plataforma europea de resolución de litigios en línea que facilita la resolución extrajudicial de dichos litigios para contratos celebrados igualmente en línea entre consumidores y prestadores de servicios de Internet. A dicha plataforma se podrá acceder a través de la siguiente página web: <a href="http://ec.europa.eu/odr">http://ec.europa.eu/odr</a></p>
+					<p><strong>Contacto</strong></p>
+					<p>Si tienes dudas sobre estos términos y condiciones, puede consultarnos contactando con nosotros a través de:</p>
+					<ul>
+						<li><p><strong>Correo electrónico: </strong><a href="mailto:info@lavayen.work" target="_blank" rel="noreferrer noopener">info@lavayen.work</a></p></li>
+						<li><p><strong>Formulario de contacto: </strong><a href="https://lavayen.work/contact" target="_blank" rel="noreferrer noopener">https://lavayen.work/contact</a></p></li>
+					</ul>
+					</div>
+				</article>
+			</div>
+		</div>
+		<section class="legal-cta" aria-label="Cierre">
+			<div class="legal-cta__rays" aria-hidden="true">
+				<HeroGodRays />
+			</div>
+			<div class="legal-cta__pad">
+				<h2 class="legal-cta__copy">
+					<span class="cta-appear" style="--appear-delay: 0ms">¿Has</span>{' '}
+					<span class="cta-appear" style="--appear-delay: 50ms">terminado?</span>
+				</h2>
+				<a class="cta-btn" href="/">
+					<span class="cta-btn__fill" aria-hidden="true"></span>
+					<span class="cta-btn__clip">
+						<span class="cta-btn__stack">
+							<span class="cta-btn__line cta-btn__line--on">Volver al inicio</span>
+							<span class="cta-btn__line cta-btn__line--off" aria-hidden="true">Volver al inicio</span>
+						</span>
+					</span>
+				</a>
+			</div>
+		</section>
+	</main>
+	<Footer />
+	<script>
+		const bootLegalCta = () => {
+			const cta = document.querySelector('.legal-cta');
+			if (!cta || cta.classList.contains('is-in')) return;
+			const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+			const play = () => {
+				cta.classList.add('is-in');
+				window.removeEventListener('scroll', onScroll);
+				window.removeEventListener('resize', onScroll);
+			};
+			const onScroll = () => {
+				const r = cta.getBoundingClientRect();
+				const seen = Math.min(r.bottom, window.innerHeight) - Math.max(r.top, 0);
+				if (seen > 0) play();
+			};
+			if (reduced) {
+				play();
+				return;
+			}
+			onScroll();
+			window.addEventListener('scroll', onScroll, { passive: true });
+			window.addEventListener('resize', onScroll);
+		};
+		bootLegalCta();
+	</script>
+</BaseLayout>

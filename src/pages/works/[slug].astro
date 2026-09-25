@@ -20,7 +20,7 @@ if (!neighbors) {
 }
 
 const { current, prev, next } = neighbors;
-const title = `${current.title} | Ángel Lavayen — Dirección de arte y diseño, Madrid`;
+const title = `${current.title} | Ángel Lavayen`;
 const description =
 	current.desc ??
 	`${current.title}: proyecto de dirección de arte y diseño gráfico por Ángel Alejandro Lavayen Ruiz (Madrid).`;
@@ -36,7 +36,6 @@ const datePublished = yearToSchemaDatePublished(current.year);
 	ogType="article"
 	ogImage={ogImageAbs}
 	ogLocaleAlternate="en_US"
-	cursorHoverSelector={'a, button, [role="button"], .work-item-link, .photo, .work-card-gallery-arrow, .work-card-dot'}
 >
 	<script
 		slot="head"
@@ -55,10 +54,6 @@ const datePublished = yearToSchemaDatePublished(current.year);
 	/>
 
 	<style slot="head">
-		:root {
-			--site-pad: clamp(1.8rem, 4.8vw, 3rem);
-		}
-
 		* {
 			box-sizing: border-box;
 		}
@@ -67,9 +62,9 @@ const datePublished = yearToSchemaDatePublished(current.year);
 		body {
 			margin: 0;
 			padding: 0;
-			font-family: Inter, system-ui, -apple-system, sans-serif;
+			font-family: 'Inter Display', Inter, system-ui, -apple-system, sans-serif;
 			background: #000;
-			color: #f5f5f5;
+			color: #fff;
 		}
 
 		body {
@@ -83,11 +78,17 @@ const datePublished = yearToSchemaDatePublished(current.year);
 			color: inherit;
 		}
 
+		/* Framer «Container»: max 1440, centrado; los paddings van dentro de WorkCard */
 		.work-detail-page {
 			flex: 1;
-			width: calc(100% - (var(--site-pad) * 2));
+			width: 100%;
+			max-width: 1440px;
 			margin: 0 auto;
-			padding: clamp(5.2rem, 14vw, 7.5rem) 0 clamp(4rem, 12vw, 7rem);
+			padding: 0;
+			background: #000;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
 		}
 
 		@media (prefers-reduced-motion: reduce) {
@@ -109,8 +110,11 @@ const datePublished = yearToSchemaDatePublished(current.year);
 		<WorkCard
 			title={current.title}
 			year={current.year}
+			tag={current.tag}
 			descriptionHtml={current.detailHtml}
+			creditsHtml={current.creditsHtml}
 			images={current.gallery}
+			videoRows={current.videoRows}
 			galleryRootId={`gallery-${current.slug}`}
 			prev={prev ? { title: prev.title, href: `/works/${prev.slug}/` } : null}
 			next={next ? { title: next.title, href: `/works/${next.slug}/` } : null}

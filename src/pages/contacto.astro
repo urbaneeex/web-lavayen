@@ -49,10 +49,6 @@ const canonicalURL = new URL(Astro.url.pathname, SITE_ORIGIN).toString();
 	/>
 
 	<style slot="head">
-		:root {
-			--site-pad: clamp(1.8rem, 4.8vw, 3rem);
-		}
-
 		* {
 			box-sizing: border-box;
 		}
@@ -61,9 +57,11 @@ const canonicalURL = new URL(Astro.url.pathname, SITE_ORIGIN).toString();
 		body {
 			margin: 0;
 			padding: 0;
-			font-family: Inter, system-ui, -apple-system, sans-serif;
+			font-family: 'Inter Display', Inter, system-ui, sans-serif;
 			background: #000;
-			color: #f5f5f5;
+			color: #fff;
+			-webkit-font-smoothing: antialiased;
+			-moz-osx-font-smoothing: grayscale;
 		}
 
 		body {
@@ -78,74 +76,172 @@ const canonicalURL = new URL(Astro.url.pathname, SITE_ORIGIN).toString();
 			text-decoration: none;
 		}
 
-		.contact-main {
+		.contact-page {
 			flex: 1;
-			width: calc(100% - (var(--site-pad) * 2));
-			margin: 0 auto;
-			padding: clamp(5.2rem, 14vw, 7.5rem) 0 clamp(4rem, 12vw, 7rem);
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			width: 100%;
+			background: #000;
 		}
 
-		.contact-layout {
+		.contact {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			width: 100%;
+			max-width: 1440px;
+			padding: 84px 30px 0;
+		}
+
+		.contact-inner {
 			display: grid;
-			grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
-			gap: clamp(2rem, 6vw, 5rem);
-			align-items: start;
+			grid-template-columns: 1fr 1fr;
+			align-items: flex-start;
+			gap: 50px;
+			width: 100%;
+			padding: 30px 0;
+			overflow: hidden;
+			border-top: 1px solid rgb(34, 34, 37);
 		}
 
-		.contact-title {
-			margin: 0 0 clamp(1.75rem, 3.5vw, 2.75rem);
+		.contact-copy {
+			display: flex;
+			flex-direction: column;
+			align-items: flex-start;
+			min-width: 0;
+		}
+
+		.contact-copy h1 {
+			margin: 0 0 10px;
 			font-family: 'Instrument Serif', Georgia, serif;
-			font-size: clamp(2.35rem, 6.5vw, 4rem);
+			font-size: 40px;
 			font-weight: 400;
-			line-height: 1;
-			letter-spacing: -0.02em;
+			line-height: 1.2;
 			color: #fff;
+		}
+
+		.contact-emoji {
+			font-family: 'Inter Display', sans-serif;
+			font-size: 30.4px;
+			font-weight: 400;
+			line-height: 1.2;
+			font-style: normal;
+		}
+
+		.contact-lead {
+			margin: 0;
+			font-family: 'Inter Display', sans-serif;
+			font-size: 16px;
+			font-weight: 400;
+			line-height: 1.4;
+			color: rgba(255, 255, 255, 0.4);
 		}
 
 		.contact-fields {
 			display: grid;
 			grid-template-columns: 1fr 1fr;
-			gap: clamp(2.2rem, 5vw, 3.75rem) clamp(1.5rem, 4vw, 3rem);
-		}
-
-		.contact-block {
+			gap: 30px;
 			min-width: 0;
 		}
 
+		.contact-block {
+			display: flex;
+			flex-direction: column;
+			align-items: flex-start;
+			justify-content: center;
+			gap: 5px;
+			min-width: 0;
+			overflow: hidden;
+		}
+
+		.contact-label,
+		.contact-value {
+			margin: 0;
+			font-family: 'Inter Display', sans-serif;
+			font-size: 16px;
+			font-weight: 400;
+			line-height: 1.4;
+		}
+
 		.contact-label {
-			display: block;
-			margin: 0 0 0.5rem;
-			font-size: 0.82rem;
-			font-weight: 500;
-			color: rgba(245, 245, 245, 0.48);
-			letter-spacing: 0.02em;
+			color: #fff;
 		}
 
 		.contact-value {
-			display: inline-block;
-			margin: 0;
-			font-size: clamp(1.05rem, 1.35vw, 1.22rem);
-			font-weight: 500;
-			color: #fff;
-			line-height: 1.35;
-		}
-
-		a.contact-value {
-			transition: opacity 0.2s ease;
+			color: rgba(255, 255, 255, 0.7);
 		}
 
 		a.contact-value:hover {
-			opacity: 0.82;
+			color: #fff;
 		}
 
-		@media (max-width: 720px) {
-			.contact-layout {
-				grid-template-columns: 1fr;
-				gap: 2.25rem;
+		.contact-appear {
+			opacity: 0.001;
+			filter: blur(5px);
+			transform: translateY(15px);
+		}
+
+		.contact-appear.is-in {
+			animation: contact-appear 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+			animation-delay: var(--appear-delay, 0ms);
+		}
+
+		@keyframes contact-appear {
+			to {
+				opacity: 1;
+				filter: blur(0);
+				transform: translateY(0);
+			}
+		}
+
+		/* Tablet (<1200) */
+		@media (max-width: 1199px) {
+			.contact-copy h1 {
+				font-size: 37.5px;
+			}
+
+			.contact-emoji {
+				font-size: 28.5px;
+			}
+
+			.contact-lead,
+			.contact-label,
+			.contact-value {
+				font-size: 15px;
+			}
+		}
+
+		/* Móvil (<810) */
+		@media (max-width: 809px) {
+			.contact {
+				padding: 60px 15px 20px;
+			}
+
+			.contact-inner {
+				display: flex;
+				flex-direction: column;
+				align-items: stretch;
+				gap: 60px;
+				padding: 20px 0 40px;
 			}
 
 			.contact-fields {
-				grid-template-columns: 1fr;
+				width: 100%;
+			}
+
+			.contact-copy h1 {
+				font-size: 35px;
+			}
+
+			.contact-emoji {
+				font-size: 26.6px;
+			}
+
+			.contact-lead,
+			.contact-label,
+			.contact-value {
+				font-size: 14px;
 			}
 		}
 
@@ -154,8 +250,12 @@ const canonicalURL = new URL(Astro.url.pathname, SITE_ORIGIN).toString();
 				scroll-behavior: auto;
 			}
 
-			a.contact-value {
-				transition: none !important;
+			.contact-appear,
+			.contact-appear.is-in {
+				opacity: 1;
+				filter: none;
+				transform: none;
+				animation: none !important;
 			}
 		}
 
@@ -166,27 +266,43 @@ const canonicalURL = new URL(Astro.url.pathname, SITE_ORIGIN).toString();
 		}
 	</style>
 
-	<Header theme="dark" />
+	<Header theme="hero" />
 
-	<main class="contact-main" id="main">
-		<div class="contact-layout">
-			<h1 class="contact-title">Contacto</h1>
-			<div class="contact-fields">
-				<div class="contact-block">
-					<span class="contact-label">Teléfono</span>
-					<a class="contact-value" href="tel:+34608812834">+34 608 812 834</a>
+	<main class="contact-page" id="main">
+		<section class="contact" aria-label="Contacto">
+			<div class="contact-inner">
+				<div class="contact-copy">
+					<h1 class="contact-appear" style="--appear-delay: 0ms">
+						Venga, no muerde. <span class="contact-emoji">📨</span>
+					</h1>
+					<p class="contact-lead contact-appear" style="--appear-delay: 80ms">
+						Si has llegado hasta aquí es que algo te ha cuadrado. Escríbeme, llámame, mándame un mensaje con
+						el emoji que más te guste, el que más odies o incluso uno vacío – lo que sea. Intento contestar
+						antes de que te arrepientas.
+					</p>
 				</div>
-				<div class="contact-block">
-					<span class="contact-label">Dirección</span>
-					<p class="contact-value">Madrid, España</p>
-				</div>
-				<div class="contact-block">
-					<span class="contact-label">Email</span>
-					<a class="contact-value" href="mailto:angel@lavayen.me">angel@lavayen.me</a>
+				<div class="contact-fields contact-appear" style="--appear-delay: 120ms">
+					<div class="contact-block">
+						<p class="contact-label">Teléfono</p>
+						<a class="contact-value" href="tel:+34608812834">+34 608 812 834</a>
+					</div>
+					<div class="contact-block">
+						<p class="contact-label">Direccion</p>
+						<p class="contact-value">Madrid, España</p>
+					</div>
+					<div class="contact-block">
+						<p class="contact-label">Email</p>
+						<a class="contact-value" href="mailto:angel@lavayen.me">angel@lavayen.me</a>
+					</div>
 				</div>
 			</div>
-		</div>
+		</section>
 	</main>
 
 	<Footer />
+
+	<script>
+		const parts = document.querySelectorAll<HTMLElement>('.contact-appear');
+		parts.forEach((el) => el.classList.add('is-in'));
+	</script>
 </BaseLayout>

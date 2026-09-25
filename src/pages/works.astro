@@ -2,7 +2,7 @@
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { workProjects } from '../data/works';
+import { getListedWorks } from '../data/works';
 import {
 	OG_IMAGE_DEFAULT_HEIGHT,
 	OG_IMAGE_DEFAULT_URL,
@@ -14,6 +14,7 @@ const title = 'Proyectos de diseño gráfico y dirección de arte | Ángel Lavay
 const description =
 	'Casos reales de Ángel Alejandro Lavayen Ruiz: branding, packaging, motion graphics, campañas, collages y diseño editorial. Director de arte y diseñador gráfico en Madrid.';
 const canonicalURL = new URL(Astro.url.pathname, SITE_ORIGIN).toString();
+const listedWorks = getListedWorks();
 ---
 
 <BaseLayout
@@ -39,10 +40,6 @@ const canonicalURL = new URL(Astro.url.pathname, SITE_ORIGIN).toString();
 	/>
 
 	<style slot="head">
-		:root {
-			--site-pad: clamp(1.8rem, 4.8vw, 3rem);
-		}
-
 		* {
 			box-sizing: border-box;
 		}
@@ -51,9 +48,9 @@ const canonicalURL = new URL(Astro.url.pathname, SITE_ORIGIN).toString();
 		body {
 			margin: 0;
 			padding: 0;
-			font-family: Inter, system-ui, -apple-system, sans-serif;
+			font-family: 'Inter Display', Inter, system-ui, sans-serif;
 			background: #000;
-			color: #f5f5f5;
+			color: #fff;
 		}
 
 		body {
@@ -68,37 +65,131 @@ const canonicalURL = new URL(Astro.url.pathname, SITE_ORIGIN).toString();
 			text-decoration: none;
 		}
 
-		.work-page {
+		.works-page {
 			flex: 1;
-			width: calc(100% - (var(--site-pad) * 2));
-			margin: 0 auto;
-			padding: clamp(5.2rem, 14vw, 7.5rem) 0 clamp(4rem, 12vw, 7rem);
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			width: 100%;
+			background: #000;
+			-webkit-font-smoothing: antialiased;
+			-moz-osx-font-smoothing: grayscale;
 		}
 
-		.work-page-title {
-			margin: 0 0 clamp(1.75rem, 3.5vw, 2.75rem);
+		.works-hero {
+			display: flex;
+			flex-direction: column;
+			align-items: flex-start;
+			justify-content: center;
+			width: 100%;
+			max-width: 1440px;
+			height: 360px;
+			padding: 84px 30px 30px;
+			overflow: hidden;
+		}
+
+		.works-hero h1 {
+			margin: 0;
 			font-family: 'Instrument Serif', Georgia, serif;
-			font-size: clamp(2.35rem, 6.5vw, 4rem);
+			font-size: 41.6px;
 			font-weight: 400;
-			line-height: 1;
-			letter-spacing: -0.02em;
+			line-height: 0.9;
+			text-align: left;
 			color: #fff;
+		}
+
+		.works-word {
+			display: inline-block;
+			line-height: 0.9;
+			animation: works-title-in 2s linear(0, 0.4 18%, 0.72 36%, 0.88 54%, 0.96 72%, 1) both;
+		}
+
+		.works-word:nth-child(2) {
+			animation-delay: 0.05s;
+		}
+
+		.works-word:nth-child(3) {
+			animation-delay: 0.1s;
+		}
+
+		.works-word:nth-child(4) {
+			animation-delay: 0.15s;
+		}
+
+		.works-word:nth-child(5) {
+			animation-delay: 0.2s;
+		}
+
+		.works-word:nth-child(6) {
+			animation-delay: 0.25s;
+		}
+
+		@keyframes works-title-in {
+			from {
+				opacity: 0.001;
+				filter: blur(10px);
+				transform: translateY(40px);
+			}
+
+			to {
+				opacity: 1;
+				filter: blur(0);
+				transform: none;
+			}
+		}
+
+		.works-grid-wrap {
+			width: 100%;
+			max-width: 1440px;
+			padding: 0 30px 60px;
 		}
 
 		.work {
 			display: grid;
-			grid-template-columns: repeat(2, minmax(0, 1fr));
-			gap: clamp(0.7rem, 1.2vw, 1.2rem);
+			grid-template-columns: 1fr 1fr;
+			gap: 30px;
 		}
 
 		.work-item {
-			display: grid;
-			gap: 0.58rem;
+			display: block;
+			min-width: 0;
+		}
+
+		.scroll-in {
+			opacity: 0;
+			transform: translateY(15px);
+		}
+
+		.scroll-in.is-in {
+			animation: home-scroll-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both;
+		}
+
+		@keyframes home-scroll-in {
+			to {
+				opacity: 1;
+				transform: none;
+			}
+		}
+
+		.work-item-link {
+			display: flex;
+			flex-direction: column;
+			align-items: stretch;
+			gap: 15px;
+			color: inherit;
+			text-decoration: none;
+			min-width: 0;
+			overflow: hidden;
+		}
+
+		.work-item-link:focus-visible {
+			outline: 2px solid rgba(255, 255, 255, 0.65);
+			outline-offset: 3px;
 		}
 
 		.work-media {
 			margin: 0;
-			aspect-ratio: 16 / 11;
+			aspect-ratio: 1.4386 / 1;
 			background: #111;
 			overflow: hidden;
 		}
@@ -108,56 +199,112 @@ const canonicalURL = new URL(Astro.url.pathname, SITE_ORIGIN).toString();
 			height: 100%;
 			object-fit: cover;
 			display: block;
-			transition: transform 220ms ease;
-		}
-
-		.work-item:hover .work-media img {
-			transform: scale(1.015);
-		}
-
-		.work-item-link {
-			display: grid;
-			gap: 0.58rem;
-			color: inherit;
-			text-decoration: none;
-		}
-
-		.work-item-link:focus-visible {
-			outline: 2px solid rgba(255, 255, 255, 0.45);
-			outline-offset: 4px;
 		}
 
 		.work-meta {
-			display: grid;
-			gap: 0.25rem;
+			display: flex;
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 10px;
+			width: 100%;
 		}
 
 		.work-year {
 			width: fit-content;
-			padding: 0.08rem 0.38rem;
-			font-size: 0.78rem;
-			color: rgba(239, 239, 239, 0.9);
-			border: 1px solid rgba(255, 255, 255, 0.2);
-			border-radius: 0.18rem;
-			line-height: 1.2;
+			padding: 5px 9px;
+			font-family: 'Inter Display', sans-serif;
+			font-size: 13px;
+			font-weight: 400;
+			line-height: 15.6px;
+			color: #fff;
+			background: rgb(23, 23, 23);
+			border: 0;
+		}
+
+		.work-meta__titles {
+			display: flex;
+			flex-direction: column;
+			align-items: flex-start;
+			justify-content: center;
+			gap: 5px;
+			width: 100%;
 		}
 
 		.work-item h2 {
 			margin: 0;
-			font-size: clamp(1.25rem, 1.55vw, 1.75rem);
+			font-family: 'Inter Display', sans-serif;
+			font-size: 22.4px;
 			font-weight: 500;
-			letter-spacing: -0.01em;
+			line-height: 26.88px;
+			color: #fff;
 		}
 
 		.work-item p {
 			margin: 0;
-			font-size: 1rem;
-			color: rgba(241, 241, 241, 0.78);
+			font-family: 'Inter Display', sans-serif;
+			font-size: 16px;
+			font-weight: 400;
+			line-height: 22.4px;
+			color: rgba(255, 255, 255, 0.7);
 		}
 
-		@media (max-width: 640px) {
+		@media (hover: hover) and (pointer: fine) {
+			a.work-item-link {
+				cursor: none !important;
+			}
+		}
+
+		@media (max-width: 1199px) {
+			.works-hero {
+				height: 324px;
+			}
+
+			.works-hero h1 {
+				font-size: 39px;
+			}
+
+			.work {
+				gap: 20px;
+			}
+
+			.work-item h2 {
+				font-size: 21px;
+				line-height: 25.2px;
+			}
+
+			.work-item p {
+				font-size: 15px;
+				line-height: 21px;
+			}
+		}
+
+		@media (max-width: 809px) {
+			.works-hero {
+				height: 253.188px;
+				padding: 50px 15px 20px;
+			}
+
+			.works-hero h1 {
+				font-size: 36.4px;
+			}
+
+			.works-grid-wrap {
+				padding: 0 15px 40px;
+			}
+
 			.work {
 				grid-template-columns: 1fr;
+				gap: 30px;
+			}
+
+			.work-item h2 {
+				font-size: 19.6px;
+				line-height: 23.52px;
+			}
+
+			.work-item p {
+				font-size: 14px;
+				line-height: 19.6px;
 			}
 		}
 
@@ -166,12 +313,13 @@ const canonicalURL = new URL(Astro.url.pathname, SITE_ORIGIN).toString();
 				scroll-behavior: auto;
 			}
 
-			.work-media img {
-				transition: none !important;
-			}
-
-			.work-item:hover .work-media img {
+			.scroll-in,
+			.scroll-in.is-in,
+			.works-word {
+				opacity: 1;
+				filter: none;
 				transform: none;
+				animation: none !important;
 			}
 		}
 
@@ -182,24 +330,35 @@ const canonicalURL = new URL(Astro.url.pathname, SITE_ORIGIN).toString();
 		}
 	</style>
 
-	<Header theme="dark" />
+	<Header theme="hero" />
 
-	<main class="work-page" id="main">
-		<h1 class="work-page-title">Works</h1>
+	<main class="works-page" id="main">
+		<section class="works-hero" aria-label="Work">
+			<h1>
+				<span class="works-word">Más</span>
+				<span class="works-word">de</span>
+				<span class="works-word">lo</span>
+				<span class="works-word">que</span>
+				<span class="works-word">hago</span>
+				<span class="works-word">🗃️</span>
+			</h1>
+		</section>
 
-		<section class="work-showcase" aria-label="Proyectos">
+		<section class="works-grid-wrap" aria-label="Proyectos">
 			<div class="work">
 				{
-					workProjects.map((p) => (
-						<article class="work-item">
+					listedWorks.map((p) => (
+						<article class="work-item scroll-in" data-appear="0">
 							<a class="work-item-link" href={`/works/${p.slug}/`}>
 								<figure class="work-media">
-									<img src={p.img} alt={p.alt} loading="lazy" />
+									<img src={p.img} alt={p.alt} width="1439" height="1000" loading="lazy" decoding="async" />
 								</figure>
 								<div class="work-meta">
 									<span class="work-year">{p.year}</span>
-									<h2>{p.title}</h2>
-									{p.desc ? <p>{p.desc}</p> : null}
+									<div class="work-meta__titles">
+										<h2>{p.title}</h2>
+										<p>{p.desc ?? ''}</p>
+									</div>
 								</div>
 							</a>
 						</article>
@@ -210,4 +369,40 @@ const canonicalURL = new URL(Astro.url.pathname, SITE_ORIGIN).toString();
 	</main>
 
 	<Footer />
+
+	<script>
+		const bootScrollIn = () => {
+			const nodes = [...document.querySelectorAll<HTMLElement>('.scroll-in')];
+			if (!nodes.length) return;
+			if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+				nodes.forEach((node) => node.classList.add('is-in'));
+				return;
+			}
+			const pending = new Set(nodes);
+			const scan = () => {
+				const vh = window.innerHeight || 0;
+				pending.forEach((node) => {
+					const rect = node.getBoundingClientRect();
+					const visible = Math.min(rect.bottom, vh) - Math.max(rect.top, 0);
+					if (visible > 0) {
+						pending.delete(node);
+						node.classList.add('is-in');
+					}
+				});
+				if (!pending.size) {
+					window.removeEventListener('scroll', scan);
+					window.removeEventListener('resize', scan);
+				}
+			};
+			window.addEventListener('scroll', scan, { passive: true });
+			window.addEventListener('resize', scan, { passive: true });
+			scan();
+		};
+
+		if (document.readyState === 'loading') {
+			document.addEventListener('DOMContentLoaded', bootScrollIn);
+		} else {
+			bootScrollIn();
+		}
+	</script>
 </BaseLayout>
