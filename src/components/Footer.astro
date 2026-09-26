@@ -63,9 +63,9 @@ const socials = [
 				))
 			}
 		</div>
-		<div class="site-footer__col">
+		<div class="site-footer__col site-footer__col--info">
 			<p class="site-footer__label">Info</p>
-			<a class="footer-link" href="/legal/therms" target="_blank" rel="noreferrer noopener">
+			<a class="footer-link footer-link--terms" href="/legal/therms" target="_blank" rel="noreferrer noopener">
 				<span class="footer-link__clip">
 					<span class="footer-link__stack">
 						<span class="footer-link__line">Términos y condiciones</span>
@@ -76,8 +76,14 @@ const socials = [
 			<button type="button" class="footer-link footer-cookie-btn" data-open-cookies>
 				<span class="footer-link__clip">
 					<span class="footer-link__stack">
-						<span class="footer-link__line">Configurar Cookies</span>
-						<span class="footer-link__line" aria-hidden="true">Configurar Cookies</span>
+						<span class="footer-link__line">
+							<span class="cookie-full">Configurar Cookies</span>
+							<span class="cookie-short">Cookies</span>
+						</span>
+						<span class="footer-link__line" aria-hidden="true">
+							<span class="cookie-full">Configurar Cookies</span>
+							<span class="cookie-short">Cookies</span>
+						</span>
 					</span>
 				</span>
 			</button>
@@ -104,6 +110,7 @@ const socials = [
 	 */
 	.site-footer {
 		width: 100%;
+		max-width: 100%;
 		margin-top: auto;
 		background: #000;
 		color: #fff;
@@ -112,6 +119,7 @@ const socials = [
 		position: sticky;
 		bottom: 0;
 		z-index: 0;
+		overflow-x: clip;
 	}
 
 	/* Contenido de página (hijos directos del body) que pasa por encima del pie */
@@ -167,6 +175,8 @@ const socials = [
 
 	.footer-link {
 		display: block;
+		min-width: 0;
+		max-width: 100%;
 		margin: 0;
 		padding: 0;
 		border: 0;
@@ -198,6 +208,10 @@ const socials = [
 		line-height: 19.2px;
 		color: #fff;
 		white-space: nowrap;
+	}
+
+	.cookie-short {
+		display: none;
 	}
 
 	.footer-link:hover .footer-link__stack,
@@ -290,6 +304,32 @@ const socials = [
 
 		.footer-copy {
 			white-space: normal;
+		}
+
+		.site-footer__col--info {
+			overflow: clip;
+			padding-right: 20px;
+		}
+
+		.footer-link--terms .footer-link__line {
+			white-space: pre-wrap;
+			overflow-wrap: anywhere;
+		}
+
+		.footer-link--terms .footer-link__clip {
+			height: auto;
+		}
+
+		.footer-link--terms .footer-link__line[aria-hidden='true'] {
+			display: none;
+		}
+
+		.cookie-full {
+			display: none;
+		}
+
+		.cookie-short {
+			display: inline;
 		}
 	}
 

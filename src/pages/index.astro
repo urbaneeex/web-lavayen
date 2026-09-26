@@ -198,7 +198,8 @@ const [workA, workB, workFeatured, workC, workD] = homeWorks;
 				display: inline-block;
 			}
 
-			.hero-line--mob {
+			.hero-line--mob,
+			.hero-br--mob {
 				display: none;
 			}
 
@@ -670,7 +671,6 @@ const [workA, workB, workFeatured, workC, workD] = homeWorks;
 
 			.cta__pad {
 				position: relative;
-				z-index: 2;
 				display: flex;
 				flex-direction: column;
 				align-items: flex-start;
@@ -682,6 +682,8 @@ const [workA, workB, workFeatured, workC, workD] = homeWorks;
 			}
 
 			.cta__copy {
+				position: relative;
+				z-index: 1;
 				margin: 0;
 				width: 100%;
 				max-width: 828px;
@@ -715,6 +717,7 @@ const [workA, workB, workFeatured, workC, workD] = homeWorks;
 
 			.cta-btn {
 				position: relative;
+				z-index: 1;
 				display: inline-flex;
 				align-items: center;
 				justify-content: center;
@@ -821,6 +824,10 @@ const [workA, workB, workFeatured, workC, workD] = homeWorks;
 				}
 
 				.hero-line--mob {
+					display: inline;
+				}
+
+				.hero-br--mob {
 					display: inline;
 				}
 
@@ -976,6 +983,10 @@ const [workA, workB, workFeatured, workC, workD] = homeWorks;
 					line-height: 43.68px;
 				}
 
+				.cta-br--desk {
+					display: none;
+				}
+
 				.cta-btn__clip {
 					height: 16.8px;
 				}
@@ -1035,6 +1046,7 @@ const [workA, workB, workFeatured, workC, workD] = homeWorks;
 				<h1 class="hero-copy">
 					<span class="hero-word roman" style="--i: 0">Hola</span>
 					<span class="hero-word" style="--i: 2">stalker.🕵️</span>
+					<br class="hero-br--mob" />
 					<span class="hero-word roman" style="--i: 4">¡Bienvenid@!</span>
 					<span class="hero-word roman" style="--i: 5">Soy</span>
 					<span class="hero-word" style="--i: 7">Ángel.</span>
@@ -1055,8 +1067,8 @@ const [workA, workB, workFeatured, workC, workD] = homeWorks;
 						<span class="hero-word" style="--i: 11">y</span>
 						<span class="hero-word" style="--i: 12">diseñador</span>
 						<span class="hero-word" style="--i: 13">multimedia</span>
-						<span class="hero-word" style="--i: 15">en</span>
-						<span class="hero-word" style="--i: 16">Madrid.</span>
+						<span class="hero-word roman" style="--i: 15">en</span>
+						<span class="hero-word roman" style="--i: 16">Madrid.</span>
 					</span>
 				</h1>
 			</div>
@@ -1213,7 +1225,7 @@ const [workA, workB, workFeatured, workC, workD] = homeWorks;
 					<em class="cta-word cta-appear" style="--appear-delay: 50ms">trabajar</em>
 					{' '}
 					<em class="cta-word cta-appear" style="--appear-delay: 100ms">conmigo</em>
-					<br />
+					<br class="cta-br--desk" />
 					<span class="cta-word cta-appear" style="--appear-delay: 150ms">sea</span>
 					{' '}
 					<span class="cta-word cta-appear" style="--appear-delay: 200ms">una</span>
