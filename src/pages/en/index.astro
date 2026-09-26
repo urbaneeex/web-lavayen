@@ -7,9 +7,11 @@ import {
 	OG_IMAGE_DEFAULT_HEIGHT,
 	OG_IMAGE_DEFAULT_URL,
 	OG_IMAGE_DEFAULT_WIDTH,
+	PERSON_ID,
 	PERSON_LEGAL_NAME,
 	SITE_ORIGIN,
-	SOCIAL_PROFILE_URLS
+	SOCIAL_PROFILE_URLS,
+	WEBSITE_ID
 } from '../../site';
 
 const title = 'Ángel Lavayen | Art director, graphic designer & motion designer in Madrid';
@@ -43,26 +45,41 @@ const schemaDescription =
 		slot="head"
 		set:html={JSON.stringify({
 			'@context': 'https://schema.org',
-			'@type': 'Person',
-			name: PERSON_LEGAL_NAME,
-			alternateName: ['Angel Lavayen', 'Ángel Lavayen'],
-			jobTitle: 'Art director, graphic designer and motion designer',
-			description: schemaDescription,
-			url: `${SITE_ORIGIN}/en/`,
-			address: {
-				'@type': 'PostalAddress',
-				addressLocality: 'Madrid',
-				addressCountry: 'ES'
-			},
-			sameAs: [...SOCIAL_PROFILE_URLS],
-			knowsAbout: [
-				'Art direction',
-				'Graphic design',
-				'Motion graphics',
-				'Branding',
-				'Editorial design',
-				'Packaging',
-				'Video editing'
+			'@graph': [
+				{
+					'@type': 'WebPage',
+					'@id': `${SITE_ORIGIN}/en/#webpage`,
+					url: canonicalURL,
+					name: title,
+					description,
+					inLanguage: 'en',
+					isPartOf: { '@id': WEBSITE_ID },
+					about: { '@id': PERSON_ID }
+				},
+				{
+					'@type': 'Person',
+					'@id': PERSON_ID,
+					name: PERSON_LEGAL_NAME,
+					alternateName: ['Angel Lavayen', 'Ángel Lavayen'],
+					jobTitle: 'Art director, graphic designer and motion designer',
+					description: schemaDescription,
+					url: `${SITE_ORIGIN}/`,
+					address: {
+						'@type': 'PostalAddress',
+						addressLocality: 'Madrid',
+						addressCountry: 'ES'
+					},
+					sameAs: [...SOCIAL_PROFILE_URLS],
+					knowsAbout: [
+						'Art direction',
+						'Graphic design',
+						'Motion graphics',
+						'Branding',
+						'Editorial design',
+						'Packaging',
+						'Video editing'
+					]
+				}
 			]
 		})}
 	/>

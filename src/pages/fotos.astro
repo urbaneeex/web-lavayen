@@ -3,7 +3,7 @@ import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import HeroGodRays from '../components/HeroGodRays.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { SITE_ORIGIN } from '../site';
+import { SITE_ORIGIN, WEBSITE_ID, breadcrumbJsonLd } from '../site';
 
 const title = 'Fotografía y mirada creativa | Ángel Lavayen, Madrid';
 const description =
@@ -55,7 +55,6 @@ const fotos = [
 	ogImage={ogImage}
 	ogImageWidth={3587}
 	ogImageHeight={2018}
-	ogLocaleAlternate="en_US"
 >
 	<script
 		slot="head"
@@ -66,8 +65,19 @@ const fotos = [
 			name: 'Fotos — Ángel Lavayen',
 			description,
 			url: canonicalURL,
-			isPartOf: { '@type': 'WebSite', name: 'Ángel Lavayen', url: `${SITE_ORIGIN}/` }
+			inLanguage: 'es',
+			isPartOf: { '@id': WEBSITE_ID }
 		})}
+	/>
+	<script
+		slot="head"
+		type="application/ld+json"
+		set:html={JSON.stringify(
+			breadcrumbJsonLd([
+				{ name: 'Inicio', url: `${SITE_ORIGIN}/` },
+				{ name: 'Fotos', url: canonicalURL }
+			])
+		)}
 	/>
 
 	<style slot="head">

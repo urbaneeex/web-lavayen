@@ -6,8 +6,10 @@ import {
 	OG_IMAGE_DEFAULT_HEIGHT,
 	OG_IMAGE_DEFAULT_URL,
 	OG_IMAGE_DEFAULT_WIDTH,
+	PERSON_ID,
 	PERSON_LEGAL_NAME,
-	SITE_ORIGIN
+	SITE_ORIGIN,
+	breadcrumbJsonLd
 } from '../site';
 
 const title = 'Contacto | Ángel Lavayen — Diseño gráfico y dirección de arte en Madrid';
@@ -23,7 +25,6 @@ const canonicalURL = new URL(Astro.url.pathname, SITE_ORIGIN).toString();
 	ogImage={OG_IMAGE_DEFAULT_URL}
 	ogImageWidth={OG_IMAGE_DEFAULT_WIDTH}
 	ogImageHeight={OG_IMAGE_DEFAULT_HEIGHT}
-	ogLocaleAlternate="en_US"
 >
 	<script
 		slot="head"
@@ -34,8 +35,10 @@ const canonicalURL = new URL(Astro.url.pathname, SITE_ORIGIN).toString();
 			name: 'Contacto — Ángel Lavayen',
 			description,
 			url: canonicalURL,
+			inLanguage: 'es',
 			mainEntity: {
 				'@type': 'Person',
+				'@id': PERSON_ID,
 				name: PERSON_LEGAL_NAME,
 				email: 'angel@lavayen.me',
 				telephone: '+34608812834',
@@ -46,6 +49,16 @@ const canonicalURL = new URL(Astro.url.pathname, SITE_ORIGIN).toString();
 				}
 			}
 		})}
+	/>
+	<script
+		slot="head"
+		type="application/ld+json"
+		set:html={JSON.stringify(
+			breadcrumbJsonLd([
+				{ name: 'Inicio', url: `${SITE_ORIGIN}/` },
+				{ name: 'Contacto', url: canonicalURL }
+			])
+		)}
 	/>
 
 	<style slot="head">

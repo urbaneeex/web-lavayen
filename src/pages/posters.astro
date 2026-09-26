@@ -2,7 +2,15 @@
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { OG_IMAGE_DEFAULT_HEIGHT, OG_IMAGE_DEFAULT_URL, OG_IMAGE_DEFAULT_WIDTH, POSTER_GUMROAD, SITE_ORIGIN } from '../site';
+import {
+	OG_IMAGE_DEFAULT_HEIGHT,
+	OG_IMAGE_DEFAULT_URL,
+	OG_IMAGE_DEFAULT_WIDTH,
+	POSTER_GUMROAD,
+	SITE_ORIGIN,
+	WEBSITE_ID,
+	breadcrumbJsonLd
+} from '../site';
 
 const title = 'Pósters digitales | Ángel Lavayen, director de arte';
 const description =
@@ -51,6 +59,29 @@ const posters = [
 	ogImageWidth={OG_IMAGE_DEFAULT_WIDTH}
 	ogImageHeight={OG_IMAGE_DEFAULT_HEIGHT}
 >
+	<script
+		slot="head"
+		type="application/ld+json"
+		set:html={JSON.stringify({
+			'@context': 'https://schema.org',
+			'@type': 'CollectionPage',
+			name: 'Pósters — Ángel Lavayen',
+			description,
+			url: canonicalURL,
+			inLanguage: 'es',
+			isPartOf: { '@id': WEBSITE_ID }
+		})}
+	/>
+	<script
+		slot="head"
+		type="application/ld+json"
+		set:html={JSON.stringify(
+			breadcrumbJsonLd([
+				{ name: 'Inicio', url: `${SITE_ORIGIN}/` },
+				{ name: 'Pósters', url: canonicalURL }
+			])
+		)}
+	/>
 	<style slot="head">
 		* {
 			box-sizing: border-box;

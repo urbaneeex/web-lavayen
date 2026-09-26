@@ -1,6 +1,23 @@
 /** Origen canónico del sitio (alineado con astro.config site). */
 export const SITE_ORIGIN = 'https://lavayen.me';
 
+/** Identificadores estables de schema.org. Siguen al origen cuando cambie el dominio. */
+export const PERSON_ID = `${SITE_ORIGIN}/#person`;
+export const WEBSITE_ID = `${SITE_ORIGIN}/#website`;
+
+export function breadcrumbJsonLd(items: { name: string; url: string }[]) {
+	return {
+		'@context': 'https://schema.org',
+		'@type': 'BreadcrumbList',
+		itemListElement: items.map((item, index) => ({
+			'@type': 'ListItem',
+			position: index + 1,
+			name: item.name,
+			item: item.url
+		}))
+	};
+}
+
 /** Imagen Open Graph por defecto (~1200×630 WebP), generada desde `lavayen-pic.webp`. */
 export const OG_IMAGE_DEFAULT_PATH = '/images/og-social.webp' as const;
 export const OG_IMAGE_DEFAULT_URL = new URL(OG_IMAGE_DEFAULT_PATH, SITE_ORIGIN).href;

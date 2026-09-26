@@ -7,7 +7,9 @@ import {
 	OG_IMAGE_DEFAULT_HEIGHT,
 	OG_IMAGE_DEFAULT_URL,
 	OG_IMAGE_DEFAULT_WIDTH,
-	SITE_ORIGIN
+	SITE_ORIGIN,
+	WEBSITE_ID,
+	breadcrumbJsonLd
 } from '../site';
 
 const title = 'Proyectos de diseño gráfico y dirección de arte | Ángel Lavayen, Madrid';
@@ -24,7 +26,6 @@ const listedWorks = getListedWorks();
 	ogImage={OG_IMAGE_DEFAULT_URL}
 	ogImageWidth={OG_IMAGE_DEFAULT_WIDTH}
 	ogImageHeight={OG_IMAGE_DEFAULT_HEIGHT}
-	ogLocaleAlternate="en_US"
 >
 	<script
 		slot="head"
@@ -35,8 +36,19 @@ const listedWorks = getListedWorks();
 			name: 'Proyectos — Ángel Lavayen',
 			description,
 			url: canonicalURL,
-			isPartOf: { '@type': 'WebSite', name: 'Ángel Lavayen', url: `${SITE_ORIGIN}/` }
+			inLanguage: 'es',
+			isPartOf: { '@id': WEBSITE_ID }
 		})}
+	/>
+	<script
+		slot="head"
+		type="application/ld+json"
+		set:html={JSON.stringify(
+			breadcrumbJsonLd([
+				{ name: 'Inicio', url: `${SITE_ORIGIN}/` },
+				{ name: 'Work', url: canonicalURL }
+			])
+		)}
 	/>
 
 	<style slot="head">

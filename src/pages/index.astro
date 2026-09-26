@@ -9,10 +9,12 @@ import {
 	OG_IMAGE_DEFAULT_HEIGHT,
 	OG_IMAGE_DEFAULT_URL,
 	OG_IMAGE_DEFAULT_WIDTH,
+	PERSON_ID,
 	PERSON_LEGAL_NAME,
 	PERSON_SHORT_NAME,
 	SITE_ORIGIN,
-	SOCIAL_PROFILE_URLS
+	SOCIAL_PROFILE_URLS,
+	WEBSITE_ID
 } from '../site';
 
 const title = 'Ángel Lavayen | Director de arte, diseñador gráfico y motion designer en Madrid';
@@ -60,26 +62,40 @@ const [workA, workB, workFeatured, workC, workD] = homeWorks;
 		slot="head"
 		set:html={JSON.stringify({
 			'@context': 'https://schema.org',
-			'@type': 'Person',
-			name: PERSON_LEGAL_NAME,
-			alternateName: [PERSON_SHORT_NAME, 'Angel Lavayen', 'Ángel Lavayen'],
-			jobTitle: 'Director de arte, diseñador gráfico y motion designer',
-			description,
-			url: `${SITE_ORIGIN}/`,
-			address: {
-				'@type': 'PostalAddress',
-				addressLocality: 'Madrid',
-				addressCountry: 'ES'
-			},
-			sameAs: [...SOCIAL_PROFILE_URLS],
-			knowsAbout: [
-				'Dirección de arte',
-				'Diseño gráfico',
-				'Motion graphics',
-				'Branding',
-				'Diseño editorial',
-				'Packaging',
-				'Edición de vídeo'
+			'@graph': [
+				{
+					'@type': 'WebSite',
+					'@id': WEBSITE_ID,
+					url: `${SITE_ORIGIN}/`,
+					name: 'Ángel Lavayen',
+					description,
+					inLanguage: 'es',
+					publisher: { '@id': PERSON_ID }
+				},
+				{
+					'@type': 'Person',
+					'@id': PERSON_ID,
+					name: PERSON_LEGAL_NAME,
+					alternateName: [PERSON_SHORT_NAME, 'Angel Lavayen', 'Ángel Lavayen'],
+					jobTitle: 'Director de arte, diseñador gráfico y motion designer',
+					description,
+					url: `${SITE_ORIGIN}/`,
+					address: {
+						'@type': 'PostalAddress',
+						addressLocality: 'Madrid',
+						addressCountry: 'ES'
+					},
+					sameAs: [...SOCIAL_PROFILE_URLS],
+					knowsAbout: [
+						'Dirección de arte',
+						'Diseño gráfico',
+						'Motion graphics',
+						'Branding',
+						'Diseño editorial',
+						'Packaging',
+						'Edición de vídeo'
+					]
+				}
 			]
 		})}
 	/>

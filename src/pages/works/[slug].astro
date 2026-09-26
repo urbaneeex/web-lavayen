@@ -4,7 +4,7 @@ import Header from '../../components/Header.astro';
 import WorkCard from '../../components/WorkCard.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getWorkNeighbors, workProjects, yearToSchemaDatePublished } from '../../data/works';
-import { PERSON_LEGAL_NAME, SITE_ORIGIN } from '../../site';
+import { PERSON_ID, PERSON_LEGAL_NAME, SITE_ORIGIN, WEBSITE_ID, breadcrumbJsonLd } from '../../site';
 
 export function getStaticPaths() {
 	return workProjects.map((p) => ({ params: { slug: p.slug } }));
@@ -35,7 +35,6 @@ const datePublished = yearToSchemaDatePublished(current.year);
 	canonicalURL={canonicalURL}
 	ogType="article"
 	ogImage={ogImageAbs}
-	ogLocaleAlternate="en_US"
 >
 	<script
 		slot="head"
@@ -48,9 +47,21 @@ const datePublished = yearToSchemaDatePublished(current.year);
 			url: canonicalURL,
 			image: ogImageAbs,
 			datePublished,
-			author: { '@type': 'Person', name: PERSON_LEGAL_NAME, url: `${SITE_ORIGIN}/` },
-			isPartOf: { '@type': 'WebSite', name: 'Ángel Lavayen', url: `${SITE_ORIGIN}/` }
+			inLanguage: 'es',
+			author: { '@id': PERSON_ID, '@type': 'Person', name: PERSON_LEGAL_NAME },
+			isPartOf: { '@id': WEBSITE_ID }
 		})}
+	/>
+	<script
+		slot="head"
+		type="application/ld+json"
+		set:html={JSON.stringify(
+			breadcrumbJsonLd([
+				{ name: 'Inicio', url: `${SITE_ORIGIN}/` },
+				{ name: 'Work', url: `${SITE_ORIGIN}/works` },
+				{ name: current.title, url: canonicalURL }
+			])
+		)}
 	/>
 
 	<style slot="head">
